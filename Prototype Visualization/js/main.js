@@ -33,6 +33,8 @@ d3.json("citylots_merge.geojson", function(collection) {
           var energyStarYear;
           var weatherNormalizedSourceEUI;
           var weatherNormalizedSourceEUIYear;
+          var weatherNormalizedSiteEUI;
+          var weatherNormalizedSiteEUIYear;
           var ghgEmissionsIntensity;
           var ghgEmissionsYear;
           var eui;
@@ -88,6 +90,23 @@ d3.json("citylots_merge.geojson", function(collection) {
             weatherNormalizedSourceEUIYear = "";
           }
 
+          if(d._2014_weather_normalized_site_eui_kbtu_ft2 != null){
+            weatherNormalizedSiteEUI = d._2014_weather_normalized_site_eui_kbtu_ft2
+            weatherNormalizedSiteEUIYear = 2014;
+          } else if(d.properties._2013_weather_normalized_site_eui_kbtu_ft2 != null){
+            weatherNormalizedSiteEUI = d.properties._2013_weather_normalized_site_eui_kbtu_ft2;
+            weatherNormalizedSiteEUIYear = 2013;
+          } else if(d.properties._2012_weather_normalized_site_eui_kbtu_ft2 != null){
+            weatherNormalizedSiteEUI = d.properties._2012_weather_normalized_site_eui_kbtu_ft2;
+            weatherNormalizedSiteEUIYear = 2012;
+          } else if(d.properties._2011_weather_normalized_site_eui_kbtu_ft2 != null){
+            weatherNormalizedSiteEUI = d.properties._2011_weather_normalized_site_eui_kbtu_ft2;
+            weatherNormalizedSiteEUIYear = 2011;
+          } else {
+            weatherNormalizedSiteEUI = "N/A";
+            weatherNormalizedSiteEUIYear = "";
+          }
+
           energyDict[parcelID] = {
             "Energy Star Score" : energyStarScore,
             "Energy Star Year" : energyStarYear,
@@ -95,6 +114,8 @@ d3.json("citylots_merge.geojson", function(collection) {
             "GHG Year" : ghgEmissionsYear,
             "Weather Normalized Source EUI" : weatherNormalizedSourceEUI,
             "Weather Normalized Source EUI Year" : weatherNormalizedSourceEUIYear,
+            "Weather Normalized Site EUI" : weatherNormalizedSiteEUI,
+            "Weather Normalized Site EUI Year" : weatherNormalizedSiteEUIYear,
             "Property Type" : d.properties.property_type_self_selected
           };
 
@@ -158,6 +179,7 @@ d3.json("citylots_merge.geojson", function(collection) {
            buildingInfo += "<div>"+  energyDict[d.properties.blklot]["Energy Star Year"] +" Energy Star Score: " + energyDict[d.properties.blklot]["Energy Star Score"] + "<\/div>";
            buildingInfo += "<div>"+  energyDict[d.properties.blklot]["GHG Year"] +" GHG Emissions: " + energyDict[d.properties.blklot]["GHG Emissions Intensity"] + " kgCO<sup>2<\/sup>e&#47;ft<sup>2<\/sup><\/div>";
            buildingInfo += "<div>"+  energyDict[d.properties.blklot]["Weather Normalized Source EUI Year"] +" Weather Normalized Source EUI: " + energyDict[d.properties.blklot]["Weather Normalized Source EUI"] + " kBTU&#47;ft<sup>2<\/sup><\/div>";
+           buildingInfo += "<div>"+  energyDict[d.properties.blklot]["Weather Normalized Site EUI Year"] +" Weather Normalized Site EUI: " + energyDict[d.properties.blklot]["Weather Normalized Site EUI"] + " kBTU&#47;ft<sup>2<\/sup><\/div>";
            buildingInfo += "<div> Property Type: "+ energyDict[d.properties.blklot]["Property Type"] +"<\/div>";
 
            $( "#building-details" ).html(buildingInfo);
