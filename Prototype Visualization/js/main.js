@@ -17,6 +17,19 @@ L.tileLayer('https://api.tiles.mapbox.com/v4/mapbox.dark/{z}/{x}/{y}.png?access_
     accessToken: 'pk.eyJ1Ijoic21vbmluZ2kiLCJhIjoiQ21rN1pjSSJ9.WKrPFjjb7LRMBjyban698g'
 }).addTo(map);
 
+//Add Legend
+var legend = L.control({position:'topright'});
+legend.onAdd = function (map) {
+    var div = L.DomUtil.create('div', 'legend');
+    div.innerHTML += "<div><b>Energy Star Score</b></div>"
+    div.innerHTML += "<i style=\"background:#ffffe0;\"></i> <b>75-100</b> <br/>";
+    div.innerHTML += "<i style=\"background:#ffa474;\"></i> <b>50-75</b><br/>";
+    div.innerHTML += "<i style=\"background:#db4551;\"></i> <b>25-50</b> <br/>";
+    div.innerHTML += "<i style=\"background:#8b0000;\"></i> <b>0-25</b><br/>";
+    return div;
+};
+legend.addTo(map);
+
 var svg = d3.select(map.getPanes().overlayPane).append("svg"),
     g = svg.append("g").attr("class", "leaflet-zoom-hide");
 
