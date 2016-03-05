@@ -1,0 +1,44 @@
+html,
+body {
+    height: 100%;
+    width: 100%;
+}
+
+body {
+    margin: 0;
+}
+
+#map {
+    width: 100%;
+    height: 100%;
+}
+
+.info {
+    position: absolute;
+    bottom: 20px;
+    right: 30px;
+    width: 275px;
+    background: #f6f6f6;
+    opacity: 1;
+    overflow: auto;
+    padding: 15px 15px 15px 15px;
+    font-size: 14px;
+    color: #151515;
+    border-radius: 3px;
+    z-index: 900;
+}
+
+.intro {
+    position: absolute;
+    top: 20px;
+    left: 30px;
+    width: 400px;
+    background: #f6f6f6;
+    opacity: 1;
+    overflow: auto;
+    padding: 25px 25px 15px 25px;
+    font-size: 14px;
+    color: #151515;
+    border-radius: 3px;
+    z-index: 900;
+}
