@@ -162,7 +162,7 @@ d3.json("citylots_merge.geojson", function(collection) {
             var color = d3.scale.quantize()
                 //.domain([-2.28277,0, 2.28277])
                 .domain([0, 25, 50, 75, 100])
-                .range(["#d7191c", "#fdae61", "#a6d96a", "#1a9641"]);
+                .range(["#8b0000", "#db4551", "#ffa474", "#ffffe0"]);
             return color(parseInt(energyDict[parcelID]["Energy Star Score"]));
           } else{
             return "#ffffbf";
@@ -192,7 +192,7 @@ d3.json("citylots_merge.geojson", function(collection) {
              if(energyDict[parcelID]["GHG Emissions Intensity"] != null){
                var color = d3.scale.quantize()
                    .domain([0, 25, 50, 75, 100])
-                   .range(["#d7191c", "#fdae61", "#a6d96a", "#1a9641"]);
+                   .range(["#8b0000", "#db4551", "#ffa474", "#ffffe0"]);
                return color(parseInt(energyDict[parcelID]["Energy Star Score"]));
              } else{
                return "#ffffbf";
