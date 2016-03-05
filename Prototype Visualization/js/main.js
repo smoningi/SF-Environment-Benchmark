@@ -120,10 +120,10 @@ d3.json("citylots_merge.geojson", function(collection) {
           if(energyDict[parcelID]["GHG Emissions Intensity"] != null){
             var color = d3.scale.quantize()
                 //.domain([-2.28277,0, 2.28277])
-                .domain([0, 2, 10])
-                .range(["#92c5de", "#f7f7f7", "#f4a582"]);
-            console.log(color(parseInt(energyDict[parcelID]["GHG Emissions Intensity"])));
-            return color(energyDict[parcelID]["GHG Emissions Intensity"]);
+                .domain([0, 50, 100])
+                .range(["#f4a582", "#f7f7f7", "#92c5de"]);
+            console.log(color(parseInt(energyDict[parcelID]["Energy Star Score"])));
+            return color(parseInt(energyDict[parcelID]["Energy Star Score"]));
           } else{
             return "#ffffbf";
           }
@@ -144,7 +144,20 @@ d3.json("citylots_merge.geojson", function(collection) {
         })
         .on("mouseout", function(d){
            d3.select(this).style("stroke", "#B9E7FF")
-           .style("fill", "#B9E7FF")
+           .style("fill", function(d){
+             var parcelID = d.properties.blklot;
+             var average = (energyDict["GHG Emissions Min"] + energyDict["GHG Emissions Max"]) / 2;
+             if(energyDict[parcelID]["GHG Emissions Intensity"] != null){
+               var color = d3.scale.quantize()
+                   //.domain([-2.28277,0, 2.28277])
+                   .domain([0, 50, 100])
+                   .range(["#f4a582", "#f7f7f7", "#92c5de"]);
+               console.log(color(parseInt(energyDict[parcelID]["Energy Star Score"])));
+               return color(parseInt(energyDict[parcelID]["Energy Star Score"]));
+             } else{
+               return "#ffffbf";
+             }
+           })
            .style("fill-opacity", 0.5)
            .style("stroke-width",0.1);
         });
