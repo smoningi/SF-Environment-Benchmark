@@ -21,7 +21,6 @@ var svg = d3.select(map.getPanes().overlayPane).append("svg"),
     g = svg.append("g").attr("class", "leaflet-zoom-hide");
 
 d3.json("citylots_merge.geojson", function(collection) {
-    //console.log(collection);
     var transform = d3.geo.transform({point: projectPoint}),
         path = d3.geo.path().projection(transform);
     var feature = g.selectAll("path")
@@ -122,7 +121,6 @@ d3.json("citylots_merge.geojson", function(collection) {
                 //.domain([-2.28277,0, 2.28277])
                 .domain([0, 50, 100])
                 .range(["#f4a582", "#f7f7f7", "#92c5de"]);
-            console.log(color(parseInt(energyDict[parcelID]["Energy Star Score"])));
             return color(parseInt(energyDict[parcelID]["Energy Star Score"]));
           } else{
             return "#ffffbf";
@@ -149,10 +147,8 @@ d3.json("citylots_merge.geojson", function(collection) {
              var average = (energyDict["GHG Emissions Min"] + energyDict["GHG Emissions Max"]) / 2;
              if(energyDict[parcelID]["GHG Emissions Intensity"] != null){
                var color = d3.scale.quantize()
-                   //.domain([-2.28277,0, 2.28277])
                    .domain([0, 50, 100])
                    .range(["#f4a582", "#f7f7f7", "#92c5de"]);
-               console.log(color(parseInt(energyDict[parcelID]["Energy Star Score"])));
                return color(parseInt(energyDict[parcelID]["Energy Star Score"]));
              } else{
                return "#ffffbf";
