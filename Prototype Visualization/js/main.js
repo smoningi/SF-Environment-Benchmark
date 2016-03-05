@@ -31,6 +31,8 @@ d3.json("citylots_merge.geojson", function(collection) {
           var parcelID = d.properties.blklot;
           var energyStarScore;
           var energyStarYear;
+          var weatherNormalizedSourceEUI;
+          var weatherNormalizedSourceEUIYear;
           var ghgEmissionsIntensity;
           var ghgEmissionsYear;
           var eui;
@@ -69,11 +71,30 @@ d3.json("citylots_merge.geojson", function(collection) {
             ghgEmissionsYear = "";
           }
 
+          if(d._2014_weather_normalized_source_eui_kbtu_ft2 != null){
+            weatherNormalizedSourceEUI = d._2014_weather_normalized_source_eui_kbtu_ft2
+            weatherNormalizedSourceEUIYear = 2014;
+          } else if(d.properties._2013_weather_normalized_source_eui_kbtu_ft2 != null){
+            weatherNormalizedSourceEUI = d.properties._2013_weather_normalized_source_eui_kbtu_ft2;
+            weatherNormalizedSourceEUIYear = 2013;
+          } else if(d.properties._2012_weather_normalized_source_eui_kbtu_ft2 != null){
+            weatherNormalizedSourceEUI = d.properties._2012_weather_normalized_source_eui_kbtu_ft2;
+            weatherNormalizedSourceEUIYear = 2012;
+          } else if(d.properties._2011_weather_normalized_source_eui_kbtu_ft2 != null){
+            weatherNormalizedSourceEUI = d.properties._2011_weather_normalized_source_eui_kbtu_ft2;
+            weatherNormalizedSourceEUIYear = 2011;
+          } else {
+            weatherNormalizedSourceEUI = "N/A";
+            weatherNormalizedSourceEUIYear = "";
+          }
+
           energyDict[parcelID] = {
             "Energy Star Score" : energyStarScore,
             "Energy Star Year" : energyStarYear,
             "GHG Emissions Intensity" : ghgEmissionsIntensity,
             "GHG Year" : ghgEmissionsYear,
+            "Weather Normalized Source EUI" : weatherNormalizedSourceEUI,
+            "Weather Normalized Source EUI Year" : weatherNormalizedSourceEUIYear,
             "Property Type" : d.properties.property_type_self_selected
           };
 
@@ -119,8 +140,8 @@ d3.json("citylots_merge.geojson", function(collection) {
           if(energyDict[parcelID]["GHG Emissions Intensity"] != null){
             var color = d3.scale.quantize()
                 //.domain([-2.28277,0, 2.28277])
-                .domain([0, 50, 100])
-                .range(["#f4a582", "#f7f7f7", "#92c5de"]);
+                .domain([0, 25, 50, 75, 100])
+                .range(["#d7191c", "#fdae61", "#a6d96a", "#1a9641"]);
             return color(parseInt(energyDict[parcelID]["Energy Star Score"]));
           } else{
             return "#ffffbf";
@@ -136,6 +157,7 @@ d3.json("citylots_merge.geojson", function(collection) {
            var buildingInfo = "<h4>"+d.properties.building_name+"<\/h4>";
            buildingInfo += "<div>"+  energyDict[d.properties.blklot]["Energy Star Year"] +" Energy Star Score: " + energyDict[d.properties.blklot]["Energy Star Score"] + "<\/div>";
            buildingInfo += "<div>"+  energyDict[d.properties.blklot]["GHG Year"] +" GHG Emissions: " + energyDict[d.properties.blklot]["GHG Emissions Intensity"] + " kgCO<sup>2<\/sup>e&#47;ft<sup>2<\/sup><\/div>";
+           buildingInfo += "<div>"+  energyDict[d.properties.blklot]["Weather Normalized Source EUI Year"] +" Weather Normalized Source EUI: " + energyDict[d.properties.blklot]["Weather Normalized Source EUI"] + " kBTU&#47;ft<sup>2<\/sup><\/div>";
            buildingInfo += "<div> Property Type: "+ energyDict[d.properties.blklot]["Property Type"] +"<\/div>";
 
            $( "#building-details" ).html(buildingInfo);
@@ -147,8 +169,8 @@ d3.json("citylots_merge.geojson", function(collection) {
              var average = (energyDict["GHG Emissions Min"] + energyDict["GHG Emissions Max"]) / 2;
              if(energyDict[parcelID]["GHG Emissions Intensity"] != null){
                var color = d3.scale.quantize()
-                   .domain([0, 50, 100])
-                   .range(["#f4a582", "#f7f7f7", "#92c5de"]);
+                   .domain([0, 25, 50, 75, 100])
+                   .range(["#d7191c", "#fdae61", "#a6d96a", "#1a9641"]);
                return color(parseInt(energyDict[parcelID]["Energy Star Score"]));
              } else{
                return "#ffffbf";
