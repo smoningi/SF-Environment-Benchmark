@@ -42,130 +42,8 @@ d3.json("citylots_merge.geojson", function(collection) {
         .append("path")
         .attr("id", function(d){
           var parcelID = d.properties.blklot;
-          var energyStarScore;
-          var energyStarYear;
-          var weatherNormalizedSourceEUI;
-          var weatherNormalizedSourceEUIYear;
-          var weatherNormalizedSiteEUI;
-          var weatherNormalizedSiteEUIYear;
-          var ghgEmissionsIntensity;
-          var ghgEmissionsYear;
-          var eui;
-
-          if(d.properties._2014_energy_star_score != null){
-            energyStarScore = d.properties._2014_energy_star_score;
-            energyStarYear = 2014;
-          } else if(d.properties._2013_energy_star_score != null){
-            energyStarScore = d.properties._2013_energy_star_score;
-            energyStarYear = 2013;
-          } else if(d.properties._2012_energy_star_score != null){
-            energyStarScore = d.properties._2012_energy_star_score;
-            energyStarYear = 2012;
-          } else if(d.properties._2011_energy_star_score != null){
-            energyStarScore = d.properties._2011_energy_star_score;
-            energyStarYear = 2011;
-          } else {
-            energyStarScore = "N/A";
-            energyStarYear = "";
-          }
-
-          if(d.properties._2014_total_ghg_emissions_intensity_kgco2e_ft2!= null){
-            ghgEmissionsIntensity = d.properties._2014_total_ghg_emissions_intensity_kgco2e_ft2;
-            ghgEmissionsYear = 2014;
-          } else if(d.properties._2013_total_ghg_emissions_intensity_kgco2e_ft2 != null){
-            ghgEmissionsIntensity = d.properties._2013_total_ghg_emissions_intensity_kgco2e_ft2;
-            ghgEmissionsYear = 2013;
-          } else if(d.properties._2012_total_ghg_emissions_intensity_kgco2e_ft2 != null){
-            ghgEmissionsIntensity = d.properties._2012_total_ghg_emissions_intensity_kgco2e_ft2;
-            ghgEmissionsYear = 2012;
-          } else if(d.properties._2011_total_ghg_emissions_intensity_kgco2e_ft2 != null){
-            ghgEmissionsIntensity = d.properties._2011_total_ghg_emissions_intensity_kgco2e_ft2
-            ghgEmissionsYear = 2011;
-          } else {
-            ghgEmissionsIntensity = "N/A";
-            ghgEmissionsYear = "";
-          }
-
-          if(d._2014_weather_normalized_source_eui_kbtu_ft2 != null){
-            weatherNormalizedSourceEUI = d._2014_weather_normalized_source_eui_kbtu_ft2
-            weatherNormalizedSourceEUIYear = 2014;
-          } else if(d.properties._2013_weather_normalized_source_eui_kbtu_ft2 != null){
-            weatherNormalizedSourceEUI = d.properties._2013_weather_normalized_source_eui_kbtu_ft2;
-            weatherNormalizedSourceEUIYear = 2013;
-          } else if(d.properties._2012_weather_normalized_source_eui_kbtu_ft2 != null){
-            weatherNormalizedSourceEUI = d.properties._2012_weather_normalized_source_eui_kbtu_ft2;
-            weatherNormalizedSourceEUIYear = 2012;
-          } else if(d.properties._2011_weather_normalized_source_eui_kbtu_ft2 != null){
-            weatherNormalizedSourceEUI = d.properties._2011_weather_normalized_source_eui_kbtu_ft2;
-            weatherNormalizedSourceEUIYear = 2011;
-          } else {
-            weatherNormalizedSourceEUI = "N/A";
-            weatherNormalizedSourceEUIYear = "";
-          }
-
-          if(d._2014_weather_normalized_site_eui_kbtu_ft2 != null){
-            weatherNormalizedSiteEUI = d._2014_weather_normalized_site_eui_kbtu_ft2
-            weatherNormalizedSiteEUIYear = 2014;
-          } else if(d.properties._2013_weather_normalized_site_eui_kbtu_ft2 != null){
-            weatherNormalizedSiteEUI = d.properties._2013_weather_normalized_site_eui_kbtu_ft2;
-            weatherNormalizedSiteEUIYear = 2013;
-          } else if(d.properties._2012_weather_normalized_site_eui_kbtu_ft2 != null){
-            weatherNormalizedSiteEUI = d.properties._2012_weather_normalized_site_eui_kbtu_ft2;
-            weatherNormalizedSiteEUIYear = 2012;
-          } else if(d.properties._2011_weather_normalized_site_eui_kbtu_ft2 != null){
-            weatherNormalizedSiteEUI = d.properties._2011_weather_normalized_site_eui_kbtu_ft2;
-            weatherNormalizedSiteEUIYear = 2011;
-          } else {
-            weatherNormalizedSiteEUI = "N/A";
-            weatherNormalizedSiteEUIYear = "";
-          }
-
-          energyDict[parcelID] = {
-            "Energy Star Score" : energyStarScore,
-            "Energy Star Year" : energyStarYear,
-            "GHG Emissions Intensity" : ghgEmissionsIntensity,
-            "GHG Year" : ghgEmissionsYear,
-            "Weather Normalized Source EUI" : weatherNormalizedSourceEUI,
-            "Weather Normalized Source EUI Year" : weatherNormalizedSourceEUIYear,
-            "Weather Normalized Site EUI" : weatherNormalizedSiteEUI,
-            "Weather Normalized Site EUI Year" : weatherNormalizedSiteEUIYear,
-            "Property Type" : d.properties.property_type_self_selected
-          };
-
-          //Store Max and Mins
-          if(energyDict["Energy Star Score Max"] == null){
-            energyDict["Energy Star Score Max"] = energyDict[parcelID]["Energy Star Score"];
-          } else{
-            if(energyDict[parcelID]["Energy Star Score"] > energyDict["Energy Star Score Max"]){
-              energyDict["Energy Star Score Max"] = energyDict[parcelID]["Energy Star Score"];
-            }
-          }
-
-          if(energyDict["Energy Star Score Min"] == null){
-            energyDict["Energy Star Score Min"] = energyDict[parcelID]["Energy Star Score"];
-          } else{
-            if(energyDict[parcelID]["Energy Star Score"] < energyDict["Energy Star Score Min"]){
-              energyDict["Energy Star Score Min"] = energyDict[parcelID]["Energy Star Score"];
-            }
-          }
-
-          if(energyDict["GHG Emissions Max"] == null){
-            energyDict["GHG Emissions Max"] = energyDict[parcelID]["GHG Emissions Intensity"];
-          } else{
-            if(energyDict[parcelID]["GHG Emissions Intensity"] > energyDict["GHG Emissions Max"]){
-              energyDict["GHG Emissions Max"] = energyDict[parcelID]["GHG Emissions Intensity"];
-            }
-          }
-
-          if(energyDict["GHG Emissions Min"] == null){
-            energyDict["GHG Emissions Min"] = energyDict[parcelID]["GHG Emissions Intensity"];
-          } else{
-            if(energyDict[parcelID]["GHG Emissions Intensity"] < energyDict["GHG Emissions Min"]){
-              energyDict["GHG Emissions Min"] = energyDict[parcelID]["GHG Emissions Intensity"];
-            }
-          }
-
-           return parcelID;
+          parcelToDict(d, parcelID)
+          return parcelID;
         })
         .style("stroke", "#B9E7FF")
         .style("fill", function(d){
@@ -219,7 +97,7 @@ d3.json("citylots_merge.geojson", function(collection) {
     reset();
 
     var chartData = dictionaryToDataArray('GHG Emissions Intensity', energyDict)
-    // chartData.forEach(function(el){ console.log(el.id)})
+
     addHistogram({element: '#compare-chart', data: chartData})
 
     function addHistogram(options){
@@ -238,11 +116,12 @@ d3.json("citylots_merge.geojson", function(collection) {
 
       var x = d3.scale.linear()
           .domain(d3.extent(values))
+          // .domain([0,10])
           .range([0, width]);
 
       // Generate a histogram using twenty uniformly-spaced bins.
       var data = d3.layout.histogram()
-          .bins(x.ticks(30))
+          .bins(x.ticks(40))
           (values);
       // debugger;
       var y = d3.scale.linear()
@@ -294,6 +173,131 @@ d3.json("citylots_merge.geojson", function(collection) {
         arr.push( {id: parcel, value: onlyNumbers} )
       }
       return arr
+    }
+
+    function parcelToDict(d, parcelID) {
+      var energyStarScore;
+      var energyStarYear;
+      var weatherNormalizedSourceEUI;
+      var weatherNormalizedSourceEUIYear;
+      var weatherNormalizedSiteEUI;
+      var weatherNormalizedSiteEUIYear;
+      var ghgEmissionsIntensity;
+      var ghgEmissionsYear;
+      var eui;
+
+      if(d.properties._2014_energy_star_score != null){
+        energyStarScore = d.properties._2014_energy_star_score;
+        energyStarYear = 2014;
+      } else if(d.properties._2013_energy_star_score != null){
+        energyStarScore = d.properties._2013_energy_star_score;
+        energyStarYear = 2013;
+      } else if(d.properties._2012_energy_star_score != null){
+        energyStarScore = d.properties._2012_energy_star_score;
+        energyStarYear = 2012;
+      } else if(d.properties._2011_energy_star_score != null){
+        energyStarScore = d.properties._2011_energy_star_score;
+        energyStarYear = 2011;
+      } else {
+        energyStarScore = "N/A";
+        energyStarYear = "";
+      }
+
+      if(d.properties._2014_total_ghg_emissions_intensity_kgco2e_ft2!= null){
+        ghgEmissionsIntensity = d.properties._2014_total_ghg_emissions_intensity_kgco2e_ft2;
+        ghgEmissionsYear = 2014;
+      } else if(d.properties._2013_total_ghg_emissions_intensity_kgco2e_ft2 != null){
+        ghgEmissionsIntensity = d.properties._2013_total_ghg_emissions_intensity_kgco2e_ft2;
+        ghgEmissionsYear = 2013;
+      } else if(d.properties._2012_total_ghg_emissions_intensity_kgco2e_ft2 != null){
+        ghgEmissionsIntensity = d.properties._2012_total_ghg_emissions_intensity_kgco2e_ft2;
+        ghgEmissionsYear = 2012;
+      } else if(d.properties._2011_total_ghg_emissions_intensity_kgco2e_ft2 != null){
+        ghgEmissionsIntensity = d.properties._2011_total_ghg_emissions_intensity_kgco2e_ft2
+        ghgEmissionsYear = 2011;
+      } else {
+        ghgEmissionsIntensity = "N/A";
+        ghgEmissionsYear = "";
+      }
+
+      if(d._2014_weather_normalized_source_eui_kbtu_ft2 != null){
+        weatherNormalizedSourceEUI = d._2014_weather_normalized_source_eui_kbtu_ft2
+        weatherNormalizedSourceEUIYear = 2014;
+      } else if(d.properties._2013_weather_normalized_source_eui_kbtu_ft2 != null){
+        weatherNormalizedSourceEUI = d.properties._2013_weather_normalized_source_eui_kbtu_ft2;
+        weatherNormalizedSourceEUIYear = 2013;
+      } else if(d.properties._2012_weather_normalized_source_eui_kbtu_ft2 != null){
+        weatherNormalizedSourceEUI = d.properties._2012_weather_normalized_source_eui_kbtu_ft2;
+        weatherNormalizedSourceEUIYear = 2012;
+      } else if(d.properties._2011_weather_normalized_source_eui_kbtu_ft2 != null){
+        weatherNormalizedSourceEUI = d.properties._2011_weather_normalized_source_eui_kbtu_ft2;
+        weatherNormalizedSourceEUIYear = 2011;
+      } else {
+        weatherNormalizedSourceEUI = "N/A";
+        weatherNormalizedSourceEUIYear = "";
+      }
+
+      if(d._2014_weather_normalized_site_eui_kbtu_ft2 != null){
+        weatherNormalizedSiteEUI = d._2014_weather_normalized_site_eui_kbtu_ft2
+        weatherNormalizedSiteEUIYear = 2014;
+      } else if(d.properties._2013_weather_normalized_site_eui_kbtu_ft2 != null){
+        weatherNormalizedSiteEUI = d.properties._2013_weather_normalized_site_eui_kbtu_ft2;
+        weatherNormalizedSiteEUIYear = 2013;
+      } else if(d.properties._2012_weather_normalized_site_eui_kbtu_ft2 != null){
+        weatherNormalizedSiteEUI = d.properties._2012_weather_normalized_site_eui_kbtu_ft2;
+        weatherNormalizedSiteEUIYear = 2012;
+      } else if(d.properties._2011_weather_normalized_site_eui_kbtu_ft2 != null){
+        weatherNormalizedSiteEUI = d.properties._2011_weather_normalized_site_eui_kbtu_ft2;
+        weatherNormalizedSiteEUIYear = 2011;
+      } else {
+        weatherNormalizedSiteEUI = "N/A";
+        weatherNormalizedSiteEUIYear = "";
+      }
+
+      energyDict[parcelID] = {
+        "Energy Star Score" : energyStarScore,
+        "Energy Star Year" : energyStarYear,
+        "GHG Emissions Intensity" : ghgEmissionsIntensity,
+        "GHG Year" : ghgEmissionsYear,
+        "Weather Normalized Source EUI" : weatherNormalizedSourceEUI,
+        "Weather Normalized Source EUI Year" : weatherNormalizedSourceEUIYear,
+        "Weather Normalized Site EUI" : weatherNormalizedSiteEUI,
+        "Weather Normalized Site EUI Year" : weatherNormalizedSiteEUIYear,
+        "Property Type" : d.properties.property_type_self_selected
+      };
+
+      //Store Max and Mins
+      if(energyDict["Energy Star Score Max"] == null){
+        energyDict["Energy Star Score Max"] = energyDict[parcelID]["Energy Star Score"];
+      } else{
+        if(energyDict[parcelID]["Energy Star Score"] > energyDict["Energy Star Score Max"]){
+          energyDict["Energy Star Score Max"] = energyDict[parcelID]["Energy Star Score"];
+        }
+      }
+
+      if(energyDict["Energy Star Score Min"] == null){
+        energyDict["Energy Star Score Min"] = energyDict[parcelID]["Energy Star Score"];
+      } else{
+        if(energyDict[parcelID]["Energy Star Score"] < energyDict["Energy Star Score Min"]){
+          energyDict["Energy Star Score Min"] = energyDict[parcelID]["Energy Star Score"];
+        }
+      }
+
+      if(energyDict["GHG Emissions Max"] == null){
+        energyDict["GHG Emissions Max"] = energyDict[parcelID]["GHG Emissions Intensity"];
+      } else{
+        if(energyDict[parcelID]["GHG Emissions Intensity"] > energyDict["GHG Emissions Max"]){
+          energyDict["GHG Emissions Max"] = energyDict[parcelID]["GHG Emissions Intensity"];
+        }
+      }
+
+      if(energyDict["GHG Emissions Min"] == null){
+        energyDict["GHG Emissions Min"] = energyDict[parcelID]["GHG Emissions Intensity"];
+      } else{
+        if(energyDict[parcelID]["GHG Emissions Intensity"] < energyDict["GHG Emissions Min"]){
+          energyDict["GHG Emissions Min"] = energyDict[parcelID]["GHG Emissions Intensity"];
+        }
+      }
     }
 
     // Reposition the SVG to cover the features.
