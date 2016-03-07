@@ -9,13 +9,13 @@ var energyDict = {};
 var color; //Color bins
 
 //Getting tile from Mapbox
-L.tileLayer('https://api.tiles.mapbox.com/v4/mapbox.dark/{z}/{x}/{y}.png?access_token={accessToken}', {
-    maxZoom: 18,
-    minZoom: 13,
-    attributionControl: false,
-    id: 'smoningi.a304c3dc',
-    accessToken: 'pk.eyJ1Ijoic21vbmluZ2kiLCJhIjoiQ21rN1pjSSJ9.WKrPFjjb7LRMBjyban698g'
-}).addTo(map);
+// L.tileLayer('https://api.tiles.mapbox.com/v4/mapbox.dark/{z}/{x}/{y}.png?access_token={accessToken}', {
+//     maxZoom: 18,
+//     minZoom: 13,
+//     attributionControl: false,
+//     id: 'smoningi.a304c3dc',
+//     accessToken: 'pk.eyJ1Ijoic21vbmluZ2kiLCJhIjoiQ21rN1pjSSJ9.WKrPFjjb7LRMBjyban698g'
+// }).addTo(map);
 
 //Add Legend
 var legend = L.control({position:'topright'});
@@ -218,78 +218,26 @@ d3.json("citylots_merge.geojson", function(collection) {
     map.on("viewreset", reset);
     reset();
 
-    var chartData = dictionaryToDataArray('GHG Emissions Intensity', energyDict)
-    // chartData.forEach(function(el){ console.log(el.id)})
-    addHistogram({element: '#compare-chart', data: chartData})
+    var chartData = dictionaryToDataArray('Energy Star Score', energyDict)
+    var values = chartData.map(function(d) {return d.value})
+                          .filter(function(d) {return d > 0})
 
-    function addHistogram(options){
-      var chartContainer = d3.select(options.element).append('div').attr('class', 'chart')
-      // x.domain(options.data.map(function(d) { return d.id ; }));
-      // y.domain([0, d3.max(options.data, function(d) { return d.value; })]);
-
-      var values = options.data.map(function(d) { return d.value ; })
-
-      // A formatter for counts.
-      // var formatCount = d3.format(",.0f");
-
-      var margin = {top: 10, right: 10, bottom: 30, left: 10},
-          width = 200 - margin.left - margin.right,
-          height = 100 - margin.top - margin.bottom;
-
-      var x = d3.scale.linear()
-          .domain(d3.extent(values))
-          .range([0, width]);
-
-      // Generate a histogram using twenty uniformly-spaced bins.
-      var data = d3.layout.histogram()
-          .bins(x.ticks(30))
-          (values);
-      // debugger;
-      var y = d3.scale.linear()
-          .domain([0, d3.max(data, function(d) { return d.y; })])
-          .range([height, 0]);
-
-      var xAxis = d3.svg.axis()
-          .scale(x)
-          .orient("bottom");
-
-      var svg = chartContainer.append("svg")
-          .attr("width", width + margin.left + margin.right)
-          .attr("height", height + margin.top + margin.bottom)
-        .append("g")
-          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-      var bar = svg.selectAll(".bar")
-          .data(data)
-        .enter().append("g")
-          .attr("class", "bar")
-          .attr("transform", function(d) { return "translate(" + x(d.x) + "," + y(d.y) + ")"; });
-
-      bar.append("rect")
-          .attr("x", 1)
-          .attr("width", x(data[0].dx) - 1)
-          .attr("height", function(d) { return height - y(d.y); });
-
-      bar.append("text")
-          .attr("dy", ".75em")
-          .attr("y", 6)
-          .attr("x", x(data[0].dx) / 2)
-          .attr("text-anchor", "middle")
-          // .text(function(d) { return formatCount(d.y); });
-
-      svg.append("g")
-          .attr("class", "x axis")
-          .attr("transform", "translate(0," + height + ")")
-          .call(xAxis);
-
-    }
+    d3.select("#compare-chart")
+      .datum(values)
+    .call(histogramChart()
+      .width(300)
+      .height(100)
+      .range([0,100])
+      .bins(50)
+      .color(["#8b0000", "#db4551", "#ffa474", "#ffffe0"])
+    )
 
     function dictionaryToDataArray(prop, dict){
       var arr = []
       for (var parcel in dict){
         // debugger;
         if ( typeof dict[parcel] != 'object' || parcel === 'null' ) continue
-        if (dict[parcel][prop] > 40) continue
+        // if (dict[parcel][prop] > 40) continue
         var onlyNumbers = (typeof dict[parcel][prop] === 'number') ? dict[parcel][prop] : -1
         arr.push( {id: parcel, value: onlyNumbers} )
       }
