@@ -1,7 +1,10 @@
+// TODO: tooltip for histogram bars to show count
+
 function histogramChart() {
   var margin = {top: 0, right: 0, bottom: 20, left: 10},
       width = 960,
-      height = 500;
+      height = 500,
+      highlight = 50;
 
   var color = d3.scale.quantize()
       .range(["#f7f7f7","#252525"]);
@@ -54,6 +57,16 @@ function histogramChart() {
           .attr('fill', function(d){ return color(d.x) } )
           .order()
 
+      // var hl = svg.select('.bars').select(".highlight");
+      // hl.append("rect").attr('class', 'highlight')
+      var hl = svg.select('.bars').append("rect").attr('class', 'highlight')
+
+      hl.attr("width", 1)
+        .attr("x", function(d) { return x(highlight); })
+        .attr("y", 1)
+        .attr("height", function(d) { return height - margin.top - margin.bottom } )
+        .attr('fill', 'red' )
+
 
       // Update the x-axis.
       g.select(".x.axis")
@@ -84,6 +97,12 @@ function histogramChart() {
   chart.color = function(_) {
     if (!arguments.length) return color.range();
     color.range(_);
+    return chart;
+  };
+
+  chart.highlight = function(_) {
+    if (!arguments.length) return highlight;
+    highlight = _;
     return chart;
   };
 
