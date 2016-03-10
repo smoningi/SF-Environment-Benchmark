@@ -57,14 +57,13 @@ function histogramChart() {
           .attr('fill', function(d){ return color(d.x) } )
           .order()
 
-      // var hl = svg.select('.bars').select(".highlight");
-      // hl.append("rect").attr('class', 'highlight')
-      var hl = svg.select('.bars').append("rect").attr('class', 'highlight')
-
+      var hl = svg.select('.bars').select('.highlight').data([highlight])
+      hl.enter().append("rect").attr('class', 'highlight')
+      hl.exit().remove()
       hl.attr("width", 1)
-        .attr("x", function(d) { return x(highlight); })
+        .attr("x", function(d) { return x(d) })
         .attr("y", 1)
-        .attr("height", function(d) { return height - margin.top - margin.bottom } )
+        .attr("height", height - margin.top - margin.bottom )
         .attr('fill', 'red' )
 
 
