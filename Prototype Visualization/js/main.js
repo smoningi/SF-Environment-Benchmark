@@ -124,9 +124,31 @@ function mapDraw(err, apiData, collection){
     map.on("viewreset", reset);
     reset();
 
-    var chartData = dictionaryToDataArray('GHG Emissions Intensity', energyDict)
-    addHistogram({element: '#compare-chart', data: chartData})
+    var chartData = dictionaryToDataArray('Energy Star Score', energyDict)
+    var values = chartData.map(function(d) {return d.value})
+                          .filter(function(d) {return d > 0})
 
+    d3.select("#compare-chart")
+      .datum(values)
+    .call(histogramChart()
+      .width(300)
+      .height(100)
+      .range([0,100])
+      .bins(50)
+      .color(["#8b0000", "#db4551", "#ffa474", "#ffffe0"])
+    )
+
+    function dictionaryToDataArray(prop, dict){
+      var arr = []
+      for (var parcel in dict){
+        // debugger;
+        if ( typeof dict[parcel] != 'object' || parcel === 'null' ) continue
+        // if (dict[parcel][prop] > 40) continue
+        var onlyNumbers = (typeof dict[parcel][prop] === 'number') ? dict[parcel][prop] : -1
+        arr.push( {id: parcel, value: onlyNumbers} )
+      }
+      return arr
+    }
 
     // Reposition the SVG to cover the features.
     function reset() {

@@ -74,8 +74,8 @@ body, #map {
     overflow: scroll;
 }
 
-.bar rect {
-  fill: steelblue;
+.bar {
+  /*fill: steelblue;*/
   shape-rendering: crispEdges;
 }
 
@@ -87,4 +87,8 @@ body, #map {
   fill: none;
   stroke: #000;
   shape-rendering: crispEdges;
+}
+
+.tick text {
+  font-size: 8px;
 }
