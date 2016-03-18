@@ -18,20 +18,27 @@ L.tileLayer('https://api.tiles.mapbox.com/v4/mapbox.dark/{z}/{x}/{y}.png?access_
 }).addTo(map);
 
 //Add Legend
-var legend = L.control({position:'topright'});
+var legend1 = "#ffffe0";
+var legend2 = "#ffa474";
+var legend3 = "#db4551";
+var legend4 = "#8b0000";
+
+var legend = L.control({position:'bottomleft'});
 legend.onAdd = function (map) {
     var div = L.DomUtil.create('div', 'legend');
     div.innerHTML += "<div><b>Energy Star Score</b></div>"
-    div.innerHTML += "<i style=\"background:#ffffe0;\"></i> <b>75-100</b> <br/>";
-    div.innerHTML += "<i style=\"background:#ffa474;\"></i> <b>50-75</b><br/>";
-    div.innerHTML += "<i style=\"background:#db4551;\"></i> <b>25-50</b> <br/>";
-    div.innerHTML += "<i style=\"background:#8b0000;\"></i> <b>0-25</b><br/>";
+    div.innerHTML += "<i style=\"background:"+legend1+";\"></i> <b>75-100</b> <br/>";
+    div.innerHTML += "<i style=\"background:"+legend2+";\"></i> <b>50-75</b><br/>";
+    div.innerHTML += "<i style=\"background:"+legend3+";\"></i> <b>25-50</b> <br/>";
+    div.innerHTML += "<i style=\"background:"+legend4+";\"></i> <b>0-25</b><br/>";
     return div;
 };
 legend.addTo(map);
 
 var svg = d3.select(map.getPanes().overlayPane).append("svg"),
     g = svg.append("g").attr("class", "leaflet-zoom-hide");
+
+var score = document.getElementById('score');
 
 d3_queue.queue()
     .defer(d3.json, "api_return.json")  /* https://data.sfgov.org/resource/j2j3-acqj.json?$limit=2000 */
@@ -93,6 +100,13 @@ function mapDraw(err, apiData, collection){
            d3.select(this).style("fill-opacity",1)
            .style("stroke", "#FFCC33")
            .style("stroke-width",2);
+            
+           // update scorebox num + bgcolor
+           scorebox.innerHTML = energyDict[d.properties.blklot]["Energy Star Score"];
+/*
+           scorebox.style.backgroundColor = legend#; // todo: update dynamically based on score
+           scorebox.style.color = "#fff";
+*/
 
            var buildingInfo = "<h4>"+d.properties.building_name+"<\/h4>";
            buildingInfo += "<div>"+  energyDict[d.properties.blklot]["Energy Star Year"] +" Energy Star Score: " + energyDict[d.properties.blklot]["Energy Star Score"] + "<\/div>";
@@ -173,6 +187,15 @@ function mapDraw(err, apiData, collection){
     }
 
 }
+
+// Toggle abstract
+$('#abstract-toggle').click(function(){
+    var abstractToggle = document.getElementById('abstract-toggle');
+    $("#abstract").toggleClass('hide');
+    abstractToggle.textContent = 
+        ((abstractToggle.textContent == "[+]")
+        ? "[–]":"[+]");
+});
 
 function addHistogram(options) {
   var chartContainer = d3.select(options.element).append('div').attr('class', 'chart')
