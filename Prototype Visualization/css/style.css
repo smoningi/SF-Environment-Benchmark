@@ -81,6 +81,7 @@ col:first-child {
     color: #151515;
     border-radius: 3px;
     z-index: 900;
+    min-height: 768px;
 }
 .intro p {
     font-size: 12px;

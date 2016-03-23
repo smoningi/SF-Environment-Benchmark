@@ -101,8 +101,39 @@ function mapDraw(err, apiData, collection){
            .style("stroke", "#FFCC33")
            .style("stroke-width",2);
             
-           // update scorebox num
+           // update scorebox num + bg
            scorebox.innerHTML = energyDict[d.properties.blklot]["Energy Star Score"];
+           (function() {
+               var escore = energyDict[d.properties.blklot]["Energy Star Score"];
+               escore = parseInt(escore) || "";
+               if (escore != "") {
+                    switch (true) {
+                        case (escore < 25):
+                            scorebox.style.backgroundColor = legend4;
+                            scorebox.style.color = "#fff";
+                            break;
+                        case (escore > 24 && escore < 50):
+                            scorebox.style.backgroundColor = legend3;
+                            scorebox.style.color = "#fff";
+                            break;
+                        case (escore > 49 && escore < 75):
+                            scorebox.style.backgroundColor = legend2;
+                            scorebox.style.color = "#000";
+                            break;
+                        case (escore > 74 && escore < 101):
+                            scorebox.style.backgroundColor = legend1;
+                            scorebox.style.color = "#000";
+                            break;
+                        default:
+                            scorebox.style.backgroundColor = "#fff";
+                            scorebox.style.color = "#ccc";
+                            break;
+                    }
+               } else {
+                   scorebox.style.backgroundColor = "#fff";
+                   scorebox.style.color = "#333";
+               }
+           })();
 
            var buildingInfo = "<h4>"+d.properties.building_name+"<\/h4>";
            buildingInfo += "<p>Property Type: " + energyDict[d.properties.blklot]["Property Type"] +"<\/p>";
