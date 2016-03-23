@@ -27,6 +27,50 @@
             space must be benchmarked using Energy Star Portfolio Manager annually, and undergo an energy audit or retrocommissioning at least once every 5 years.
              This map visualizes energy consumption and greenhouse gas emissions of these buildings.
         </p>
+        
+        <div id="filters">
+            <div class="btn-group" role="group" data-toggle="buttons">
+                <div class="btn-group">
+                    <button type="button" class="btn btn-sm btn-default dropdown-toggle" id="energy-score-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width:150px">
+                      Energy Score
+                      <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu">
+                      <li><a href="#">All</a></li>
+                      <li class="divider"></li>
+                      <li><a href="#">0-24</a></li>
+                      <li><a href="#">25-49</a></li>
+                      <li><a href="#">50-74</a></li>
+                      <li><a href="#">75-100</a></li>
+                      <li class="divider"></li>                    
+                      <li><a href="#">N/A</a></li>
+                    </ul>
+                </div>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-sm btn-default dropdown-toggle" id="category-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width:150px">
+                      Category
+                      <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-right">
+                      <li><a href="#">All</a></li>
+                      <li class="divider"></li>
+                      <li><a href="#">Financial Office</a></li>
+                      <li><a href="#">Grocery</a></li>
+                      <li><a href="#">Hospital</a></li>
+                      <li><a href="#">Hotel</a></li>
+                      <li><a href="#">Mixed Use Property</a></li>
+                      <li><a href="#">Office</a></li>
+                      <li><a href="#">Other</a></li>
+                      <li><a href="#">Performing Arts</a></li>
+                      <li><a href="#">Retail Store</a></li>
+                      <li><a href="#">Supermarket/Grocery Store</a></li>
+                      <li class="divider"></li>                    
+                      <li><a href="#">N/A</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
         <div id="compare-chart"></div>
         <div class="info">
           <div id="scorebox"><i class='fa fa-building'></i></div>

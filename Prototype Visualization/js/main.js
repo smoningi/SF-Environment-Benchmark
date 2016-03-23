@@ -101,19 +101,18 @@ function mapDraw(err, apiData, collection){
            .style("stroke", "#FFCC33")
            .style("stroke-width",2);
             
-           // update scorebox num + bgcolor
+           // update scorebox num
            scorebox.innerHTML = energyDict[d.properties.blklot]["Energy Star Score"];
-/*
-           scorebox.style.backgroundColor = legend#; // todo: update dynamically based on score
-           scorebox.style.color = "#fff";
-*/
 
            var buildingInfo = "<h4>"+d.properties.building_name+"<\/h4>";
-           buildingInfo += "<div>"+  energyDict[d.properties.blklot]["Energy Star Year"] +" Energy Star Score: " + energyDict[d.properties.blklot]["Energy Star Score"] + "<\/div>";
-           buildingInfo += "<div>"+  energyDict[d.properties.blklot]["GHG Year"] +" GHG Emissions: " + energyDict[d.properties.blklot]["GHG Emissions Intensity"] + " kgCO<sup>2<\/sup>e&#47;ft<sup>2<\/sup><\/div>";
-           buildingInfo += "<div>"+  energyDict[d.properties.blklot]["Weather Normalized Source EUI Year"] +" Weather Normalized Source EUI: " + energyDict[d.properties.blklot]["Weather Normalized Source EUI"] + " kBTU&#47;ft<sup>2<\/sup><\/div>";
-           buildingInfo += "<div>"+  energyDict[d.properties.blklot]["Weather Normalized Site EUI Year"] +" Weather Normalized Site EUI: " + energyDict[d.properties.blklot]["Weather Normalized Site EUI"] + " kBTU&#47;ft<sup>2<\/sup><\/div>";
-           buildingInfo += "<div> Property Type: "+ energyDict[d.properties.blklot]["Property Type"] +"<\/div>";
+           buildingInfo += "<p>Property Type: " + energyDict[d.properties.blklot]["Property Type"] +"<\/p>";
+           buildingInfo += "<table id='buildingDetails'><colgroup><col\/><col\/></colgroup>";
+//           buildingInfo += "<tr><th>1<\/th><th>2<\/th></tr>";
+           buildingInfo += "<tr><td>" + energyDict[d.properties.blklot]["Energy Star Score"] +"<\/td><td>"+  energyDict[d.properties.blklot]["Energy Star Year"] +" Energy Star Score<\/td><\/tr>";
+           buildingInfo += "<tr><td>" + energyDict[d.properties.blklot]["GHG Emissions Intensity"] +"<\/td><td>"+  energyDict[d.properties.blklot]["GHG Year"] +" GHG Emissions <small>(kgCO<sup>2<\/sup>e&#47;ft<sup>2<\/sup>)<\/small><\/td><\/tr>";
+           buildingInfo += "<tr><td>" + energyDict[d.properties.blklot]["Weather Normalized Source EUI"] +"<\/td><td>"+  energyDict[d.properties.blklot]["Weather Normalized Source EUI Year"] +" Weather Normalized Source EUI <small>(kBTU&#47;ft<sup>2<\/sup>)<\/small><\/td><\/tr>";
+           buildingInfo += "<tr><td>" + energyDict[d.properties.blklot]["Weather Normalized Site EUI"] +"<\/td><td>"+  energyDict[d.properties.blklot]["Weather Normalized Site EUI Year"] +" Weather Normalized Site EUI <small>(kBTU&#47;ft<sup>2<\/sup>)<\/small><\/td><\/tr>";
+           buildingInfo += "<\/table>";
 
            $( "#building-details" ).html(buildingInfo);
         })
@@ -149,7 +148,7 @@ function mapDraw(err, apiData, collection){
       .height(100)
       .range([0,100])
       .bins(50)
-      .color(["#8b0000", "#db4551", "#ffa474", "#ffffe0"])
+      .color([legend4, legend3, legend2, legend1])
     )
 
     function dictionaryToDataArray(prop, dict){
@@ -191,7 +190,7 @@ function mapDraw(err, apiData, collection){
 // Toggle abstract
 $('#abstract-toggle').click(function(){
     var abstractToggle = document.getElementById('abstract-toggle');
-    $("#abstract").toggleClass('hide');
+    $("#abstract,#filters,#compare-chart").toggleClass('hide');
     abstractToggle.textContent = 
         ((abstractToggle.textContent == "[+]")
         ? "[–]":"[+]");
