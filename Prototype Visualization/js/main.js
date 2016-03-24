@@ -100,7 +100,7 @@ function mapDraw(err, apiData, collection){
            d3.select(this).style("fill-opacity",1)
            .style("stroke", "#FFCC33")
            .style("stroke-width",2);
-            
+
            // update scorebox num + bg
            scorebox.innerHTML = energyDict[d.properties.blklot]["Energy Star Score"];
            (function() {
@@ -222,7 +222,7 @@ function mapDraw(err, apiData, collection){
 $('#abstract-toggle').click(function(){
     var abstractToggle = document.getElementById('abstract-toggle');
     $("#abstract,#filters,#compare-chart").toggleClass('hide');
-    abstractToggle.textContent = 
+    abstractToggle.textContent =
         ((abstractToggle.textContent == "[+]")
         ? "[–]":"[+]");
 });
@@ -292,6 +292,29 @@ function dictionaryToDataArray(prop, dict){
 }
 
 function parcelToDict(d, parcelID) {
+  /* the following block parses dataset to generate "latest" score values for each property*/
+  // var tests = ['benchmark','energy_star_score','site_eui_kbtu_ft2','source_eui_kbtu_ft2','percent_better_than_national_median_site_eui','percent_better_than_national_median_source_eui','total_ghg_emissions_metric_tons_co2e','total_ghg_emissions_intensity_kgco2e_ft2','weather_normalized_site_eui_kbtu_ft2','weather_normalized_source_eui_kbtu_ft2']
+  // data.forEach(function(building){
+  //   tests.forEach(function(test){
+  //     building = latest(test, building)
+  //   })
+  // })
+  // function latest(score, entry){
+  //   var years = [2011,2012,2013,2014,2015]
+  //   if (score === 'benchmark') years.unshift(2010)
+  //   var yearScore = years.map(function(d){
+  //     if (score === 'benchmark') return 'benchmark_'+d+'_status'
+  //     else return '_'+d+'_'+score
+  //   })
+  //   yearScore.forEach(function(year,i){
+  //     if (entry[year] != null){
+  //       entry['latest_'+score] = entry[year]
+  //       entry['latest_'+score+'_year'] = years[i]
+  //     }
+  //   })
+  //   return entry
+  // }
+  /* end parse block*/
   var energyStarScore;
   var energyStarYear;
   var weatherNormalizedSourceEUI;
