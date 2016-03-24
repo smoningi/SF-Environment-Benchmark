@@ -8,15 +8,15 @@ var map = L.map('map').setView([37.7833, -122.4167], 14);
 //Storing latest energy report data locally
 var energyDict = {};
 var color; //Color bins
-
-//Getting tile from Mapbox
-L.tileLayer('https://api.tiles.mapbox.com/v4/mapbox.dark/{z}/{x}/{y}.png?access_token={accessToken}', {
-    maxZoom: 18,
-    minZoom: 13,
-    attributionControl: false,
-    id: 'smoningi.a304c3dc',
-    accessToken: 'pk.eyJ1Ijoic21vbmluZ2kiLCJhIjoiQ21rN1pjSSJ9.WKrPFjjb7LRMBjyban698g'
-}).addTo(map);
+//
+// //Getting tile from Mapbox
+// L.tileLayer('https://api.tiles.mapbox.com/v4/mapbox.dark/{z}/{x}/{y}.png?access_token={accessToken}', {
+//     maxZoom: 18,
+//     minZoom: 13,
+//     attributionControl: false,
+//     id: 'smoningi.a304c3dc',
+//     accessToken: 'pk.eyJ1Ijoic21vbmluZ2kiLCJhIjoiQ21rN1pjSSJ9.WKrPFjjb7LRMBjyban698g'
+// }).addTo(map);
 
 //Add Legend
 var legend1 = "#ffffe0";
@@ -24,17 +24,17 @@ var legend2 = "#ffa474";
 var legend3 = "#db4551";
 var legend4 = "#8b0000";
 
-var legend = L.control({position:'bottomleft'});
-legend.onAdd = function (map) {
-    var div = L.DomUtil.create('div', 'legend');
-    div.innerHTML += "<div><b>Energy Star Score</b></div>"
-    div.innerHTML += "<i style=\"background:"+legend1+";\"></i> <b>75-100</b> <br/>";
-    div.innerHTML += "<i style=\"background:"+legend2+";\"></i> <b>50-75</b><br/>";
-    div.innerHTML += "<i style=\"background:"+legend3+";\"></i> <b>25-50</b> <br/>";
-    div.innerHTML += "<i style=\"background:"+legend4+";\"></i> <b>0-25</b><br/>";
-    return div;
-};
-legend.addTo(map);
+// var legend = L.control({position:'bottomleft'});
+// legend.onAdd = function (map) {
+//     var div = L.DomUtil.create('div', 'legend');
+//     div.innerHTML += "<div><b>Energy Star Score</b></div>"
+//     div.innerHTML += "<i style=\"background:"+legend1+";\"></i> <b>75-100</b> <br/>";
+//     div.innerHTML += "<i style=\"background:"+legend2+";\"></i> <b>50-75</b><br/>";
+//     div.innerHTML += "<i style=\"background:"+legend3+";\"></i> <b>25-50</b> <br/>";
+//     div.innerHTML += "<i style=\"background:"+legend4+";\"></i> <b>0-25</b><br/>";
+//     return div;
+// };
+// legend.addTo(map);
 
 var svg = d3.select(map.getPanes().overlayPane).append("svg"),
     g = svg.append("g").attr("class", "leaflet-zoom-hide");
@@ -298,7 +298,7 @@ function parcelToDict(d, parcelID) {
   //   return entry
   // }
   /* end parse block*/
-  
+
   var energyStarScore;
   var energyStarYear;
   var weatherNormalizedSourceEUI;
@@ -389,37 +389,5 @@ function parcelToDict(d, parcelID) {
     "Property Type" : d.properties.property_type_self_selected
   };
 
-  //Store Max and Mins
-  if(energyDict["Energy Star Score Max"] == null){
-    energyDict["Energy Star Score Max"] = energyDict[parcelID]["Energy Star Score"];
-  } else{
-    if(energyDict[parcelID]["Energy Star Score"] > energyDict["Energy Star Score Max"]){
-      energyDict["Energy Star Score Max"] = energyDict[parcelID]["Energy Star Score"];
-    }
-  }
-
-  if(energyDict["Energy Star Score Min"] == null){
-    energyDict["Energy Star Score Min"] = energyDict[parcelID]["Energy Star Score"];
-  } else{
-    if(energyDict[parcelID]["Energy Star Score"] < energyDict["Energy Star Score Min"]){
-      energyDict["Energy Star Score Min"] = energyDict[parcelID]["Energy Star Score"];
-    }
-  }
-
-  if(energyDict["GHG Emissions Max"] == null){
-    energyDict["GHG Emissions Max"] = energyDict[parcelID]["GHG Emissions Intensity"];
-  } else{
-    if(energyDict[parcelID]["GHG Emissions Intensity"] > energyDict["GHG Emissions Max"]){
-      energyDict["GHG Emissions Max"] = energyDict[parcelID]["GHG Emissions Intensity"];
-    }
-  }
-
-  if(energyDict["GHG Emissions Min"] == null){
-    energyDict["GHG Emissions Min"] = energyDict[parcelID]["GHG Emissions Intensity"];
-  } else{
-    if(energyDict[parcelID]["GHG Emissions Intensity"] < energyDict["GHG Emissions Min"]){
-      energyDict["GHG Emissions Min"] = energyDict[parcelID]["GHG Emissions Intensity"];
-    }
-  }
 }
 
