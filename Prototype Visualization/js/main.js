@@ -1,7 +1,7 @@
 /**
  * Created by Sanat Moningi
  */
-//TODO: parcel features should have a uniqueID other than 'parcel_s' or 'blklot' since several buildings can share the same parcel geoJSON. Possible ID: 'blklot' + 'latitude'.  create this id when the geojson file is combined with the api data.
+// data source: https://data.sfgov.org/Energy-and-Environment/Existing-Commercial-Buildings-Energy-Performance-O/j2j3-acqj
 
 //Setting up leaflet map
 var map = L.map('map').setView([37.7833, -122.4167], 14);
@@ -17,7 +17,7 @@ var color; //Color bins
 //     id: 'smoningi.a304c3dc',
 //     accessToken: 'pk.eyJ1Ijoic21vbmluZ2kiLCJhIjoiQ21rN1pjSSJ9.WKrPFjjb7LRMBjyban698g'
 // }).addTo(map);
-
+var colorSwatches = ["#8b0000", "#db4551", "#ffa474", "#ffffe0"]
 //Add Legend
 var legend1 = "#ffffe0"; // best
 var legend2 = "#ffa474";
@@ -28,10 +28,10 @@ var legend4 = "#8b0000"; // worst
 // legend.onAdd = function (map) {
 //     var div = L.DomUtil.create('div', 'legend');
 //     div.innerHTML += "<div><b>Energy Star Score</b></div>"
-//     div.innerHTML += "<i style=\"background:"+legend1+";\"></i> <b>75-100</b> <br/>";
-//     div.innerHTML += "<i style=\"background:"+legend2+";\"></i> <b>50-75</b><br/>";
-//     div.innerHTML += "<i style=\"background:"+legend3+";\"></i> <b>25-50</b> <br/>";
-//     div.innerHTML += "<i style=\"background:"+legend4+";\"></i> <b>0-25</b><br/>";
+//     div.innerHTML += "<i style=\"background:"+colorSwatches[3]+";\"></i> <b>75-100</b> <br/>";
+//     div.innerHTML += "<i style=\"background:"+colorSwatches[2]+";\"></i> <b>50-75</b><br/>";
+//     div.innerHTML += "<i style=\"background:"+colorSwatches[1]+";\"></i> <b>25-50</b> <br/>";
+//     div.innerHTML += "<i style=\"background:"+colorSwatches[0]+";\"></i> <b>0-25</b><br/>";
 //     return div;
 // };
 // legend.addTo(map);
@@ -48,12 +48,13 @@ d3_queue.queue()
 
 function parseData(apiData){
   var re1 = /(.+)\//
-  var re2 = /\/(.+)/
+  var re2 = /[\/\.](.+)/
   apiData.forEach(function(parcel){
     if (parcel.parcel_s === undefined) {return parcel}
     parcel.parcel1 = re1.exec(parcel.parcel_s)[1]
     parcel.parcel2 = re2.exec(parcel.parcel_s)[1]
     parcel.blklot = '' + parcel.parcel1 + parcel.parcel2
+    parcel.ID = parcel.blklot
     return parcel
   })
   return apiData
@@ -77,13 +78,12 @@ function mapDraw(err, apiData, collection){
         .enter()
         .append("path")
         .attr("id", function(d){
-          var parcelID = d.properties.blklot;
-          parcelToDict(d, parcelID)
-          return parcelID;
+          parcelToDict(d)
+          return d.properties.ID;
         })
         .style("stroke", "#B9E7FF")
         .style("fill", function(d){
-          var parcelID = d.properties.blklot;
+          var parcelID = d.properties.ID;
           var average = (energyDict["GHG Emissions Min"] + energyDict["GHG Emissions Max"]) / 2;
           if(energyDict[parcelID]["GHG Emissions Intensity"] != null){
             var color = d3.scale.quantize()
@@ -103,14 +103,14 @@ function mapDraw(err, apiData, collection){
            .style("stroke-width",2);
 
            // update scorebox num + bg
-           var escore = energyDict[d.properties.blklot]["Energy Star Score"];            
+           var escore = energyDict[d.properties.blklot]["Energy Star Score"];
            scorebox.innerHTML = escore;
            (function() {
                escore = parseInt(escore) || "";
                if (escore != "") {
                     switch (true) {
                         case (escore < 25):
-                            scorebox.style.backgroundColor = legend4;
+                            scorebox.style.backgroundColor = colorSwatches[0];
                             scorebox.style.color = "#fff";
                             break;
                         case (escore >= 25 && escore < 50):
@@ -152,12 +152,12 @@ function mapDraw(err, apiData, collection){
         .on("mouseout", function(d){
            d3.select(this).style("stroke", "#B9E7FF")
            .style("fill", function(d){
-             var parcelID = d.properties.blklot;
+             var parcelID = d.properties.ID;
              var average = (energyDict["GHG Emissions Min"] + energyDict["GHG Emissions Max"]) / 2;
              if(energyDict[parcelID]["GHG Emissions Intensity"] != null){
                var color = d3.scale.quantize()
                    .domain([0, 25, 50, 75, 100])
-                   .range(["#8b0000", "#db4551", "#ffa474", "#ffffe0"]);
+                   .range(colorSwatches);
                return color(parseInt(energyDict[parcelID]["Energy Star Score"]));
              } else{
                return "#ffffbf";
@@ -178,7 +178,7 @@ function mapDraw(err, apiData, collection){
       .height(100)
       .range([0,104])
       .bins(50)
-      .color([legend4, legend3, legend2, legend1])
+      .color(colorSwatches)
     d3.select("#compare-chart")
       .datum(values)
     .call(histogram)
@@ -196,7 +196,7 @@ function mapDraw(err, apiData, collection){
     //     .height(100)
     //     .range([0,20])
     //     .bins(50)
-    //     .color([legend4, legend3, legend2, legend1])
+    //     .color(colorSwatches)
     //   )
 
     function highlight(selection, data){
@@ -293,7 +293,7 @@ function dictionaryToDataArray(prop, dict){
   return arr
 }
 
-function parcelToDict(d, parcelID) {
+function parcelToDict(d) {
   /* the following block parses dataset to generate "latest" score values for each property*/
   // var tests = ['benchmark','energy_star_score','site_eui_kbtu_ft2','source_eui_kbtu_ft2','percent_better_than_national_median_site_eui','percent_better_than_national_median_source_eui','total_ghg_emissions_metric_tons_co2e','total_ghg_emissions_intensity_kgco2e_ft2','weather_normalized_site_eui_kbtu_ft2','weather_normalized_source_eui_kbtu_ft2']
   // data.forEach(function(building){
@@ -396,7 +396,7 @@ function parcelToDict(d, parcelID) {
     weatherNormalizedSiteEUIYear = "";
   }
 
-  energyDict[parcelID] = {
+  energyDict[d.properties.ID] = {
     "Energy Star Score" : energyStarScore,
     "Energy Star Year" : energyStarYear,
     "GHG Emissions Intensity" : ghgEmissionsIntensity,
