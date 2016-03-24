@@ -1,7 +1,11 @@
+// TODO: tooltip for histogram bars to show count
+// TODO: add labels to x-axis
+// TODO: add y-axis tick marks
+
 function histogramChart() {
   var margin = {top: 0, right: 0, bottom: 20, left: 10},
       width = 960,
-      height = 500;
+      height = 500
 
   var color = d3.scale.quantize()
       .range(["#f7f7f7","#252525"]);
@@ -54,12 +58,10 @@ function histogramChart() {
           .attr('fill', function(d){ return color(d.x) } )
           .order()
 
-
       // Update the x-axis.
       g.select(".x.axis")
           .attr("transform", "translate(0," + y.range()[0] + ")")
           .call(xAxis);
-
     });
   }
 
@@ -84,6 +86,15 @@ function histogramChart() {
   chart.color = function(_) {
     if (!arguments.length) return color.range();
     color.range(_);
+    return chart;
+  };
+
+  chart.xScale = function(_) {
+    if (!arguments.length) return x;
+    return chart;
+  };
+  chart.yScale = function(_) {
+    if (!arguments.length) return y;
     return chart;
   };
 
