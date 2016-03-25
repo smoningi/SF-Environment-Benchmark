@@ -30,9 +30,9 @@
         
         <div id="filters">
             <div class="btn-group" role="group" data-toggle="buttons">
-                <div class="btn-group">
-                    <button type="button" class="btn btn-sm btn-default dropdown-toggle" id="energy-score-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width:150px">
-                      Energy Score
+                <div class="btn-group energyScore-dropdown">
+                    <button type="button" class="btn btn-sm btn-default dropdown-toggle" id="energy-score-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      <small>Energy Score</small>
                       <span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu">
@@ -46,9 +46,10 @@
                       <li><a href="#">N/A</a></li>
                     </ul>
                 </div>
-                <div class="btn-group">
-                    <button type="button" class="btn btn-sm btn-default dropdown-toggle" id="category-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width:150px">
-                      Category
+                
+                <div class="btn-group category-dropdown">
+                    <button type="button" class="btn btn-sm btn-default dropdown-toggle" id="category-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      <small>Category</small>
                       <span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-right">
@@ -68,6 +69,19 @@
                       <li><a href="#">N/A</a></li>
                     </ul>
                 </div>
+                
+                <div class="btn-group">
+                    <button type="button" class="btn btn-sm btn-default dropdown-toggle" id="more-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      <small>More</small>
+                      <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-right">
+                      <li><a href="#">GHG Emissions</a></li>
+                      <li><a href="#">Source EUI</a></li>
+                      <li><a href="#">Site EUI</a></li>
+                    </ul>
+                </div>
+                
             </div>
         </div>
 
@@ -80,22 +94,7 @@
           </div>
         </div>        
     </div>
-    <!-- <div class="container-fluid" style="padding-left: 0px;padding-right: 0px" id="whole">
-        <div>
-            <div id="map" class="col-xs-8 col-sm-8 col-md-8 col-lg-9">
-            </div>
-        </div>
-        <div id="sidePanel"class="col-xs-4 col-sm-4 col-md-4 col-lg-3" >
-            <div id="wrapper">
-                <h2>Side Panel</h2>
 
-                <div id="info">
-
-                </div>
-            </div><!--close wrapper-->
-        <!-- </div><!--close sidepanel--> --> -->
-
-    <!-- </div> -->
 </body>
 <script src="js/histogram-chart.js"></script>
 <script src="js/main.js"></script>

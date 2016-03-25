@@ -51,18 +51,25 @@ body, #map {
 }
 #buildingDetails {
     padding-top: 36px;
-/*    margin-left: -46px;*/
+    margin-left: -48px;
+    width: 289px;
 }
 col:first-child {
     width: 40px;
     background-color: #fff;
+    border-right: 3px #e7e7e7 solid;
+}
+col:last-child {
+    background-color: #ccc;
 }
 #buildingDetails tr {
-    border-bottom: 1px #ccc solid;
+    border: 3px #e7e7e7 solid;
 }
+/*
 #buildingDetails tr:first-child {
     border-top: 1px #ccc solid;
 }
+*/
 #buildingDetails td:first-child {
     text-align: center;
     font-weight: 700;
@@ -111,23 +118,13 @@ col:first-child {
     margin-right: 8px;
     margin-top: 8px;
 }
-
-#sidePanel{
-    /*padding: 4px 30px 0 4px;*/
-    /*padding-left: 30px;*/
-    /*    width: 25%;
-    */    /*padding: 6px 8px;*/
-    /*font: 14px/16px Arial, Helvetica, sans-serif;*/
-    background: #191919;
-    /*background: rgba(255,255,255,0.8);*/
-    box-shadow: 0 0 15px rgba(0,0,0,0.2);
-    border-radius: 5px;
-    color: #f6f6f6;
-    opacity: .8;
-    height: 100%;
-    overflow: scroll;
+#filters button {
+    width:120px;
+    border-radius: 0px;
 }
-
+#more-dropdown {
+    width:60px !important;
+}
 .bar {
   /*fill: steelblue;*/
   shape-rendering: crispEdges;

@@ -18,10 +18,10 @@ L.tileLayer('https://api.tiles.mapbox.com/v4/mapbox.dark/{z}/{x}/{y}.png?access_
 }).addTo(map);
 
 //Add Legend
-var legend1 = "#ffffe0";
+var legend1 = "#ffffe0"; // best
 var legend2 = "#ffa474";
 var legend3 = "#db4551";
-var legend4 = "#8b0000";
+var legend4 = "#8b0000"; // worst
 
 var legend = L.control({position:'bottomleft'});
 legend.onAdd = function (map) {
@@ -102,7 +102,8 @@ function mapDraw(err, apiData, collection){
            .style("stroke-width",2);
 
            // update scorebox num + bg
-           scorebox.innerHTML = energyDict[d.properties.blklot]["Energy Star Score"];
+           var escore = energyDict[d.properties.blklot]["Energy Star Score"];            
+           scorebox.innerHTML = escore;
            (function() {
                var escore = energyDict[d.properties.blklot]["Energy Star Score"];
                escore = parseInt(escore) || "";
@@ -260,6 +261,18 @@ $('#abstract-toggle').click(function(){
     abstractToggle.textContent =
         ((abstractToggle.textContent == "[+]")
         ? "[–]":"[+]");
+});
+
+// Toggle filter options: Energy Score
+$('#filters .energyScore-dropdown .dropdown-menu li').click(function() {
+//    $('#filters .dropdown-menu li').removeClass('active');
+    $(this).toggleClass('active');
+});
+
+// Toggle filter options: Category
+$('#filters .category-dropdown .dropdown-menu li').click(function() {
+//    $('#filters .dropdown-menu li').removeClass('active');
+    $(this).toggleClass('active');
 });
 
 function dictionaryToDataArray(prop, dict){
