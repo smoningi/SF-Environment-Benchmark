@@ -38,7 +38,7 @@ legend.addTo(map);
 var svg = d3.select(map.getPanes().overlayPane).append("svg"),
     g = svg.append("g").attr("class", "leaflet-zoom-hide");
 
-var score = document.getElementById('score');
+var scorebox = document.getElementById('scorebox');
 
 d3_queue.queue()
     .defer(d3.json, "api_return.json")  /* https://data.sfgov.org/resource/j2j3-acqj.json?$limit=2000 */
@@ -105,7 +105,6 @@ function mapDraw(err, apiData, collection){
            var escore = energyDict[d.properties.blklot]["Energy Star Score"];            
            scorebox.innerHTML = escore;
            (function() {
-               var escore = energyDict[d.properties.blklot]["Energy Star Score"];
                escore = parseInt(escore) || "";
                if (escore != "") {
                     switch (true) {
@@ -113,15 +112,15 @@ function mapDraw(err, apiData, collection){
                             scorebox.style.backgroundColor = legend4;
                             scorebox.style.color = "#fff";
                             break;
-                        case (escore > 24 && escore < 50):
+                        case (escore >= 25 && escore < 50):
                             scorebox.style.backgroundColor = legend3;
                             scorebox.style.color = "#fff";
                             break;
-                        case (escore > 49 && escore < 75):
+                        case (escore >= 50 && escore < 75):
                             scorebox.style.backgroundColor = legend2;
                             scorebox.style.color = "#000";
                             break;
-                        case (escore > 74 && escore < 101):
+                        case (escore >= 75 && escore <= 100):
                             scorebox.style.backgroundColor = legend1;
                             scorebox.style.color = "#000";
                             break;
@@ -139,7 +138,6 @@ function mapDraw(err, apiData, collection){
            var buildingInfo = "<h4>"+d.properties.building_name+"<\/h4>";
            buildingInfo += "<p>Property Type: " + energyDict[d.properties.blklot]["Property Type"] +"<\/p>";
            buildingInfo += "<table id='buildingDetails'><colgroup><col\/><col\/></colgroup>";
-          //  buildingInfo += "<tr><th>1<\/th><th>2<\/th></tr>";
            buildingInfo += "<tr><td>" + energyDict[d.properties.blklot]["Energy Star Score"] +"<\/td><td>"+  energyDict[d.properties.blklot]["Energy Star Year"] +" Energy Star Score<\/td><\/tr>";
            buildingInfo += "<tr><td>" + energyDict[d.properties.blklot]["GHG Emissions Intensity"] +"<\/td><td>"+  energyDict[d.properties.blklot]["GHG Year"] +" GHG Emissions <small>(kgCO<sup>2<\/sup>e&#47;ft<sup>2<\/sup>)<\/small><\/td><\/tr>";
            buildingInfo += "<tr><td>" + energyDict[d.properties.blklot]["Weather Normalized Source EUI"] +"<\/td><td>"+  energyDict[d.properties.blklot]["Weather Normalized Source EUI Year"] +" Weather Normalized Source EUI <small>(kBTU&#47;ft<sup>2<\/sup>)<\/small><\/td><\/tr>";
@@ -265,13 +263,21 @@ $('#abstract-toggle').click(function(){
 
 // Toggle filter options: Energy Score
 $('#filters .energyScore-dropdown .dropdown-menu li').click(function() {
-//    $('#filters .dropdown-menu li').removeClass('active');
+    $('#filters .energyScore-dropdown .dropdown-menu li:first-child').removeClass('active');
+    $(this).toggleClass('active');
+});
+$('#filters .energyScore-dropdown .dropdown-menu li:first-child').click(function() {
+    $('#filters .energyScore-dropdown .dropdown-menu li').removeClass('active');
     $(this).toggleClass('active');
 });
 
 // Toggle filter options: Category
 $('#filters .category-dropdown .dropdown-menu li').click(function() {
-//    $('#filters .dropdown-menu li').removeClass('active');
+    $('#filters .category-dropdown .dropdown-menu li:first-child').removeClass('active');
+    $(this).toggleClass('active');
+});
+$('#filters .category-dropdown .dropdown-menu li:first-child').click(function() {
+    $('#filters .category-dropdown .dropdown-menu li').removeClass('active');
     $(this).toggleClass('active');
 });
 
