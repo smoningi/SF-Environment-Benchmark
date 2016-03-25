@@ -19,6 +19,7 @@ body, #map {
 #compare-chart {
     background-color: #e7e7e7;
     margin-bottom: 15px;
+    padding-top: 15px;
     border-radius: 3px;
     clear: both;
 }
@@ -119,7 +120,7 @@ col:last-child {
     margin-top: 8px;
 }
 #filters button {
-    width:120px;
+    width:121px;
     border-radius: 0px;
 }
 #more-dropdown {
