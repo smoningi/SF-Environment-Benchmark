@@ -172,15 +172,15 @@ function mapDraw(err, apiData, collection){
                   scorebox.style.backgroundColor = colorSwatches[0];
                   scorebox.style.color = "#fff";
                   break;
-              case (escore > 24 && escore < 50):
+              case (escore >= 25 && escore < 50):
                   scorebox.style.backgroundColor = colorSwatches[1];
                   scorebox.style.color = "#fff";
                   break;
-              case (escore > 49 && escore < 75):
+              case (escore >= 50 && escore < 75):
                   scorebox.style.backgroundColor = colorSwatches[2];
                   scorebox.style.color = "#000";
                   break;
-              case (escore > 74 && escore < 101):
+              case (escore >= 75 && escore <= 100):
                   scorebox.style.backgroundColor = colorSwatches[3];
                   scorebox.style.color = "#000";
                   break;
@@ -197,7 +197,6 @@ function mapDraw(err, apiData, collection){
       var buildingInfo = "<h4>"+d.properties.building_name+"<\/h4>";
           buildingInfo += "<p>Property Type: " + d.properties.property_type_self_selected +"<\/p>";
           buildingInfo += "<table id='buildingDetails'><colgroup><col\/><col\/></colgroup>";
-          //  buildingInfo += "<tr><th>1<\/th><th>2<\/th></tr>";
           buildingInfo += "<tr><td>" + d.properties.latest_energy_star_score +"<\/td><td>"+  d.properties.latest_energy_star_score_year +" Energy Star Score<\/td><\/tr>";
           buildingInfo += "<tr><td>" + d.properties.latest_total_ghg_emissions_intensity_kgco2e_ft2 +"<\/td><td>"+  d.properties.latest_total_ghg_emissions_intensity_kgco2e_ft2_year +" GHG Emissions <small>(kgCO<sub>2<\/sub>e&#47;ft<sup>2<\/sup>)<\/small><\/td><\/tr>";
           buildingInfo += "<tr><td>" + d.properties.latest_weather_normalized_source_eui_kbtu_ft2 +"<\/td><td>"+  d.properties.latest_weather_normalized_source_eui_kbtu_ft2_year +" Weather Normalized Source EUI <small>(kBTU&#47;ft<sup>2<\/sup>)<\/small><\/td><\/tr>";
