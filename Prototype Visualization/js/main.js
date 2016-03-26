@@ -262,3 +262,23 @@ $('#abstract-toggle').click(function(){
         ((abstractToggle.textContent == "[+]")
         ? "[–]":"[+]");
 });
+
+// Toggle filter options: Energy Score
+$('#filters .energyScore-dropdown .dropdown-menu li').click(function() {
+    $('#filters .energyScore-dropdown .dropdown-menu li:first-child').removeClass('active');
+    $(this).toggleClass('active');
+});
+$('#filters .energyScore-dropdown .dropdown-menu li:first-child').click(function() {
+    $('#filters .energyScore-dropdown .dropdown-menu li').removeClass('active');
+    $(this).toggleClass('active');
+});
+
+// Toggle filter options: Category
+$('#filters .category-dropdown .dropdown-menu li').click(function() {
+    $('#filters .category-dropdown .dropdown-menu li:first-child').removeClass('active');
+    $(this).toggleClass('active');
+});
+$('#filters .category-dropdown .dropdown-menu li:first-child').click(function() {
+    $('#filters .category-dropdown .dropdown-menu li').removeClass('active');
+    $(this).toggleClass('active');
+});
