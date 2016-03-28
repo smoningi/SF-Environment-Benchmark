@@ -46,6 +46,7 @@ d3_queue.queue()
     .await(mapDraw)
 
 function mapDraw(err, apiData, collection){
+    var activeMetric = 'latest_energy_star_score'
     returnedApiData = parseData(apiData)
     collection.features.forEach(function(feature){
       var data = returnedApiData.find(function(el){
@@ -65,7 +66,7 @@ function mapDraw(err, apiData, collection){
         })
         .style("stroke", "#B9E7FF")
         .style("fill", function(d){
-          return color(parseInt(d.properties.latest_energy_star_score));
+          return color(parseInt(d.properties[activeMetric]));
         })
         .style("fill-opacity", 0.5)
         .style("stroke-width",0.1)
@@ -74,12 +75,12 @@ function mapDraw(err, apiData, collection){
             .style("stroke", "#FFCC33")
             .style("stroke-width",2);
           updateScorebox(d);
-          d3.select("#compare-chart").call(histogramHighlight,d.properties.latest_energy_star_score)
+          d3.select("#compare-chart").call(histogramHighlight,d.properties[activeMetric])
         })
         .on("mouseout", function(d){
           d3.select(this).style("stroke", "#B9E7FF")
             .style("fill", function(d){
-              return color(parseInt(d.properties.latest_energy_star_score));
+              return color(parseInt(d.properties[activeMetric]));
             })
             .style("fill-opacity", 0.5)
             .style("stroke-width",0.1);
@@ -88,7 +89,7 @@ function mapDraw(err, apiData, collection){
     map.on("viewreset", reset);
     reset();
 
-    var chartData = apiDataToArray('latest_energy_star_score')
+    var chartData = apiDataToArray(activeMetric)
     var values = chartData.map(function(d) {return d.value})
                           .filter(function(d) {return d > 0})
     var histogram = histogramChart()
@@ -102,6 +103,11 @@ function mapDraw(err, apiData, collection){
     .call(histogram)
 
     d3.select("#compare-chart").call(histogramHighlight,-10)
+
+    d3.select('#test-button').on('click', function(){
+      filterCategory('Hotel')
+
+    })
 
     // //demonstrates how to update the histogram chart with new data
     // chartData = apiDataToArray('latest_total_ghg_emissions_intensity_kgco2e_ft2')
@@ -117,6 +123,49 @@ function mapDraw(err, apiData, collection){
     //     .bins(20)
     //     .color(colorSwatches)
     //   )
+
+    // Toggle filter options: Energy Score
+    $('#filters .energyScore-dropdown .dropdown-menu li').click(function() {
+        $('#filters .energyScore-dropdown .dropdown-menu li:first-child').removeClass('active');
+        $(this).toggleClass('active');
+    });
+    $('#filters .energyScore-dropdown .dropdown-menu li:first-child').click(function() {
+        $('#filters .energyScore-dropdown .dropdown-menu li').removeClass('active');
+        $(this).toggleClass('active');
+    });
+
+    // Toggle filter options: Category
+    $('#filters .category-dropdown .dropdown-menu li').click(function() {
+        // $('#filters .category-dropdown .dropdown-menu li:first-child').removeClass('active');
+        $('#filters .category-dropdown .dropdown-menu li').removeClass('active');
+        $(this).toggleClass('active');
+
+        var category = $(this).first().text()
+        filterCategory(category) //only activates last filter selected
+        chartData = apiDataToArray(activeMetric, category)
+        values = chartData.map(function(d) {return d.value})
+                          .filter(function(d) {return d > 0})
+        d3.select("#compare-chart")
+          .datum(values)
+          .call(histogramChart()
+            .width(280)
+            .height(100)
+            .range([0,104])
+            .bins(50)
+            .color(colorSwatches)
+          )
+    });
+    $('#filters .category-dropdown .dropdown-menu li:first-child').click(function() {
+        $('#filters .category-dropdown .dropdown-menu li').removeClass('active');
+        $(this).toggleClass('active');
+    });
+
+    function filterCategory(metric) {
+      feature.attr('class', function(d){
+        if (metric === 'All') return ''
+        return d.properties.property_type_self_selected === metric ? '' : 'hidden'
+      })
+    }
 
     function histogramHighlight(selection, data){
       if( isNaN(data) ) data = -10
@@ -161,10 +210,10 @@ function mapDraw(err, apiData, collection){
 
     function updateScorebox(d){
       // update scorebox num + bg
-      scorebox.innerHTML = d.properties.latest_energy_star_score;
+      scorebox.innerHTML = d.properties[activeMetric];
       // we should be able to use the d3 color scale "color" to set the scorebox's background instead of this iife switch statment
       (function() {
-          var escore = d.properties.latest_energy_star_score;
+          var escore = d.properties[activeMetric];
           escore = parseInt(escore) || "";
           if (escore != "") {
             switch (true) {
@@ -245,8 +294,14 @@ function latest(test, entry){
   return entry
 }
 
-function apiDataToArray(prop) {
-  var arr = returnedApiData.map(function(parcel){
+function apiDataToArray(prop,categoryFilter) {
+  var arr = returnedApiData
+  if(categoryFilter && categoryFilter !== 'All'){
+    arr = arr.filter(function(parcel){
+      return parcel.property_type_self_selected === categoryFilter
+    })
+  }
+  arr = arr.map(function(parcel){
     // if ( typeof parcel != 'object' || parcel === 'null' ) continue
     var onlyNumbers = (typeof parseInt(parcel[prop]) === 'number') ? parseInt(parcel[prop]) : -1
     return {id: parcel.ID, value: onlyNumbers}
@@ -261,24 +316,4 @@ $('#abstract-toggle').click(function(){
     abstractToggle.textContent =
         ((abstractToggle.textContent == "[+]")
         ? "[–]":"[+]");
-});
-
-// Toggle filter options: Energy Score
-$('#filters .energyScore-dropdown .dropdown-menu li').click(function() {
-    $('#filters .energyScore-dropdown .dropdown-menu li:first-child').removeClass('active');
-    $(this).toggleClass('active');
-});
-$('#filters .energyScore-dropdown .dropdown-menu li:first-child').click(function() {
-    $('#filters .energyScore-dropdown .dropdown-menu li').removeClass('active');
-    $(this).toggleClass('active');
-});
-
-// Toggle filter options: Category
-$('#filters .category-dropdown .dropdown-menu li').click(function() {
-    $('#filters .category-dropdown .dropdown-menu li:first-child').removeClass('active');
-    $(this).toggleClass('active');
-});
-$('#filters .category-dropdown .dropdown-menu li:first-child').click(function() {
-    $('#filters .category-dropdown .dropdown-menu li').removeClass('active');
-    $(this).toggleClass('active');
 });
