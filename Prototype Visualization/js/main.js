@@ -88,7 +88,7 @@ function mapDraw(err, apiData, collection){
             var color = d3.scale.quantize()
                 //.domain([-2.28277,0, 2.28277])
                 .domain([0, 25, 50, 75, 100])
-                .range(["#8b0000", "#db4551", "#ffa474", "#ffffe0"]);
+                .range([legend4, legend3, legend2, legend1]);
             return color(parseInt(energyDict[parcelID]["Energy Star Score"]));
           } else{
             return "#ffffbf";
@@ -104,36 +104,20 @@ function mapDraw(err, apiData, collection){
            // update scorebox num + bg
            var escore = energyDict[d.properties.blklot]["Energy Star Score"];            
            scorebox.innerHTML = escore;
-           (function() {
-               escore = parseInt(escore) || "";
-               if (escore != "") {
-                    switch (true) {
-                        case (escore < 25):
-                            scorebox.style.backgroundColor = legend4;
-                            scorebox.style.color = "#fff";
-                            break;
-                        case (escore >= 25 && escore < 50):
-                            scorebox.style.backgroundColor = legend3;
-                            scorebox.style.color = "#fff";
-                            break;
-                        case (escore >= 50 && escore < 75):
-                            scorebox.style.backgroundColor = legend2;
-                            scorebox.style.color = "#000";
-                            break;
-                        case (escore >= 75 && escore <= 100):
-                            scorebox.style.backgroundColor = legend1;
-                            scorebox.style.color = "#000";
-                            break;
-                        default:
-                            scorebox.style.backgroundColor = "#fff";
-                            scorebox.style.color = "#ccc";
-                            break;
-                    }
-               } else {
-                   scorebox.style.backgroundColor = "#fff";
-                   scorebox.style.color = "#333";
-               }
-           })();
+            
+           var color = d3.scale.quantize()
+                .domain([0, 25, 50, 75, 100])
+                .range([legend4, legend3, legend2, legend1]);
+           if (escore >= 50 && escore <= 100) {
+               scorebox.style.backgroundColor = color(escore);
+               scorebox.style.color = "#000";
+           } else if (escore >= 0 && escore < 50) {
+               scorebox.style.backgroundColor = color(escore);
+               scorebox.style.color = "#fff";
+           } else { // escore == null or N/A
+               scorebox.style.backgroundColor = "#fff";
+               scorebox.style.color = "#000";
+           }
 
            var buildingInfo = "<h4>"+d.properties.building_name+"<\/h4>";
            buildingInfo += "<p>Property Type: " + energyDict[d.properties.blklot]["Property Type"] +"<\/p>";
