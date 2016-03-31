@@ -161,39 +161,17 @@ function mapDraw(err, apiData, collection){
 
     function updateScorebox(d){
       // update scorebox num + bg
-      scorebox.innerHTML = d.properties.latest_energy_star_score;
-      // we should be able to use the d3 color scale "color" to set the scorebox's background instead of this iife switch statment
-      (function() {
-          var escore = d.properties.latest_energy_star_score;
-          escore = parseInt(escore) || "";
-          if (escore != "") {
-            switch (true) {
-              case (escore < 25):
-                  scorebox.style.backgroundColor = colorSwatches[0];
-                  scorebox.style.color = "#fff";
-                  break;
-              case (escore >= 25 && escore < 50):
-                  scorebox.style.backgroundColor = colorSwatches[1];
-                  scorebox.style.color = "#fff";
-                  break;
-              case (escore >= 50 && escore < 75):
-                  scorebox.style.backgroundColor = colorSwatches[2];
-                  scorebox.style.color = "#000";
-                  break;
-              case (escore >= 75 && escore <= 100):
-                  scorebox.style.backgroundColor = colorSwatches[3];
-                  scorebox.style.color = "#000";
-                  break;
-              default:
-                  scorebox.style.backgroundColor = "#fff";
-                  scorebox.style.color = "#ccc";
-                  break;
-              }
-          } else {
-            scorebox.style.backgroundColor = "#fff";
-            scorebox.style.color = "#333";
-          }
-      })();
+      var escore = d.properties.latest_energy_star_score;
+      scorebox.innerHTML = escore;
+      scorebox.style.backgroundColor = color(escore) || "#fff";
+      if (escore >= 50 && escore <= 100) {
+          scorebox.style.color = "#000";
+      } else if (escore >= 0 && escore < 50) {
+          scorebox.style.color = "#fff";
+      } else { // escore == null or N/A
+          scorebox.style.color = "#000";
+      }
+      
       var buildingInfo = "<h4>"+d.properties.building_name+"<\/h4>";
           buildingInfo += "<p>Property Type: " + d.properties.property_type_self_selected +"<\/p>";
           buildingInfo += "<table id='buildingDetails'><colgroup><col\/><col\/></colgroup>";
