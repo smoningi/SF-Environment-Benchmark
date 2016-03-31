@@ -210,7 +210,7 @@ function mapDraw(err, apiData, collection){
 
     function updateScorebox(d){
       // update scorebox num + bg
-      var escore = d.properties.latest_energy_star_score;
+      var escore = d.properties[activeMetric];
       scorebox.innerHTML = escore;
       scorebox.style.backgroundColor = color(escore) || "#fff";
       if (escore >= 50 && escore <= 100) {
