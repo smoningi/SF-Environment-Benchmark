@@ -108,8 +108,7 @@ col:last-child {
     background: #191919;
     /*background: rgba(255,255,255,0.8);*/
     box-shadow: 0 0 15px rgba(0,0,0,0.2);
-    padding-left: 5px;
-    padding-top: 5px;
+    padding: 5px;
     border-radius: 5px;
     color: #f6f6f6;
     opacity: .8;
@@ -128,6 +127,10 @@ col:last-child {
 }
 #more-dropdown {
     width:60px !important;
+}
+.category-dropdown ul {
+    overflow-y: scroll;
+    height: 482px;
 }
 .bar {
   /*fill: steelblue;*/
