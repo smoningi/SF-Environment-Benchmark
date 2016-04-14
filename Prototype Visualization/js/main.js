@@ -45,6 +45,13 @@ d3_queue.queue()
     .defer(d3.json, "justGeo.geojson")
     .await(mapDraw)
 
+var metricMap = {
+  'Energy Star Score':'latest_energy_star_score',
+  'GHG Emissions':'latest_total_ghg_emissions_intensity_kgco2e_ft2',
+  'Source EUI':'latest_source_eui_kbtu_ft2',
+  'Site EUI':'latest_site_eui_kbtu_ft2'
+}
+
 function mapDraw(err, apiData, collection){
     var activeMetric = 'latest_energy_star_score'
     returnedApiData = parseData(apiData)
@@ -105,24 +112,53 @@ function mapDraw(err, apiData, collection){
     d3.select("#compare-chart").call(histogramHighlight,-10)
 
     d3.select('#test-button').on('click', function(){
-      filterCategory('Hotel')
+      filterMapCategory('Hotel')
 
     })
 
-    // //demonstrates how to update the histogram chart with new data
-    // chartData = apiDataToArray('latest_total_ghg_emissions_intensity_kgco2e_ft2')
-    // values = chartData.map(function(d) {return d.value})
-    //                   .filter(function(d) {return d > 0})
-    // color.domain( d3.extent(values.map(function(d) { return d.x; })) )
-    // d3.select("#compare-chart")
-    //   .datum(values)
-    //   .call(histogramChart()
-    //     .width(280)
-    //     .height(100)
-    //     .range([0,20])
-    //     .bins(20)
-    //     .color(colorSwatches)
-    //   )
+
+
+    var dispatcher = d3.dispatch('changeCategory', 'changeMetric')
+    dispatcher.on('changeCategory', function(newCategory){
+      filterMapCategory(newCategory) //only activates last filter selected
+      chartData = apiDataToArray(activeMetric, newCategory)
+      values = chartData.map(function(d) {return d.value})
+                        .filter(function(d) {return d > 0})
+      d3.select("#compare-chart")
+        .datum(values)
+        .call(histogramChart()
+          .width(280)
+          .height(100)
+          .range([0,104])
+          .bins(50)
+          .color(colorSwatches)
+        )
+    })
+    dispatcher.on('changeMetric', function(newMetric){
+      activeMetric = metricMap[newMetric]
+      chartData = apiDataToArray(activeMetric)
+
+      values = chartData.map(function(d) {return d.value})
+                        .filter(function(d) {return d > 0})
+
+      color.domain( [0,d3.max(values)] )
+
+      feature.style("fill", function(d){
+        return color(parseInt(d.properties[activeMetric]));
+      })
+
+      chartData = apiDataToArray(activeMetric)
+
+      d3.select("#compare-chart")
+        .datum(values)
+        .call(histogramChart()
+          .width(280)
+          .height(100)
+          .range(color.domain())
+          .bins(50)
+          .color(colorSwatches)
+        )
+    })
 
     // Toggle filter options: Energy Score
     $('#filters .energyScore-dropdown .dropdown-menu li').click(function() {
@@ -134,6 +170,21 @@ function mapDraw(err, apiData, collection){
         $(this).toggleClass('active');
     });
 
+
+    // Toggle filter options: Comparator Metric
+    $('#filters .metric-dropdown .dropdown-menu li').click(function() {
+        $('#filters .metric-dropdown .dropdown-menu li:first-child').removeClass('active');
+        $(this).toggleClass('active');
+
+        var newMetric = $(this).first().text()
+        dispatcher.changeMetric(newMetric)
+
+    });
+    $('#filters .metric-dropdown .dropdown-menu li:first-child').click(function() {
+        $('#filters .metric-dropdown .dropdown-menu li').removeClass('active');
+        $(this).toggleClass('active');
+    });
+
     // Toggle filter options: Category
     $('#filters .category-dropdown .dropdown-menu li').click(function() {
         // $('#filters .category-dropdown .dropdown-menu li:first-child').removeClass('active');
@@ -141,26 +192,14 @@ function mapDraw(err, apiData, collection){
         $(this).toggleClass('active');
 
         var category = $(this).first().text()
-        filterCategory(category) //only activates last filter selected
-        chartData = apiDataToArray(activeMetric, category)
-        values = chartData.map(function(d) {return d.value})
-                          .filter(function(d) {return d > 0})
-        d3.select("#compare-chart")
-          .datum(values)
-          .call(histogramChart()
-            .width(280)
-            .height(100)
-            .range([0,104])
-            .bins(50)
-            .color(colorSwatches)
-          )
+        dispatcher.changeCategory(category)
     });
     $('#filters .category-dropdown .dropdown-menu li:first-child').click(function() {
         $('#filters .category-dropdown .dropdown-menu li').removeClass('active');
         $(this).toggleClass('active');
     });
 
-    function filterCategory(metric) {
+    function filterMapCategory(metric) {
       feature.attr('class', function(d){
         if (metric === 'All') return ''
         return d.properties.property_type_self_selected === metric ? '' : 'hidden'
