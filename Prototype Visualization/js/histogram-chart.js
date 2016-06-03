@@ -1,6 +1,7 @@
 // TODO: tooltip for histogram bars to show count
 // TODO: add labels to x-axis
 // TODO: add y-axis tick marks
+// BUG: the y-axis does not re-scale after switching between metrics and returning to energy star score
 
 function histogramChart() {
   var margin = {top: 0, right: 0, bottom: 20, left: 10},
