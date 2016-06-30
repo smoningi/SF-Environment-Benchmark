@@ -69,17 +69,64 @@ col:last-child {
 #buildingDetails tr {
     border: 3px #e7e7e7 solid;
 }
-/*
-#buildingDetails tr:first-child {
-    border-top: 1px #ccc solid;
-}
-*/
 #buildingDetails td:first-child {
     text-align: center;
     font-weight: 700;
 }
 #buildingDetails td:nth-child(2) {
     padding: 6px 0 6px 6px;
+}
+.filter-header {
+    font-size: 14px;
+    font-weight: 700;
+}
+#category-filters tr:first-child td {
+    padding-bottom: 6px;
+}
+#category-filters td:nth-child(odd) {
+    padding-right: 6px;
+}
+#category-filters td:nth-child(even) {
+    font-size: 12px;
+    width: 240px;
+    padding-top: 3px;
+}
+#category-filters-select {
+    margin-left: -48px;
+    list-style: none;
+}
+#category-filters-select li {
+    border-bottom: 1px #ccc solid;
+    padding: 6px;
+}
+#category-filters-select li:last-child {
+    border-bottom: none;
+}
+#category-filters-select li select {
+    vertical-align: middle;    
+    height: 22px;
+    width: 310px;
+}
+#category-filters-select li button {
+    height: 21px;
+    width: 21px;
+    color: #999;
+    background-color: #fff;
+    text-align: center;
+    vertical-align: middle;
+    padding: 0 2px;
+    margin-left: 5px;
+    border: 1px #999 solid;
+    border-radius: 4px;
+}
+#category-filters-select li button:hover {
+    background-color: #999;
+    color: #fff;
+}
+#other-filters td:last-child {
+    font-size: 12px;
+    padding-left: 8px;
+    padding-top: 2px;
 }
 .intro {
     position: absolute;
@@ -97,16 +144,19 @@ col:last-child {
 .intro p {
     font-size: 12px;
 }
-#abstract-toggle {
+#abstract-toggle a {
     cursor: pointer;
     font-weight: 700;
+    color: #333;
     text-decoration: none;
+}
+#abstract {
+    margin-bottom: 5px;
+    height: 160px;
 }
 .legend {
     line-height: 40px;
-    /*color: #555;*/
     background: #191919;
-    /*background: rgba(255,255,255,0.8);*/
     box-shadow: 0 0 15px rgba(0,0,0,0.2);
     padding: 5px;
     border-radius: 5px;
@@ -122,11 +172,11 @@ col:last-child {
     margin-top: 8px;
 }
 #filters button {
-    width:121px;
+    width: 151px;
     border-radius: 0px;
 }
-#more-dropdown {
-    width:60px !important;
+#metrics-dropdown {
+    width:150px !important;
 }
 .category-dropdown ul {
     overflow-y: scroll;
