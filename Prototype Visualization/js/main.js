@@ -2,6 +2,8 @@
  * Created by Sanat Moningi
  */
 // data source: https://data.sfgov.org/Energy-and-Environment/Existing-Commercial-Buildings-Energy-Performance-O/j2j3-acqj
+
+//
 var colorSwatches = ["#8b0000", "#db4551", "#ffa474", "#ffffe0"]
 var color = d3.scale.quantize()
     .domain([0, 100])
@@ -245,7 +247,8 @@ function mapDraw(err, apiData, collection){
 
     function updateScorebox(d){
       // update scorebox num + bg
-      var escore = d.properties[activeMetric];
+      var escore = +d.properties[activeMetric];
+      escore = roundToTenth(escore);
       scorebox.innerHTML = escore;
       scorebox.style.backgroundColor = color(escore) || "#fff";
       if (escore >= 50 && escore <= 100) {
@@ -322,124 +325,15 @@ function apiDataToArray(prop,categoryFilter) {
   return arr
 }
 
-var categoryFilters = [
-    'Automobile Dealership',
-    'College/University',
-    'Distribution Center',
-    'Financial Office',
-    'Fitness Center/Health Club/Gym',
-    'Hospital (General Medical & Surgical)',
-    'Hotel',
-    'K-12 School',
-    'Manufacturing/Industrial Plant',
-    'Mixed Use Property',
-    'Medical Office',
-    'Non-Refrigerated Warehouse',
-    'Office',
-    'Other',
-    'Retail Store',
-    'Restaurant',
-    'Supermarket/Grocery Store',
-    'Worship Facility',
-    'N/A'
-];
-
-//*******************************************
-/* CATEGORY FILTER DROPDOWN
-/********************************************/
-
-// populate single category select dropdown menu
-var filterOptions = '<li><a id="show-filter-options-modal" href="#">'+
-    '<i class="fa fa-filter"></i> Multi-Category Filter Demo</a></li>'+
-    '<li class="active"><a href="#">All</a></li>'+
-    '<li class="divider"></li>';
-for (var i=0;i < categoryFilters.length;i++) {
-    filterOptions += '<li><a href="#">'+categoryFilters[i]+'</a></li>';
-}
-$("#category-filters-dropdown").html(filterOptions);
-
-// FPO open multi-filter selection modal
-$('#show-filter-options-modal').click(function(){
-    $("#filter-options-modal").modal('show');
-});
-
-//*******************************************
-/* CATEGORY FILTER CHECKBOXES
-/********************************************/
-
-// populate 2-col checkbox grid
-var filterCheckboxes = '<tr><td><input id="js-toggle-category" type="checkbox" name=""></td><td>Select All</td></tr>';
-for (var i=0;i < categoryFilters.length;i+=2) {
-    filterCheckboxes += '<tr class="js-category-box">';
-    filterCheckboxes += '<td><input id="js-toggle-category" type="checkbox" name=""></td>';
-    filterCheckboxes += '<td>'+categoryFilters[i]+'</td>';
-    if (categoryFilters[i+1]) {
-        filterCheckboxes += '<td><input id="js-toggle-category" type="checkbox" name=""></td>';
-        filterCheckboxes += '<td>'+categoryFilters[i+1]+'</td>';
-    } else {
-        filterCheckboxes += '<td>&nbsp;</td><td>&nbsp;</td>';
-    };
-    filterCheckboxes += '</tr>';
-}
-$("#category-filters-checkboxes").html(filterCheckboxes);
-
-// toggle category selections via Select All
-$('#js-toggle-category').change(function() {
-    if($(this).is(":checked")) {
-        $('.js-category-box').find(':checkbox').prop('checked', true);
-    } else {
-        $('.js-category-box').find(':checkbox').prop('checked', false);
-    }
-});
-$('.js-category-box').find(':checkbox').change(function() {
-    $('#js-toggle-category:checkbox').prop('checked', false);        
-});
-
-//*******************************************
-/* CATEGORY FILTER SELECT CHAIN TOOL
-/********************************************/
-
-// populate multi-category select chain tool
-var filterRow = '<li><select><option value="" selected></option>';
-for (var i=0;i < categoryFilters.length;i++) {
-    filterRow += '<option value="'+categoryFilters[i]+'">'+categoryFilters[i]+'</option>';
-}
-filterRow += '</select>'+
-    '<button class="remove-row" type="button"><small><i class="fa fa-minus"></i></small></button>'+
-    '<button class="add-row" type="button"><small><i class="fa fa-plus"></i></small></button>'+
-    '</li>';
-
-// add filter row for select chain tool 
-$("#category-filters-select").html(filterRow);
-
-// add/remove filter rows via +/- buttons
-var filterRowsAdded = 0;
-$('#category-filters-select').on("click",".remove-row", function(){
-   if (filterRowsAdded > 0) {
-       $("#category-filters-select > li:last-child").remove();
-       console.log("remove row: "+filterRowsAdded);
-       filterRowsAdded--;       
-   }
-});
-$('#category-filters-select').on("click",".add-row", function(){
-   $("#category-filters-select > li:last-child").after(filterRow);    
-   filterRowsAdded++;
-   console.log("add row: "+filterRowsAdded);    
-});
-
-//*******************************************
-/* TOGGLE DISPLAY OF ABSTRACT
-/********************************************/
-
-var isAbstract = false;
-
-$('.intro').on("click","#abstract-toggle", function(){
+// Toggle abstract
+$('#abstract-toggle').click(function(){
+    var abstractToggle = document.getElementById('abstract-toggle');
     $("#abstract,#filters,#compare-chart").toggleClass('hide');
-    if (isAbstract) {
-        $('#abstract-toggle').html("<a><i class='fa fa-info-circle'></i></a>");
-        isAbstract=!isAbstract;
-    } else {
-        $('#abstract-toggle').html("<a><i class='fa fa-minus-circle'></i></a>");
-        isAbstract=!isAbstract;
-    }
+    abstractToggle.textContent =
+        ((abstractToggle.textContent == "[+]")
+        ? "[–]":"[+]");
 });
+
+function roundToTenth(num){
+  return Math.round(10*num)/10
+}
