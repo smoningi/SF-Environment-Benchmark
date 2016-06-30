@@ -173,16 +173,12 @@ function mapDraw(err, apiData, collection){
 
     // Toggle filter options: Comparator Metric
     $('#filters .metric-dropdown .dropdown-menu li').click(function() {
-        $('#filters .metric-dropdown .dropdown-menu li:first-child').removeClass('active');
+        $('#filters .metric-dropdown .dropdown-menu li').removeClass('active');
         $(this).toggleClass('active');
 
         var newMetric = $(this).first().text()
         dispatcher.changeMetric(newMetric)
 
-    });
-    $('#filters .metric-dropdown .dropdown-menu li:first-child').click(function() {
-        $('#filters .metric-dropdown .dropdown-menu li').removeClass('active');
-        $(this).toggleClass('active');
     });
 
     // Toggle filter options: Category
