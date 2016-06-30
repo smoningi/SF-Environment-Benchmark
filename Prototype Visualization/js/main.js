@@ -2,7 +2,13 @@
  * Created by Sanat Moningi
  */
 // data source: https://data.sfgov.org/Energy-and-Environment/Existing-Commercial-Buildings-Energy-Performance-O/j2j3-acqj
-var colorSwatches = ["#8b0000", "#db4551", "#ffa474", "#ffffe0"]
+
+var colorSwatches = ["#8b0000", "#db4551", "#ffa474", "#ffffe0"];
+// var colorSwatches.energy_star_score = ["#8b0000", "#db4551", "#ffa474", "#ffffe0"];
+// var colorSwatches.ghg_emissions = ["#f4fde8","#b6e9ba","#76cec7","#3ea3d3"];
+// var colorSwatches.source_eui_kbtu_ft2 = ["#FFECD9","#FFD5AB", "#FFBF80", "#FFAA55"];
+// var colorSwatches.site_eui_kbtu_ft2 = ['#FF413B','#FF7570','#FFABA8','#C1E9B7'];
+
 var color = d3.scale.quantize()
     .domain([0, 100])
     .range(colorSwatches);
@@ -26,7 +32,7 @@ L.tileLayer('https://api.tiles.mapbox.com/v4/mapbox.dark/{z}/{x}/{y}.png?access_
 var legend = L.control({position:'bottomleft'});
 legend.onAdd = function (map) {
     var div = L.DomUtil.create('div', 'legend');
-    div.innerHTML += "<div><b>Energy Star Score</b></div>"
+    div.innerHTML += "<div id='legend-label'><b>Energy Star Score</b></div>"
     div.innerHTML += "<i style=\"background:"+colorSwatches[3]+";\"></i> <b>75-100</b> <br/>";
     div.innerHTML += "<i style=\"background:"+colorSwatches[2]+";\"></i> <b>50-75</b><br/>";
     div.innerHTML += "<i style=\"background:"+colorSwatches[1]+";\"></i> <b>25-50</b> <br/>";
@@ -135,6 +141,8 @@ function mapDraw(err, apiData, collection){
         )
     })
     dispatcher.on('changeMetric', function(newMetric){
+      var legendLabel = document.getElementById('legend-label')
+      legendLabel.innerHTML = "<b>"+newMetric+"</b>"
       activeMetric = metricMap[newMetric]
       chartData = apiDataToArray(activeMetric)
 
