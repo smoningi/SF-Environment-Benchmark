@@ -323,7 +323,7 @@ function apiDataToArray(prop,categoryFilter) {
   }
   arr = arr.map(function(parcel){
     // if ( typeof parcel != 'object' || parcel === 'null' ) continue
-    var onlyNumbers = (typeof parseInt(parcel[prop]) === 'number') ? parseInt(parcel[prop]) : -1
+    var onlyNumbers = (typeof parseInt(parcel[prop]) === 'number' && !isNaN(parcel[prop])) ? parseInt(parcel[prop]) : -1
     return {id: parcel.ID, value: onlyNumbers}
   })
   return arr
