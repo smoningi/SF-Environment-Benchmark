@@ -1,6 +1,8 @@
+// We should totally be using dc for this project. http://dc-js.github.io/dc.js/
+
 // glogal reference objects
 var colors = {}
-colors.estar = ['#1b64aa','#59bde9','#fec33a','#fd812e'] //colorSwatches = ["#8b0000", "#db4551", "#ffa474", "#ffffe0"]
+colors.estar = ['#fd812e', '#fec33a', '#59bde9', '#1b64aa'] //colorSwatches = ["#8b0000", "#db4551", "#ffa474", "#ffffe0"]
 var metricMap = {
   'Energy Star Score':'latest_energy_star_score',
   'GHG Emissions':'latest_total_ghg_emissions_intensity_kgco2e_ft2',
@@ -45,6 +47,17 @@ function renderCharts (error, apiData) {
   histogram.colorScale(color).bins(100)
   chartHistogram.datum(values).call(histogram)
   chartHistogram.call(histogramHighlight,-10)
+
+  $('#infotable').DataTable( {
+        data: returnedApiData,
+        columns: [
+            { title: "Address", data: "building_address" },
+            { title: "BlockLot", data: "ID" },
+            { title: "Building Name", data: "building_name" },
+            { title: "Floor Area", data: "floor_area" },
+            { title: "Property Type", data: "property_type_self_selected" }
+        ]
+    } );
 }
 
 
@@ -72,6 +85,10 @@ function renderCharts (error, apiData) {
 //       buildingInfo += "<\/table>";
 //   $( "#building-details" ).html(buildingInfo);
 // }
+
+function tabledata () {
+
+}
 
 function parseData (apiData) {
   var metrics = ['benchmark','energy_star_score','site_eui_kbtu_ft2','source_eui_kbtu_ft2','percent_better_than_national_median_site_eui','percent_better_than_national_median_source_eui','total_ghg_emissions_metric_tons_co2e','total_ghg_emissions_intensity_kgco2e_ft2','weather_normalized_site_eui_kbtu_ft2','weather_normalized_source_eui_kbtu_ft2']
