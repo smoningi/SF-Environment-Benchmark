@@ -9,6 +9,7 @@ var metricMap = {
   'Source EUI':'latest_source_eui_kbtu_ft2',
   'Site EUI':'latest_site_eui_kbtu_ft2'
 }
+var width = parseInt(d3.select('#chart-histogram').style('width'))
 
 // Storing parcel data globally
 var returnedApiData = []
@@ -24,7 +25,7 @@ var scorebox = document.getElementById('scorebox')
 var color = d3.scale.threshold()
   .range(colors.estar)
 var histogram = histogramChart()
-  .width(400)
+  .width(width)
   .height(200)
   .range([0,104])
   .bins(50)
@@ -49,15 +50,21 @@ function renderCharts (error, apiData) {
   chartHistogram.call(histogramHighlight,-10)
 
   $('#infotable').DataTable( {
-        data: returnedApiData,
-        columns: [
-            { title: "Address", data: "building_address" },
-            { title: "BlockLot", data: "ID" },
-            { title: "Building Name", data: "building_name" },
-            { title: "Floor Area", data: "floor_area" },
-            { title: "Property Type", data: "property_type_self_selected" }
-        ]
-    } );
+    data: returnedApiData,
+    columns: [
+      { title: "Address", data: "building_address" },
+      { title: "BlockLot", data: "ID" },
+      { title: "Building Name", data: "building_name" },
+      { title: "Floor Area", data: "floor_area" },
+      { title: "Property Type", data: "property_type_self_selected" },
+      { title: "Energy Star", data: "latest_energy_star_score" }
+    ]
+  });
+
+  var metricSelector = document.getElementById('metric-selector')
+  metricSelector.innerHTML = ""
+  var metrics = ['Energy Star Score','GHG Emissions','Source EUI','Site EUI']
+  metrics.forEach(addOption, metricSelector)
 }
 
 
@@ -168,4 +175,21 @@ function histogramHighlight (selection, data) {
 
 function sortNumber (a,b) {
   return a - b;
+}
+
+function addOption(el,i, arr){
+  /*
+  * takes an array of strings and creates an option
+  * in the select element passed as 'this' in a forEach call:
+  *   var foo = document.getElementById('foo')
+  *   ['bar','baz', 'bar_baz'].forEach(addOption, foo)
+  * creates <option value="bar">Bar</option>
+  *         <option value="baz">Baz</option>
+  *         <option value="bar_baz">Bar Baz</option>
+  * inside the existing <select id="foo"></select>
+  */
+  var option = document.createElement("option")
+  option.value = el
+  option.text = el.replace(/_/,' ')
+  this.appendChild(option)
 }
