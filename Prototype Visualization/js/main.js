@@ -3,15 +3,23 @@
  */
 // data source: https://data.sfgov.org/Energy-and-Environment/Existing-Commercial-Buildings-Energy-Performance-O/j2j3-acqj
 
-var colorSwatches = ["#8b0000", "#db4551", "#ffa474", "#ffffe0"];
-// var colorSwatches.energy_star_score = ["#8b0000", "#db4551", "#ffa474", "#ffffe0"];
-// var colorSwatches.ghg_emissions = ["#f4fde8","#b6e9ba","#76cec7","#3ea3d3"];
-// var colorSwatches.source_eui_kbtu_ft2 = ["#FFECD9","#FFD5AB", "#FFBF80", "#FFAA55"];
-// var colorSwatches.site_eui_kbtu_ft2 = ['#FF413B','#FF7570','#FFABA8','#C1E9B7'];
+var colorMetric = "energy_star_score";
+var newMetric = "Energy Star Score";
+
+var colorSwatches = {
+  energy_star_score: ["#FD6C16","#FEB921","#46AEE6","#134D9C"], // primary
+  // energy_star_score: ["#8b0000","#db4551","#ffa474","#ffffe0"], // dark to lt
+  // energy_star_score: ["#FFECD9","#FFD5AB", "#FFBF80", "#FFAA55"], // lt to dark (warm)
+  // energy_star_score: ["#f4fde8","#b6e9ba","#76cec7","#3ea3d3"], // lt to dark (cool)
+  // energy_star_score: ['#C1E9B7','#FFABA8','#FF7570','#FF413B'], // gr to red
+  total_ghg_emissions_intensity_kgco2e_ft2: ["#f4fde8","#b6e9ba","#76cec7","#3ea3d3"],
+  source_eui_kbtu_ft2: ["#FFECD9","#FFD5AB", "#FFBF80", "#FFAA55"],
+  site_eui_kbtu_ft2: ["#ffffe0","#ffa474","#db4551","#8b0000"]
+};
 
 var color = d3.scale.quantize()
     .domain([0, 100])
-    .range(colorSwatches);
+    .range(colorSwatches[colorMetric]);
 
 //Setting up leaflet map
 var map = L.map('map').setView([37.7833, -122.4167], 14);
@@ -27,19 +35,6 @@ L.tileLayer('https://api.tiles.mapbox.com/v4/mapbox.dark/{z}/{x}/{y}.png?access_
     id: 'smoningi.a304c3dc',
     accessToken: 'pk.eyJ1Ijoic21vbmluZ2kiLCJhIjoiQ21rN1pjSSJ9.WKrPFjjb7LRMBjyban698g'
 }).addTo(map);
-
-// Add Legend
-var legend = L.control({position:'bottomleft'});
-legend.onAdd = function (map) {
-    var div = L.DomUtil.create('div', 'legend');
-    div.innerHTML += "<div id='legend-label'><b>Energy Star Score</b></div>"
-    div.innerHTML += "<i style=\"background:"+colorSwatches[3]+";\"></i> <b>75-100</b> <br/>";
-    div.innerHTML += "<i style=\"background:"+colorSwatches[2]+";\"></i> <b>50-75</b><br/>";
-    div.innerHTML += "<i style=\"background:"+colorSwatches[1]+";\"></i> <b>25-50</b> <br/>";
-    div.innerHTML += "<i style=\"background:"+colorSwatches[0]+";\"></i> <b>0-25</b><br/>";
-    return div;
-};
-legend.addTo(map);
 
 var svg = d3.select(map.getPanes().overlayPane).append("svg"),
     g = svg.append("g").attr("class", "leaflet-zoom-hide");
@@ -102,6 +97,9 @@ function mapDraw(err, apiData, collection){
     map.on("viewreset", reset);
     reset();
 
+    var legend = L.control({position:'bottomleft'});
+    addLegend();
+
     var chartData = apiDataToArray(activeMetric)
     var values = chartData.map(function(d) {return d.value})
                           .filter(function(d) {return d > 0})
@@ -110,7 +108,7 @@ function mapDraw(err, apiData, collection){
       .height(100)
       .range([0,104])
       .bins(50)
-      .color(colorSwatches)
+      .color(colorSwatches[colorMetric])
     d3.select("#compare-chart")
       .datum(values)
     .call(histogram)
@@ -137,13 +135,15 @@ function mapDraw(err, apiData, collection){
           .height(100)
           .range([0,104])
           .bins(50)
-          .color(colorSwatches)
+          .color(colorSwatches[colorMetric])
         )
     })
     dispatcher.on('changeMetric', function(newMetric){
-      var legendLabel = document.getElementById('legend-label')
-      legendLabel.innerHTML = "<b>"+newMetric+"</b>"
-      activeMetric = metricMap[newMetric]
+      var activeMetric = metricMap[newMetric]
+      colorMetric = metricMap[newMetric].replace(/^latest_/, '')
+      console.log('colorMetric='+colorMetric)
+      updateLegend();
+
       chartData = apiDataToArray(activeMetric)
 
       values = chartData.map(function(d) {return d.value})
@@ -157,14 +157,14 @@ function mapDraw(err, apiData, collection){
 
       chartData = apiDataToArray(activeMetric)
 
-      d3.select("#compare-chart")
+      d3.select("#compare-chart") // histogram
         .datum(values)
         .call(histogramChart()
           .width(280)
           .height(100)
           .range(color.domain())
           .bins(50)
-          .color(colorSwatches)
+          .color(colorSwatches[colorMetric])
         )
     })
 
@@ -184,7 +184,7 @@ function mapDraw(err, apiData, collection){
         $('#filters .metric-dropdown .dropdown-menu li').removeClass('active');
         $(this).toggleClass('active');
 
-        var newMetric = $(this).first().text()
+        newMetric = $(this).first().text()
         dispatcher.changeMetric(newMetric)
 
     });
@@ -251,17 +251,40 @@ function mapDraw(err, apiData, collection){
         this.stream.point(point.x, point.y);
     }
 
+    function updateLegend() {
+      map.removeControl(legend);
+      addLegend();
+    }
+
+    function addLegend() {
+      console.log("addLegend:"+colorMetric+","+newMetric);
+
+      legend.onAdd = function (map) {
+          var div = L.DomUtil.create('div', 'legend');
+          div.innerHTML += "<div id='legend-label'><b>"+newMetric+"</b></div>"
+          div.innerHTML += "<i style=\"background:"+colorSwatches[colorMetric][3]+";\"></i> <b>75-100</b> <br/>";
+          div.innerHTML += "<i style=\"background:"+colorSwatches[colorMetric][2]+";\"></i> <b>50-75</b><br/>";
+          div.innerHTML += "<i style=\"background:"+colorSwatches[colorMetric][1]+";\"></i> <b>25-50</b> <br/>";
+          div.innerHTML += "<i style=\"background:"+colorSwatches[colorMetric][0]+";\"></i> <b>0-25</b><br/>";
+          return div;
+      };
+      legend.addTo(map);
+
+    }
+
     function updateScorebox(d){
       // update scorebox num + bg
       var escore = d.properties[activeMetric];
       scorebox.innerHTML = escore;
       scorebox.style.backgroundColor = color(escore) || "#fff";
-      if (escore >= 50 && escore <= 100) {
-          scorebox.style.color = "#000";
-      } else if (escore >= 0 && escore < 50) {
+
+      // todo: update text color based on colorMetric
+      if (escore >= 0 && escore <= 50) {
+          scorebox.style.color = "#333";
+      } else if (escore >= 51 && escore <= 100) {
           scorebox.style.color = "#fff";
       } else { // escore == null or N/A
-          scorebox.style.color = "#000";
+          scorebox.style.color = "#333";
       }
 
       var buildingInfo = "<h4>"+d.properties.building_name+"<\/h4>";
@@ -400,7 +423,7 @@ $('#js-toggle-category').change(function() {
     }
 });
 $('.js-category-box').find(':checkbox').change(function() {
-    $('#js-toggle-category:checkbox').prop('checked', false);        
+    $('#js-toggle-category:checkbox').prop('checked', false);
 });
 
 //*******************************************
@@ -417,7 +440,7 @@ filterRow += '</select>'+
     '<button class="add-row" type="button"><small><i class="fa fa-plus"></i></small></button>'+
     '</li>';
 
-// add filter row for select chain tool 
+// add filter row for select chain tool
 $("#category-filters-select").html(filterRow);
 
 // add/remove filter rows via +/- buttons
@@ -426,13 +449,13 @@ $('#category-filters-select').on("click",".remove-row", function(){
    if (filterRowsAdded > 0) {
        $("#category-filters-select > li:last-child").remove();
        console.log("remove row: "+filterRowsAdded);
-       filterRowsAdded--;       
+       filterRowsAdded--;
    }
 });
 $('#category-filters-select').on("click",".add-row", function(){
-   $("#category-filters-select > li:last-child").after(filterRow);    
+   $("#category-filters-select > li:last-child").after(filterRow);
    filterRowsAdded++;
-   console.log("add row: "+filterRowsAdded);    
+   console.log("add row: "+filterRowsAdded);
 });
 
 //*******************************************
