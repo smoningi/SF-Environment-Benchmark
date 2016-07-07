@@ -8,7 +8,7 @@ SF Environment Benchmark part of the Data Science Working Group at Code for San 
 
 ## Getting Started
 
-Fork this repo, then clone your repo locally
+[Fork this repo](https://help.github.com/articles/fork-a-repo/), then clone your repo locally
 ```
 $ git clone <your-repo>
 $ git remote add upstream <this-repo>
