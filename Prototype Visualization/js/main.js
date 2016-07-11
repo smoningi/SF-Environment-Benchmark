@@ -10,7 +10,8 @@ var metricMap = {
       'Site EUI':'latest_site_eui_kbtu_ft2'
     };
 
-var colorMetric = colorMetric || 'energy_star_score',
+var activeMetric = activeMetric || 'latest_energy_star_score',
+    colorMetric = colorMetric || 'energy_star_score',
     newMetric = newMetric || 'Energy Star Score';
 
 var colorSwatches = {
@@ -56,7 +57,7 @@ d3_queue.queue()
     .await(mapDraw)
 
 function mapDraw(err, apiData, collection){
-    var activeMetric = 'latest_energy_star_score'
+    // activeMetric = activeMetric || 'latest_energy_star_score'
     returnedApiData = parseData(apiData)
     collection.features.forEach(function(feature){
       var data = returnedApiData.find(function(el){
@@ -130,18 +131,22 @@ function mapDraw(err, apiData, collection){
       chartData = apiDataToArray(activeMetric, newCategory)
       values = chartData.map(function(d) {return d.value})
                         .filter(function(d) {return d > 0})
+
+      $(".category-dropdown small").html(newCategory.substring(0,18));
+
       d3.select("#compare-chart")
         .datum(values)
         .call(histogramChart()
           .width(280)
           .height(100)
+          // .range([0,d3.max(values)])
           .range([0,104])
           .bins(50)
           .color(colorSwatches[colorMetric])
         )
     })
     dispatcher.on('changeMetric', function(newMetric){
-      var activeMetric = metricMap[newMetric]
+      activeMetric = metricMap[newMetric]
       colorMetric = metricMap[newMetric].replace(/^latest_/, '')
       updateLegend();
 
@@ -154,6 +159,7 @@ function mapDraw(err, apiData, collection){
           .domain([0,d3.max(values)])
           .range(colorSwatches[colorMetric]);
 
+      console.log("max(values)="+d3.max(values));
       // color.domain( [0,d3.max(values)] )
       //      .range(colorSwatches[colorMetric]);
 
@@ -161,8 +167,9 @@ function mapDraw(err, apiData, collection){
         return color(parseInt(d.properties[activeMetric]));
       })
 
+      $(".metric-dropdown small").html(newMetric);
 
-      chartData = apiDataToArray(activeMetric)
+      // chartData = apiDataToArray(activeMetric)
 
       d3.select("#compare-chart") // histogram
         .datum(values)
@@ -173,6 +180,7 @@ function mapDraw(err, apiData, collection){
           .bins(50)
           .color(colorSwatches[colorMetric])
         )
+
     })
 
     // Toggle filter options: Energy Score
