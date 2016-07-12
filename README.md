@@ -6,6 +6,11 @@ The original goal of the SF Environment Benchmark project was to visualize build
 
 SF Environment Benchmark part of the Data Science Working Group at Code for San Francisco.
 
+### Contributing DSWG Members
+- Sanat Moningi
+- Tyler Field
+- Geoffrey Pay
+
 ## Getting Started
 
 [Fork this repo](https://help.github.com/articles/fork-a-repo/), then clone your repo locally
