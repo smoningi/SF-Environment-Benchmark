@@ -286,17 +286,30 @@ function mapDraw(err, apiData, collection){
 
     function updateScorebox(d){
       // update scorebox num + bg
-      var escore = d.properties[activeMetric];
-      scorebox.innerHTML = escore;
-      scorebox.style.backgroundColor = color(escore) || "#fff";
+      var boxNumber = d.properties[activeMetric];
+      scorebox.innerHTML = boxNumber;
+      scorebox.style.backgroundColor = color(boxNumber) || "#fff";
 
-      // TODO: update text color based on colorMetric
-      if (escore >= 0 && escore <= 50) {
-          scorebox.style.color = "#333";
-      } else if (escore >= 51 && escore <= 100) {
-          scorebox.style.color = "#fff";
-      } else { // escore == null or N/A
-          scorebox.style.color = "#333";
+      // update text color based on colorMetric
+      if (colorMetric == 'energy_star_score') {
+        if (boxNumber >= 0 && boxNumber <= 50) {
+            scorebox.style.color = '#333';
+        } else if (boxNumber >= 51 && boxNumber <= 100) {
+            scorebox.style.color = '#fff';
+        } else { // boxNumber == null or N/A
+            scorebox.style.color = '#333';
+        }
+      } else {
+        scorebox.style.color = '#333';
+      }
+
+      // update layout if boxNumber exceeds 99
+      if (boxNumber >= 0 && boxNumber <= 99) {
+        scorebox.style.fontSize = "18px";
+        scorebox.style.paddingTop = "7px";
+      } else {
+        scorebox.style.fontSize = "12px";
+        scorebox.style.paddingTop = "10px";
       }
 
       var buildingInfo = "<h4>"+d.properties.building_name+"<\/h4>";
