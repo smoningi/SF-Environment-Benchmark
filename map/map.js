@@ -309,12 +309,15 @@ function mapDraw(err, apiData, collection){
 
 }
 
+// parseData() should be shared between map.js & dashboard.js
 function parseData(apiData){
   var tests = ['benchmark','energy_star_score','site_eui_kbtu_ft2','source_eui_kbtu_ft2','percent_better_than_national_median_site_eui','percent_better_than_national_median_source_eui','total_ghg_emissions_metric_tons_co2e','total_ghg_emissions_intensity_kgco2e_ft2','weather_normalized_site_eui_kbtu_ft2','weather_normalized_source_eui_kbtu_ft2']
   var re1 = /(.+)\//
   var re2 = /[\/\.](.+)/
+  var spliceArray = []
   apiData.forEach(function(parcel){
-    if (parcel.parcel_s === undefined) {return parcel}
+    if (parcel.parcel_s === undefined) {spliceArray.unshift(index); return parcel}
+    if (! parcel.hasOwnProperty('property_type_self_selected') ) { parcel.property_type_self_selected = 'N/A'}
     parcel.parcel1 = re1.exec(parcel.parcel_s)[1]
     parcel.parcel2 = re2.exec(parcel.parcel_s)[1]
     parcel.blklot = '' + parcel.parcel1 + parcel.parcel2
@@ -323,6 +326,10 @@ function parseData(apiData){
       parcel = latest(test, parcel)
     })
     return parcel
+  })
+  // remove elements that have no parcel identifier
+  spliceArray.forEach(function (el) {
+    apiData.splice(el,1)
   })
   return apiData
 }
