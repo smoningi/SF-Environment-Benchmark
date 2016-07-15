@@ -6,14 +6,14 @@ The original goal of the SF Environment Benchmark project was to visualize build
 
 SF Environment Benchmark part of the Data Science Working Group at Code for San Francisco.
 
-## Contributing DSWG Members
+#### Contributing DSWG Members
 - Sanat Moningi
 - Tyler Field
 - Geoffrey Pay
 - Baolin Liu
 
 ## Prototypes
- - # [SF Energy and GHG Map Visualization](http://smoningi.github.io/SF-Environment-Benchmark/map/)
+ - [SF Energy and GHG Map Visualization](http://smoningi.github.io/SF-Environment-Benchmark/map/)
 
 ## Getting Started
 
