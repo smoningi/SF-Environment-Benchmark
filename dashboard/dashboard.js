@@ -9,20 +9,42 @@ var colorSwatches = {
       site_eui_kbtu_ft2: ['#ffffe0','#ffa474','#db4551','#8b0000']
     };
 
-// metricMap should be shared between map.js & dashboard.js
-var metricMap = {
-  'Energy Star Score':'latest_energy_star_score',
-  'GHG Emissions':'latest_total_ghg_emissions_intensity_kgco2e_ft2',
-  'Source EUI':'latest_source_eui_kbtu_ft2',
-  'Site EUI':'latest_site_eui_kbtu_ft2'
-}
+// categoryFilters should be shared between map.js & dashboard.js
+var categoryFilters = [
+  'All',
+  'Automobile Dealership',
+  'College/University',
+  'Distribution Center',
+  'Financial Office',
+  'Fitness Center/Health Club/Gym',
+  'Hospital (General Medical & Surgical)',
+  'Hotel',
+  'K-12 School',
+  'Manufacturing/Industrial Plant',
+  'Mixed Use Property',
+  'Medical Office',
+  'Non-Refrigerated Warehouse',
+  'Office',
+  'Other',
+  'Retail Store',
+  'Restaurant',
+  'Supermarket/Grocery Store',
+  'Worship Facility',
+  'N/A'
+];
+
 var width = parseInt(d3.select('#chart-histogram').style('width'))
 
 // Storing parcel data globally
 var returnedApiData = []
 
 // page state data
-var activeMetric = 'latest_energy_star_score'
+var activeCategory = 'All'
+
+// populate dropdown menu
+var categorySelector = document.getElementById('category-selector')
+categorySelector.innerHTML = ""
+categoryFilters.forEach(addOption, categorySelector)
 
 // pointers to dom elements
 var chartHistogram = d3.select('#chart-histogram')
@@ -43,65 +65,42 @@ d3_queue.queue()
     .await(renderCharts)
 function renderCharts (error, apiData) {
   returnedApiData = parseData(apiData)
-  var chartData = apiDataToArray(activeMetric)
-  var values = chartData.map(function (d) {return d.value})
-                        .filter(function (d) {return d > 0})
-                        .sort(sortNumber)
+  var valuesArr = objArrayToSortedNumArray(apiDataToArray('latest_energy_star_score')).filter(function (d) { return d > 0 })
   // color assigned by quartile
-  var thresholds = arrayQuartiles(values)
+  var thresholds = arrayQuartiles(valuesArr)
   color.domain(thresholds)
   histogram.colorScale(color).bins(100)
-  chartHistogram.datum(values).call(histogram)
+  chartHistogram.datum(valuesArr).call(histogram)
   chartHistogram.call(histogramHighlight,-10)
 
-  $('#infotable').DataTable( {
-    data: returnedApiData,
-    columns: [
-      { title: "Address", data: "building_address" },
-      { title: "BlockLot", data: "ID" },
-      { title: "Building Name", data: "building_name" },
-      { title: "Floor Area", data: "floor_area" },
-      { title: "Property Type", data: "property_type_self_selected" },
-      { title: "Energy Star", data: "latest_energy_star_score" }
-    ]
-  });
+  // $('#infotable').DataTable( {
+  //   data: returnedApiData,
+  //   columns: [
+  //     { title: "Address", data: "building_address" },
+  //     { title: "BlockLot", data: "ID" },
+  //     { title: "Building Name", data: "building_name" },
+  //     { title: "Floor Area", data: "floor_area" },
+  //     { title: "Property Type", data: "property_type_self_selected" },
+  //     { title: "Energy Star", data: "latest_energy_star_score" }
+  //   ]
+  // });
 
-  var metricSelector = document.getElementById('metric-selector')
-  metricSelector.innerHTML = ""
-  var metrics = ['Energy Star Score','GHG Emissions','Source EUI','Site EUI']
-  metrics.forEach(addOption, metricSelector)
+
+  $("select[name='category-selector']").change(function(){dispatcher.changeCategory(this.value)})
 }
+var dispatcher = d3.dispatch('changeCategory')
+dispatcher.on('changeCategory', function(newCategory){
+  console.log('foo');
+  // filterMapCategory(newCategory) //only activates last filter selected
+  valuesArr = objArrayToSortedNumArray(apiDataToArray('latest_energy_star_score', newCategory)).filter(function (d) { return d > 0 })
+  thresholds = arrayQuartiles(valuesArr)
+  color.domain(thresholds)
+  histogram.colorScale(color)
+  chartHistogram.datum(valuesArr).call(histogram)
+})
 
 
-// function updateScorebox(d){
-//   // update scorebox num + bg
-//   var escore = +d.properties[activeMetric];
-//   escore = roundToTenth(escore);
-//   scorebox.innerHTML = escore;
-//   scorebox.style.backgroundColor = color(escore) || "#fff";
-//   if (escore >= 50 && escore <= 100) {
-//       scorebox.style.color = "#000";
-//   } else if (escore >= 0 && escore < 50) {
-//       scorebox.style.color = "#fff";
-//   } else { // escore == null or N/A
-//       scorebox.style.color = "#000";
-//   }
-//
-//   var buildingInfo = "<h4>"+d.properties.building_name+"<\/h4>";
-//       buildingInfo += "<p>Property Type: " + d.properties.property_type_self_selected +"<\/p>";
-//       buildingInfo += "<table id='buildingDetails'><colgroup><col\/><col\/></colgroup>";
-//       buildingInfo += "<tr><td>" + d.properties.latest_energy_star_score +"<\/td><td>"+  d.properties.latest_energy_star_score_year +" Energy Star Score<\/td><\/tr>";
-//       buildingInfo += "<tr><td>" + d.properties.latest_total_ghg_emissions_intensity_kgco2e_ft2 +"<\/td><td>"+  d.properties.latest_total_ghg_emissions_intensity_kgco2e_ft2_year +" GHG Emissions <small>(kgCO<sub>2<\/sub>e&#47;ft<sup>2<\/sup>)<\/small><\/td><\/tr>";
-//       buildingInfo += "<tr><td>" + d.properties.latest_weather_normalized_source_eui_kbtu_ft2 +"<\/td><td>"+  d.properties.latest_weather_normalized_source_eui_kbtu_ft2_year +" Weather Normalized Source EUI <small>(kBTU&#47;ft<sup>2<\/sup>)<\/small><\/td><\/tr>";
-//       buildingInfo += "<tr><td>" + d.properties.latest_weather_normalized_site_eui_kbtu_ft2 +"<\/td><td>"+  d.properties.latest_weather_normalized_site_eui_kbtu_ft2_year +" Weather Normalized Site EUI <small>(kBTU&#47;ft<sup>2<\/sup>)<\/small><\/td><\/tr>";
-//       buildingInfo += "<\/table>";
-//   $( "#building-details" ).html(buildingInfo);
-// }
-
-function tabledata () {
-
-}
-
+// parseData() should be shared between map.js & dashboard.js
 function parseData (apiData) {
   var metrics = ['benchmark','energy_star_score','site_eui_kbtu_ft2','source_eui_kbtu_ft2','percent_better_than_national_median_site_eui','percent_better_than_national_median_source_eui','total_ghg_emissions_metric_tons_co2e','total_ghg_emissions_intensity_kgco2e_ft2','weather_normalized_site_eui_kbtu_ft2','weather_normalized_source_eui_kbtu_ft2']
   var re1 = /(.+)\//
@@ -109,6 +108,7 @@ function parseData (apiData) {
   var spliceArray = []
   apiData.forEach(function (parcel, index) {
     if (parcel.parcel_s === undefined) {spliceArray.unshift(index); return parcel}
+    if (! parcel.hasOwnProperty('property_type_self_selected') ) { parcel.property_type_self_selected = 'N/A'}
     parcel.parcel1 = re1.exec(parcel.parcel_s)[1]
     parcel.parcel2 = re2.exec(parcel.parcel_s)[1]
     parcel.blklot = '' + parcel.parcel1 + parcel.parcel2
@@ -158,6 +158,10 @@ function apiDataToArray (prop, categoryFilter) {
     return {id: parcel.ID, value: onlyNumbers}
   })
   return arr
+}
+
+function objArrayToSortedNumArray (objArray) {
+  return objArray.map(function (el){ return el.value }).sort(function (a,b) { return a - b })
 }
 
 function histogramHighlight (selection, data) {
