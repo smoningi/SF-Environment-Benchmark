@@ -52,8 +52,8 @@ var svg = d3.select(map.getPanes().overlayPane).append("svg"),
 var scorebox = document.getElementById('scorebox');
 
 d3_queue.queue()
-    .defer(d3.json, "api_return.json")  /* https://data.sfgov.org/resource/j2j3-acqj.json?$limit=2000 */
-    .defer(d3.json, "justGeo.geojson")
+    .defer(d3.json, "../data/api_return.json")  /* https://data.sfgov.org/resource/j2j3-acqj.json?$limit=2000 */
+    .defer(d3.json, "../data/justGeo.geojson")
     .await(mapDraw)
 
 function mapDraw(err, apiData, collection){
