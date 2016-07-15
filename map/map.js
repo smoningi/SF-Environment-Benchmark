@@ -23,14 +23,6 @@ var colorSwatches = {
       site_eui_kbtu_ft2: ['#ffffe0','#ffa474','#db4551','#8b0000']
     };
 
-// metricRanges should be calculated on the fly from activeMetric domains
-var metricRanges = {
-      energy_star_score: ['0-25','25-50','50-75','75-100'],
-      total_ghg_emissions_intensity_kgco2e_ft2: ['0-50','50-100','100-150','150-200'],
-      source_eui_kbtu_ft2: ['0-1000','1000-2000', '2000-3000', '3000-4000'],
-      site_eui_kbtu_ft2: ['0-10k','10k-20k','20k-30k','30k-40k']
-    };
-
 var color = d3.scale.threshold()
     .range(colorSwatches[colorMetric]);
 
@@ -151,7 +143,6 @@ function mapDraw(err, apiData, collection){
     dispatcher.on('changeMetric', function(newMetric){
       activeMetric = metricMap[newMetric]
       colorMetric = metricMap[newMetric].replace(/^latest_/, '')
-      updateLegend();
 
       chartData = apiDataToArray(activeMetric)
       valuesArr = objArrayToSortedNumArray(chartData).filter(function (d) { return d > 0 })
@@ -171,7 +162,7 @@ function mapDraw(err, apiData, collection){
       d3.select("#compare-chart")
         .datum(valuesArr)
       .call(histogram)
-
+      updateLegend();
     })
 
     // Toggle filter options: Energy Score
@@ -263,11 +254,13 @@ function mapDraw(err, apiData, collection){
     }
 
     function addLegend() {
+      var d = color.domain()
+      var domains = ['0-' + d[0], d[0] + '-' + d[1], d[1] + '-' + d[2], d[2] + '-' + d3.max(valuesArr)]
       legend.onAdd = function (map) {
           var div = L.DomUtil.create('div', 'legend');
           div.innerHTML += "<div id='legend-label'><b>"+newMetric+"</b></div>";
           for (var i=3;i>=0;i--) {
-            div.innerHTML += "<i style=\"background:"+colorSwatches[colorMetric][i]+";\"></i> <b>"+metricRanges[colorMetric][i]+"</b> <br/>";
+            div.innerHTML += "<i style=\"background:"+colorSwatches[colorMetric][i]+";\"></i> <b>"+domains[i]+"</b> <br/>";
           }
           return div;
       };
