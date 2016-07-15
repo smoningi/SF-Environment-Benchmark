@@ -16,6 +16,7 @@ SF Environment Benchmark part of the Data Science Working Group at Code for San 
 [Fork this repo](https://help.github.com/articles/fork-a-repo/), then clone your repo locally
 ```
 $ git clone <your-repo>
+$ cd <this-repo's-name>
 $ git remote add upstream <this-repo>
 ```
 Launch a local server.  If you're on a Mac, you already have [SimpleHTTPServer](http://www.pythonforbeginners.com/modules-in-python/how-to-use-simplehttpserver/) installed:  
