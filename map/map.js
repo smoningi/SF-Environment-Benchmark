@@ -3,6 +3,7 @@
  */
 // data source: https://data.sfgov.org/Energy-and-Environment/Existing-Commercial-Buildings-Energy-Performance-O/j2j3-acqj
 
+// metricMap should be shared between map.js & dashboard.js
 var metricMap = {
       'Energy Star Score':'latest_energy_star_score',
       'GHG Emissions':'latest_total_ghg_emissions_intensity_kgco2e_ft2',
@@ -14,6 +15,7 @@ var activeMetric = activeMetric || 'latest_energy_star_score',
     colorMetric = colorMetric || 'energy_star_score',
     newMetric = newMetric || 'Energy Star Score';
 
+// colorSwatches should be shared between map.js & dashboard.js
 var colorSwatches = {
       energy_star_score: ['#FD6C16','#FEB921','#46AEE6','#134D9C'],
       total_ghg_emissions_intensity_kgco2e_ft2: ['#f4fde8','#b6e9ba','#76cec7','#3ea3d3'],
@@ -21,15 +23,7 @@ var colorSwatches = {
       site_eui_kbtu_ft2: ['#ffffe0','#ffa474','#db4551','#8b0000']
     };
 
-var metricRanges = {
-      energy_star_score: ['0-25','25-50','50-75','75-100'],
-      total_ghg_emissions_intensity_kgco2e_ft2: ['0-50','50-100','100-150','150-200'],
-      source_eui_kbtu_ft2: ['0-1000','1000-2000', '2000-3000', '3000-4000'],
-      site_eui_kbtu_ft2: ['0-10k','10k-20k','20k-30k','30k-40k']
-    };
-
-var color = d3.scale.quantize()
-    .domain([0, 100])
+var color = d3.scale.threshold()
     .range(colorSwatches[colorMetric]);
 
 //Setting up leaflet map
@@ -52,7 +46,7 @@ var svg = d3.select(map.getPanes().overlayPane).append("svg"),
 var scorebox = document.getElementById('scorebox');
 
 d3_queue.queue()
-    .defer(d3.json, "../data/api_return.json")  /* https://data.sfgov.org/resource/j2j3-acqj.json?$limit=2000 */
+    .defer(d3.json, "../data/j2j3-acqj.json")  /* https://data.sfgov.org/resource/j2j3-acqj.json?$limit=2000 */
     .defer(d3.json, "../data/justGeo.geojson")
     .await(mapDraw)
 
@@ -65,6 +59,11 @@ function mapDraw(err, apiData, collection){
       })
       if (data != undefined) feature.properties = data
     })
+
+    var chartData = apiDataToArray(activeMetric)
+    var valuesArr = objArrayToSortedNumArray(chartData).filter(function (d) { return d > 0 })
+    var thresholds = arrayQuartiles(valuesArr)
+    color.domain(thresholds)
 
     var transform = d3.geo.transform({point: projectPoint}),
         path = d3.geo.path().projection(transform);
@@ -103,24 +102,21 @@ function mapDraw(err, apiData, collection){
     var legend = L.control({position:'bottomleft'});
     addLegend();
 
-    var chartData = apiDataToArray(activeMetric)
-    var values = chartData.map(function(d) {return d.value})
-                          .filter(function(d) {return d > 0})
+
     var histogram = histogramChart()
       .width(280)
       .height(100)
       .range([0,104])
       .bins(50)
-      .color(colorSwatches[colorMetric])
+      .colorScale(color)
     d3.select("#compare-chart")
-      .datum(values)
+      .datum(valuesArr)
     .call(histogram)
 
     d3.select("#compare-chart").call(histogramHighlight,-10)
 
     d3.select('#test-button').on('click', function(){
       filterMapCategory('Hotel')
-
     })
 
 
@@ -129,58 +125,44 @@ function mapDraw(err, apiData, collection){
     dispatcher.on('changeCategory', function(newCategory){
       filterMapCategory(newCategory) //only activates last filter selected
       chartData = apiDataToArray(activeMetric, newCategory)
-      values = chartData.map(function(d) {return d.value})
-                        .filter(function(d) {return d > 0})
+      valuesArr = objArrayToSortedNumArray(chartData).filter(function (d) { return d > 0 })
+      thresholds = arrayQuartiles(valuesArr)
+      color.domain(thresholds)
+           .range(colorSwatches[colorMetric]);
 
       $(".category-dropdown small").html(newCategory.substring(0,18));
 
+      histogram
+        .range([0,d3.max(valuesArr)+4]) //why does +4 work??
+        .bins(50)
+        .colorScale(color)
       d3.select("#compare-chart")
-        .datum(values)
-        .call(histogramChart()
-          .width(280)
-          .height(100)
-          // .range([0,d3.max(values)])
-          .range([0,104])
-          .bins(50)
-          .color(colorSwatches[colorMetric])
-        )
+        .datum(valuesArr)
+      .call(histogram)
     })
     dispatcher.on('changeMetric', function(newMetric){
       activeMetric = metricMap[newMetric]
       colorMetric = metricMap[newMetric].replace(/^latest_/, '')
-      updateLegend();
 
       chartData = apiDataToArray(activeMetric)
-
-      values = chartData.map(function(d) {return d.value})
-                        .filter(function(d) {return d > 0})
-
-      color = d3.scale.quantize()
-          .domain([0,d3.max(values)])
-          .range(colorSwatches[colorMetric]);
-
-      console.log("max(values)="+d3.max(values));
-      // color.domain( [0,d3.max(values)] )
-      //      .range(colorSwatches[colorMetric]);
+      valuesArr = objArrayToSortedNumArray(chartData).filter(function (d) { return d > 0 })
+      thresholds = arrayQuartiles(valuesArr)
+      color.domain(thresholds)
+           .range(colorSwatches[colorMetric]);
 
       feature.style("fill", function(d){
         return color(parseInt(d.properties[activeMetric]));
       })
 
       $(".metric-dropdown small").html(newMetric);
-
-      // chartData = apiDataToArray(activeMetric)
-
-      d3.select("#compare-chart") // histogram
-        .datum(values)
-        .call(histogramChart()
-          .width(280)
-          .height(100)
-          .range(color.domain())
-          .bins(50)
-          .color(colorSwatches[colorMetric])
-        )
-
+      histogram
+        .range([0,d3.max(valuesArr)+4]) //why does +4 work??
+        .bins(50)
+        .colorScale(color)
+      d3.select("#compare-chart")
+        .datum(valuesArr)
+      .call(histogram)
+      updateLegend();
     })
 
     // Toggle filter options: Energy Score
@@ -272,11 +254,13 @@ function mapDraw(err, apiData, collection){
     }
 
     function addLegend() {
+      var d = color.domain()
+      var domains = ['0-' + d[0], d[0] + '-' + d[1], d[1] + '-' + d[2], d[2] + '-' + d3.max(valuesArr)]
       legend.onAdd = function (map) {
           var div = L.DomUtil.create('div', 'legend');
           div.innerHTML += "<div id='legend-label'><b>"+newMetric+"</b></div>";
           for (var i=3;i>=0;i--) {
-            div.innerHTML += "<i style=\"background:"+colorSwatches[colorMetric][i]+";\"></i> <b>"+metricRanges[colorMetric][i]+"</b> <br/>";
+            div.innerHTML += "<i style=\"background:"+colorSwatches[colorMetric][i]+";\"></i> <b>"+domains[i]+"</b> <br/>";
           }
           return div;
       };
@@ -286,7 +270,7 @@ function mapDraw(err, apiData, collection){
 
     function updateScorebox(d){
       // update scorebox num + bg
-      var boxNumber = d.properties[activeMetric];
+      var boxNumber = roundToTenth(d.properties[activeMetric]);
       scorebox.innerHTML = boxNumber;
       scorebox.style.backgroundColor = color(boxNumber) || "#fff";
 
@@ -315,10 +299,10 @@ function mapDraw(err, apiData, collection){
       var buildingInfo = "<h4>"+d.properties.building_name+"<\/h4>";
           buildingInfo += "<p>Property Type: " + d.properties.property_type_self_selected +"<\/p>";
           buildingInfo += "<table id='buildingDetails'><colgroup><col\/><col\/></colgroup>";
-          buildingInfo += "<tr><td>" + d.properties.latest_energy_star_score +"<\/td><td>"+  d.properties.latest_energy_star_score_year +" Energy Star Score<\/td><\/tr>";
-          buildingInfo += "<tr><td>" + d.properties.latest_total_ghg_emissions_intensity_kgco2e_ft2 +"<\/td><td>"+  d.properties.latest_total_ghg_emissions_intensity_kgco2e_ft2_year +" GHG Emissions <small>(kgCO<sub>2<\/sub>e&#47;ft<sup>2<\/sup>)<\/small><\/td><\/tr>";
-          buildingInfo += "<tr><td>" + d.properties.latest_weather_normalized_source_eui_kbtu_ft2 +"<\/td><td>"+  d.properties.latest_weather_normalized_source_eui_kbtu_ft2_year +" Weather Normalized Source EUI <small>(kBTU&#47;ft<sup>2<\/sup>)<\/small><\/td><\/tr>";
-          buildingInfo += "<tr><td>" + d.properties.latest_weather_normalized_site_eui_kbtu_ft2 +"<\/td><td>"+  d.properties.latest_weather_normalized_site_eui_kbtu_ft2_year +" Weather Normalized Site EUI <small>(kBTU&#47;ft<sup>2<\/sup>)<\/small><\/td><\/tr>";
+          buildingInfo += "<tr><td>" + roundToTenth(d.properties.latest_energy_star_score) +"<\/td><td>"+  d.properties.latest_energy_star_score_year +" Energy Star Score<\/td><\/tr>";
+          buildingInfo += "<tr><td>" + roundToTenth(d.properties.latest_total_ghg_emissions_intensity_kgco2e_ft2) +"<\/td><td>"+  d.properties.latest_total_ghg_emissions_intensity_kgco2e_ft2_year +" GHG Emissions <small>(kgCO<sub>2<\/sub>e&#47;ft<sup>2<\/sup>)<\/small><\/td><\/tr>";
+          buildingInfo += "<tr><td>" + roundToTenth(d.properties.latest_weather_normalized_source_eui_kbtu_ft2) +"<\/td><td>"+  d.properties.latest_weather_normalized_source_eui_kbtu_ft2_year +" Weather Normalized Source EUI <small>(kBTU&#47;ft<sup>2<\/sup>)<\/small><\/td><\/tr>";
+          buildingInfo += "<tr><td>" + roundToTenth(d.properties.latest_weather_normalized_site_eui_kbtu_ft2) +"<\/td><td>"+  d.properties.latest_weather_normalized_site_eui_kbtu_ft2_year +" Weather Normalized Site EUI <small>(kBTU&#47;ft<sup>2<\/sup>)<\/small><\/td><\/tr>";
           buildingInfo += "<\/table>";
       $( "#building-details" ).html(buildingInfo);
     }
@@ -363,7 +347,7 @@ function latest(test, entry){
   return entry
 }
 
-function apiDataToArray(prop,categoryFilter) {
+function apiDataToArray (prop,categoryFilter) {
   var arr = returnedApiData
   if(categoryFilter && categoryFilter !== 'All'){
     arr = arr.filter(function(parcel){
@@ -376,6 +360,22 @@ function apiDataToArray(prop,categoryFilter) {
     return {id: parcel.ID, value: onlyNumbers}
   })
   return arr
+}
+
+function objArrayToSortedNumArray (objArray) {
+  return objArray.map(function (el){ return el.value }).sort(function (a,b) { return a - b })
+}
+
+function arrayQuartiles (sortedArr) {
+  return [
+    d3.quantile(sortedArr,0.25),
+    d3.quantile(sortedArr,0.5),
+    d3.quantile(sortedArr,0.75)
+  ]
+}
+
+function roundToTenth(num){
+  return Math.round(10*num)/10
 }
 
 var categoryFilters = [
