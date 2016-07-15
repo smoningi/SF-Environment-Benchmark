@@ -270,7 +270,7 @@ function mapDraw(err, apiData, collection){
 
     function updateScorebox(d){
       // update scorebox num + bg
-      var boxNumber = d.properties[activeMetric];
+      var boxNumber = roundToTenth(d.properties[activeMetric]);
       scorebox.innerHTML = boxNumber;
       scorebox.style.backgroundColor = color(boxNumber) || "#fff";
 
@@ -299,10 +299,10 @@ function mapDraw(err, apiData, collection){
       var buildingInfo = "<h4>"+d.properties.building_name+"<\/h4>";
           buildingInfo += "<p>Property Type: " + d.properties.property_type_self_selected +"<\/p>";
           buildingInfo += "<table id='buildingDetails'><colgroup><col\/><col\/></colgroup>";
-          buildingInfo += "<tr><td>" + d.properties.latest_energy_star_score +"<\/td><td>"+  d.properties.latest_energy_star_score_year +" Energy Star Score<\/td><\/tr>";
-          buildingInfo += "<tr><td>" + d.properties.latest_total_ghg_emissions_intensity_kgco2e_ft2 +"<\/td><td>"+  d.properties.latest_total_ghg_emissions_intensity_kgco2e_ft2_year +" GHG Emissions <small>(kgCO<sub>2<\/sub>e&#47;ft<sup>2<\/sup>)<\/small><\/td><\/tr>";
-          buildingInfo += "<tr><td>" + d.properties.latest_weather_normalized_source_eui_kbtu_ft2 +"<\/td><td>"+  d.properties.latest_weather_normalized_source_eui_kbtu_ft2_year +" Weather Normalized Source EUI <small>(kBTU&#47;ft<sup>2<\/sup>)<\/small><\/td><\/tr>";
-          buildingInfo += "<tr><td>" + d.properties.latest_weather_normalized_site_eui_kbtu_ft2 +"<\/td><td>"+  d.properties.latest_weather_normalized_site_eui_kbtu_ft2_year +" Weather Normalized Site EUI <small>(kBTU&#47;ft<sup>2<\/sup>)<\/small><\/td><\/tr>";
+          buildingInfo += "<tr><td>" + roundToTenth(d.properties.latest_energy_star_score) +"<\/td><td>"+  d.properties.latest_energy_star_score_year +" Energy Star Score<\/td><\/tr>";
+          buildingInfo += "<tr><td>" + roundToTenth(d.properties.latest_total_ghg_emissions_intensity_kgco2e_ft2) +"<\/td><td>"+  d.properties.latest_total_ghg_emissions_intensity_kgco2e_ft2_year +" GHG Emissions <small>(kgCO<sub>2<\/sub>e&#47;ft<sup>2<\/sup>)<\/small><\/td><\/tr>";
+          buildingInfo += "<tr><td>" + roundToTenth(d.properties.latest_weather_normalized_source_eui_kbtu_ft2) +"<\/td><td>"+  d.properties.latest_weather_normalized_source_eui_kbtu_ft2_year +" Weather Normalized Source EUI <small>(kBTU&#47;ft<sup>2<\/sup>)<\/small><\/td><\/tr>";
+          buildingInfo += "<tr><td>" + roundToTenth(d.properties.latest_weather_normalized_site_eui_kbtu_ft2) +"<\/td><td>"+  d.properties.latest_weather_normalized_site_eui_kbtu_ft2_year +" Weather Normalized Site EUI <small>(kBTU&#47;ft<sup>2<\/sup>)<\/small><\/td><\/tr>";
           buildingInfo += "<\/table>";
       $( "#building-details" ).html(buildingInfo);
     }
@@ -372,6 +372,10 @@ function arrayQuartiles (sortedArr) {
     d3.quantile(sortedArr,0.5),
     d3.quantile(sortedArr,0.75)
   ]
+}
+
+function roundToTenth(num){
+  return Math.round(10*num)/10
 }
 
 var categoryFilters = [
