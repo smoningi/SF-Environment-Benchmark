@@ -1,14 +1,15 @@
 // TODO: tooltip for histogram bars to show count
 // TODO: add labels to x-axis
 // TODO: add y-axis tick marks
+// BUG: the y-axis does not re-scale after switching between metrics and returning to energy star score
 
 function histogramChart() {
   var margin = {top: 0, right: 0, bottom: 20, left: 10},
       width = 960,
       height = 500
 
-  var color = d3.scale.quantize()
-      .range(["#f7f7f7","#252525"]);
+  var color = d3.scale.threshold()
+      // .range(["#f7f7f7","#252525"]);
 
   var histogram = d3.layout.histogram(),
       x = d3.scale.linear(),
@@ -29,7 +30,7 @@ function histogramChart() {
       y   .domain([0, d3.max(data, function(d) { return d.y; })])
           .range([height - margin.top - margin.bottom, 0]);
 
-      color.domain(x.domain())
+      // color.domain(x.domain())
 
       // Select the svg element, if it exists.
       var svg = d3.select(this).selectAll("svg").data([data]);
@@ -83,9 +84,21 @@ function histogramChart() {
     return chart;
   };
 
-  chart.color = function(_) {
+  chart.colorRange = function(_) {
     if (!arguments.length) return color.range();
     color.range(_);
+    return chart;
+  };
+
+  chart.colorDomain = function(_) {
+    if (!arguments.length) return color.domain();
+    color.domain(_);
+    return chart;
+  };
+
+  chart.colorScale = function(_) {
+    if (!arguments.length) return {domain: color.domain(), range: color.range()};
+    color = _;
     return chart;
   };
 
