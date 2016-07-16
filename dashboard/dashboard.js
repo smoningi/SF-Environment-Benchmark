@@ -1,7 +1,7 @@
-// We should totally be using dc for this project. http://dc-js.github.io/dc.js/
+/* We should totally be using dc for this project. http://dc-js.github.io/dc.js/ */
 
-// glogal reference objects
-// colorSwatches should be shared between map.js & dashboard.js
+/* glogal reference objects */
+/* colorSwatches should be shared between map.js & dashboard.js */
 var colorSwatches = {
       energy_star_score: ['#FD6C16','#FEB921','#46AEE6','#134D9C'],
       total_ghg_emissions_intensity_kgco2e_ft2: ['#f4fde8','#b6e9ba','#76cec7','#3ea3d3'],
@@ -9,48 +9,46 @@ var colorSwatches = {
       site_eui_kbtu_ft2: ['#ffffe0','#ffa474','#db4551','#8b0000']
     };
 
-// categoryFilters should be shared between map.js & dashboard.js
+/* categoryFilters should be shared between map.js & dashboard.js */
 var categoryFilters = [
   'All',
-  'Automobile Dealership',
-  'College/University',
-  'Distribution Center',
-  'Financial Office',
-  'Fitness Center/Health Club/Gym',
-  'Hospital (General Medical & Surgical)',
-  'Hotel',
-  'K-12 School',
-  'Manufacturing/Industrial Plant',
-  'Mixed Use Property',
-  'Medical Office',
-  'Non-Refrigerated Warehouse',
   'Office',
-  'Other',
+  'Hotel',
   'Retail Store',
-  'Restaurant',
-  'Supermarket/Grocery Store',
+  'Other',
+  'Mixed Use Property',
+  'Non-Refrigerated Warehouse',
   'Worship Facility',
+  'College/University',
+  'Supermarket/Grocery Store',
+  'Medical Office',
+  'Manufacturing/Industrial Plant',
+  'Distribution Center',
+  'Automobile Dealership',
+  'Restaurant',
   'N/A'
 ];
 
 var width = parseInt(d3.select('#chart-histogram').style('width'))
 
-// Storing parcel data globally
+/* Storing parcel data globally */
 var returnedApiData = []
 
-// page state data
+/* page state data */
 var activeCategory = 'All'
 
-// populate dropdown menu
+/* populate dropdown menu */
 var categorySelector = document.getElementById('category-selector')
 categorySelector.innerHTML = ""
 categoryFilters.forEach(addOption, categorySelector)
 
-// pointers to dom elements
+/* pointers to dom elements */
 var chartHistogram = d3.select('#chart-histogram')
+var chartStackedBar = d3.select('#chart-stackedbar')
+var chartBubble = d3.select('#chart-bubble')
 var scorebox = document.getElementById('scorebox')
 
-// global chart objects
+/* global chart objects */
 var color = d3.scale.threshold()
   .range(colorSwatches.energy_star_score)
 var histogram = histogramChart()
@@ -58,21 +56,42 @@ var histogram = histogramChart()
   .height(200)
   .range([0,104])
   .bins(50)
+var stackedBar = hStackedBarChart()
+  .width(width)
+  .height(200)
+// var bubbles = bubbleChart()
+//   .width(width)
+//   .height(200)
 
-// get the data and render the page
+/* get the data and render the page */
 d3_queue.queue()
     .defer(d3.json, '../data/j2j3-acqj.json')  /* https://data.sfgov.org/resource/j2j3-acqj.json?$limit=2000 */
     .await(renderCharts)
 function renderCharts (error, apiData) {
   returnedApiData = parseData(apiData)
   var valuesArr = objArrayToSortedNumArray(apiDataToArray('latest_energy_star_score')).filter(function (d) { return d > 0 })
-  // color assigned by quartile
+
+  /* color assigned by quartile */
   var thresholds = arrayQuartiles(valuesArr)
   color.domain(thresholds)
+
+  /* draw histogram for energy star */
   histogram.colorScale(color).bins(100)
   chartHistogram.datum(valuesArr).call(histogram)
   chartHistogram.call(histogramHighlight,-10)
 
+  /* draw stacked bar for energy use intensity */
+  stackedBar.colorScale(color)
+  chartStackedBar.datum(valuesArr).call(stackedBar)
+  // chartStackedBar.call(stackedBarHighlight,-10)
+
+  /* draw bubble chart for estimated cost ? <<do we even have the data for this? */
+  // bubbles.colorScale(color)
+  // chartBubble.datum(valuesArr).call(stackedBar)
+
+  /* draw map */
+
+  /* draw table for data */
   // $('#infotable').DataTable( {
   //   data: returnedApiData,
   //   columns: [
@@ -88,19 +107,19 @@ function renderCharts (error, apiData) {
 
   $("select[name='category-selector']").change(function(){dispatcher.changeCategory(this.value)})
 }
+
 var dispatcher = d3.dispatch('changeCategory')
 dispatcher.on('changeCategory', function(newCategory){
-  console.log('foo');
-  // filterMapCategory(newCategory) //only activates last filter selected
-  valuesArr = objArrayToSortedNumArray(apiDataToArray('latest_energy_star_score', newCategory)).filter(function (d) { return d > 0 })
-  thresholds = arrayQuartiles(valuesArr)
+  // filterMapCategory(newCategory) /* only activates last filter selected */
+  var valuesArr = objArrayToSortedNumArray(apiDataToArray('latest_energy_star_score', newCategory)).filter(function (d) { return d > 0 })
+  var thresholds = arrayQuartiles(valuesArr)
   color.domain(thresholds)
   histogram.colorScale(color)
   chartHistogram.datum(valuesArr).call(histogram)
 })
 
 
-// parseData() should be shared between map.js & dashboard.js
+/* parseData() should be shared between map.js & dashboard.js */
 function parseData (apiData) {
   var metrics = ['benchmark','energy_star_score','site_eui_kbtu_ft2','source_eui_kbtu_ft2','percent_better_than_national_median_site_eui','percent_better_than_national_median_source_eui','total_ghg_emissions_metric_tons_co2e','total_ghg_emissions_intensity_kgco2e_ft2','weather_normalized_site_eui_kbtu_ft2','weather_normalized_source_eui_kbtu_ft2']
   var re1 = /(.+)\//
@@ -118,7 +137,7 @@ function parseData (apiData) {
     })
     return parcel
   })
-  // remove elements that have no parcel identifier
+  /* remove elements that have no parcel identifier */
   spliceArray.forEach(function (el) {
     apiData.splice(el,1)
   })

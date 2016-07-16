@@ -65,7 +65,7 @@ function hStackedBarChart() {
   };
 
   // Expose the histogram's value, range and bins method.
-  d3.rebind(chart, stack, "value", "range", "bins");
+  // d3.rebind(chart, stack, "value", "range", "bins");
 
   // Expose the x-axis' tickFormat method.
   d3.rebind(chart, xAxis, "tickFormat");
