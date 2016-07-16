@@ -9,6 +9,13 @@ var colorSwatches = {
       site_eui_kbtu_ft2: ['#ffffe0','#ffa474','#db4551','#8b0000']
     };
 
+var color = {
+  energy_star_score: d3.scale.threshold().range(colorSwatches.energy_star_score),
+  total_ghg_emissions_intensity_kgco2e_ft2: d3.scale.threshold().range(colorSwatches.total_ghg_emissions_intensity_kgco2e_ft2),
+  source_eui_kbtu_ft2: d3.scale.threshold().range(colorSwatches.source_eui_kbtu_ft2),
+  site_eui_kbtu_ft2: d3.scale.threshold().range(colorSwatches.site_eui_kbtu_ft2)
+}
+
 /* categoryFilters should be shared between map.js & dashboard.js */
 var categoryFilters = [
   'All',
@@ -49,8 +56,6 @@ var chartBubble = d3.select('#chart-bubble')
 var scorebox = document.getElementById('scorebox')
 
 /* global chart objects */
-var color = d3.scale.threshold()
-  .range(colorSwatches.energy_star_score)
 var histogram = histogramChart()
   .width(width)
   .height(200)
@@ -58,7 +63,7 @@ var histogram = histogramChart()
   .bins(50)
 var stackedBar = hStackedBarChart()
   .width(width)
-  .height(200)
+  .height(60)
 // var bubbles = bubbleChart()
 //   .width(width)
 //   .height(200)
@@ -69,25 +74,30 @@ d3_queue.queue()
     .await(renderCharts)
 function renderCharts (error, apiData) {
   returnedApiData = parseData(apiData)
-  var valuesArr = objArrayToSortedNumArray(apiDataToArray('latest_energy_star_score')).filter(function (d) { return d > 0 })
+  var estarVals = objArrayToSortedNumArray(apiDataToArray('latest_energy_star_score')).filter(function (d) { return d > 0 })
+  var euiVals = objArrayToSortedNumArray(apiDataToArray('latest_site_eui_kbtu_ft2')).filter(function (d) { return d > 0 && d < 1000 }) /* 1000 here is arbitrary to cut out outlier of SFMOMA & some others*/
+  var ghgVals = objArrayToSortedNumArray(apiDataToArray('latest_total_ghg_emissions_metric_tons_co2e')).filter(function (d) { return d > 0 })
 
   /* color assigned by quartile */
-  var thresholds = arrayQuartiles(valuesArr)
-  color.domain(thresholds)
+  color.energy_star_score.domain(arrayQuartiles(estarVals))
+  color.source_eui_kbtu_ft2.domain(arrayQuartiles(euiVals))
+  // color.total_ghg_emissions_intensity_kgco2e_ft2.domain(arrayQuartiles(ghgVals))
 
   /* draw histogram for energy star */
-  histogram.colorScale(color).bins(100)
-  chartHistogram.datum(valuesArr).call(histogram)
+  histogram.colorScale(color.energy_star_score).bins(100)
+  chartHistogram.datum(estarVals).call(histogram)
   chartHistogram.call(histogramHighlight,-10)
 
   /* draw stacked bar for energy use intensity */
-  stackedBar.colorScale(color)
-  chartStackedBar.datum(valuesArr).call(stackedBar)
+  stackedBar.colorScale(color.source_eui_kbtu_ft2)
+  chartStackedBar.datum(euiVals).call(stackedBar)
   // chartStackedBar.call(stackedBarHighlight,-10)
 
   /* draw bubble chart for estimated cost ? <<do we even have the data for this? */
-  // bubbles.colorScale(color)
-  // chartBubble.datum(valuesArr).call(stackedBar)
+  /* draw bubble chart for greenhouse gases (ghg) instead */
+  // bubbles.colorScale(color.total_ghg_emissions_intensity_kgco2e_ft2)
+  // chartBubble.datum(ghgVals).call(bubbles)
+  // chartBubble.call(chartBubbleHighlight,-10)
 
   /* draw map */
 
@@ -111,11 +121,16 @@ function renderCharts (error, apiData) {
 var dispatcher = d3.dispatch('changeCategory')
 dispatcher.on('changeCategory', function(newCategory){
   // filterMapCategory(newCategory) /* only activates last filter selected */
-  var valuesArr = objArrayToSortedNumArray(apiDataToArray('latest_energy_star_score', newCategory)).filter(function (d) { return d > 0 })
-  var thresholds = arrayQuartiles(valuesArr)
-  color.domain(thresholds)
-  histogram.colorScale(color)
-  chartHistogram.datum(valuesArr).call(histogram)
+  var estarVals = objArrayToSortedNumArray(apiDataToArray('latest_energy_star_score', newCategory)).filter(function (d) { return d > 0 })
+  var euiVals = objArrayToSortedNumArray(apiDataToArray('latest_site_eui_kbtu_ft2', newCategory)).filter(function (d) { return d > 0 && d < 1000 }) /* 1000 here is arbitrary to cut out outlier of SFMOMA & some others*/
+
+  color.energy_star_score.domain(arrayQuartiles(estarVals))
+  color.source_eui_kbtu_ft2.domain(arrayQuartiles(euiVals))
+
+  // histogram.colorScale(color.energy_star_score)
+  chartHistogram.datum(estarVals).call(histogram)
+
+  chartStackedBar.datum(euiVals).call(stackedBar)
 })
 
 
