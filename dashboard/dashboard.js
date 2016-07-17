@@ -12,7 +12,7 @@ var colorSwatches = {
 var color = {
   energy_star_score: d3.scale.threshold().range(colorSwatches.energy_star_score),
   total_ghg_emissions_intensity_kgco2e_ft2: d3.scale.threshold().range(colorSwatches.total_ghg_emissions_intensity_kgco2e_ft2),
-  source_eui_kbtu_ft2: d3.scale.threshold().range(colorSwatches.source_eui_kbtu_ft2),
+  source_eui_kbtu_ft2: d3.scale.threshold().range(colorSwatches.energy_star_score),
   site_eui_kbtu_ft2: d3.scale.threshold().range(colorSwatches.site_eui_kbtu_ft2)
 }
 
@@ -64,9 +64,10 @@ var histogram = histogramChart()
 var stackedBar = hStackedBarChart()
   .width(width)
   .height(60)
-// var bubbles = bubbleChart()
-//   .width(width)
-//   .height(200)
+  .margin({top: 0, right: 0, bottom: 0, left: 50})
+var bubbles = scatterPlot()
+  .width(width)
+  .height(200)
 
 /* get the data and render the page */
 d3_queue.queue()
@@ -74,9 +75,15 @@ d3_queue.queue()
     .await(renderCharts)
 function renderCharts (error, apiData) {
   returnedApiData = parseData(apiData)
-  var estarVals = objArrayToSortedNumArray(apiDataToArray('latest_energy_star_score')).filter(function (d) { return d > 0 })
-  var euiVals = objArrayToSortedNumArray(apiDataToArray('latest_site_eui_kbtu_ft2')).filter(function (d) { return d > 0 && d < 1000 }) /* 1000 here is arbitrary to cut out outlier of SFMOMA & some others*/
-  var ghgVals = objArrayToSortedNumArray(apiDataToArray('latest_total_ghg_emissions_metric_tons_co2e')).filter(function (d) { return d > 0 })
+
+  var estarVals = objArrayToSortedNumArray(apiDataToArray('latest_energy_star_score'))
+  estarVals = estarVals.filter(function (d) { return d > 0 })
+
+  var euiVals = objArrayToSortedNumArray(apiDataToArray('latest_site_eui_kbtu_ft2'))
+  euiVals = euiVals.filter(function (d) { return d > 0 && d < 1000 }) /* 1000 here is arbitrary to cut out outlier of SFMOMA & some others*/
+
+  var scatterPlotVals = apiDataToXYR('latest_site_eui_kbtu_ft2', 'latest_total_ghg_emissions_metric_tons_co2e', 'floor_area')
+  scatterPlotVals = scatterPlotVals.filter(function(d){ return d.x < 1000 }) /* 1000 here is arbitrary to cut out outlier of SFMOMA & some others*/
 
   /* color assigned by quartile */
   color.energy_star_score.domain(arrayQuartiles(estarVals))
@@ -95,8 +102,8 @@ function renderCharts (error, apiData) {
 
   /* draw bubble chart for estimated cost ? <<do we even have the data for this? */
   /* draw bubble chart for greenhouse gases (ghg) instead */
-  // bubbles.colorScale(color.total_ghg_emissions_intensity_kgco2e_ft2)
-  // chartBubble.datum(ghgVals).call(bubbles)
+  bubbles.colorScale(color.source_eui_kbtu_ft2)
+  chartBubble.datum(scatterPlotVals).call(bubbles)
   // chartBubble.call(chartBubbleHighlight,-10)
 
   /* draw map */
@@ -123,14 +130,15 @@ dispatcher.on('changeCategory', function(newCategory){
   // filterMapCategory(newCategory) /* only activates last filter selected */
   var estarVals = objArrayToSortedNumArray(apiDataToArray('latest_energy_star_score', newCategory)).filter(function (d) { return d > 0 })
   var euiVals = objArrayToSortedNumArray(apiDataToArray('latest_site_eui_kbtu_ft2', newCategory)).filter(function (d) { return d > 0 && d < 1000 }) /* 1000 here is arbitrary to cut out outlier of SFMOMA & some others*/
+  var scatterPlotVals = apiDataToXYR('latest_site_eui_kbtu_ft2', 'latest_total_ghg_emissions_metric_tons_co2e', 'floor_area', newCategory)
+  scatterPlotVals = scatterPlotVals.filter(function(d){ return d.x < 1000 }) /* 1000 here is arbitrary to cut out outlier of SFMOMA & some others*/
 
   color.energy_star_score.domain(arrayQuartiles(estarVals))
-  color.source_eui_kbtu_ft2.domain(arrayQuartiles(euiVals))
 
-  // histogram.colorScale(color.energy_star_score)
   chartHistogram.datum(estarVals).call(histogram)
-
   chartStackedBar.datum(euiVals).call(stackedBar)
+  chartBubble.datum(scatterPlotVals).call(bubbles)
+
 })
 
 
@@ -192,6 +200,29 @@ function apiDataToArray (prop, categoryFilter) {
     return {id: parcel.ID, value: onlyNumbers}
   })
   return arr
+}
+
+function apiDataToXYR (xProp, yProp, rProp, categoryFilter) {
+  var arr = returnedApiData
+  if (categoryFilter && categoryFilter !== 'All') {
+    arr = arr.filter(function(parcel){
+      return parcel.property_type_self_selected === categoryFilter
+    })
+  }
+  /* filter out values that don't exist */
+  arr = arr.filter(function (parcel) {
+    var thisparcel = [onlyNumbers(parcel[xProp]), onlyNumbers(parcel[yProp]), onlyNumbers(parcel[rProp])]
+    return thisparcel.every(function (el) {return el > 0})
+  })
+  /* make the simplified xyr data array */
+  arr = arr.map(function (parcel) {
+    return { id: parcel.ID, x: +parcel[xProp], y: +parcel[yProp], r: +parcel[rProp] }
+  })
+  return arr
+}
+
+function onlyNumbers (val) {
+  return (typeof parseInt(val) === 'number' && !isNaN(val)) ? parseInt(val) : -1
 }
 
 function objArrayToSortedNumArray (objArray) {
