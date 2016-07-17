@@ -72,7 +72,9 @@ function hStackedBarChart() {
 
   chart.margin = function(_) {
     if (!arguments.length) return margin;
-    margin = _;
+    for (prop in _) {
+      margin[prop] = _[prop];
+    }
     return chart;
   };
 
