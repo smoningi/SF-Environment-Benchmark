@@ -50,7 +50,7 @@ function hStackedBarChart() {
           .attr("x", function(d,i) { return (i===0) ? 0 : x(data[i-1]) })
           .attr("y", function(d) { return y(1); })
           .attr("height", function(d) { return y.range()[0] - y(1) })
-          .attr('fill', function(d){ return color(d-1) } )
+          .attr('fill', function(d,i){ return color.range()[i] } )
           .order()
 
       /* Update the x-axis. */

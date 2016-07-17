@@ -4,7 +4,7 @@
 // BUG: the y-axis does not re-scale after switching between metrics and returning to energy star score
 
 function scatterPlot() {
-  var margin = {top: 0, right: 0, bottom: 20, left: 50},
+  var margin = {top: 10, right: 10, bottom: 20, left: 50},
       width = 960,
       height = 500
 

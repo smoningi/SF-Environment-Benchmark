@@ -64,10 +64,10 @@ var histogram = histogramChart()
 var stackedBar = hStackedBarChart()
   .width(width)
   .height(60)
-  .margin({top: 0, right: 0, bottom: 0, left: 50})
+  .margin({top: 0, right: 10, bottom: 0, left: 50})
 var bubbles = scatterPlot()
   .width(width)
-  .height(200)
+  .height(300)
 
 /* get the data and render the page */
 d3_queue.queue()
