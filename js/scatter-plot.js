@@ -1,10 +1,8 @@
 // TODO: tooltip for dots
-// TODO: add labels to x-axis
-// TODO: add y-axis tick marks
-// BUG: the y-axis does not re-scale after switching between metrics and returning to energy star score
+// BUG: Axis labels are drawn again on update
 
 function scatterPlot() {
-  var margin = {top: 10, right: 10, bottom: 20, left: 50},
+  var margin = {top: 10, right: 10, bottom: 30, left: 50},
       width = 960,
       height = 500
 
@@ -14,9 +12,13 @@ function scatterPlot() {
   var histogram = d3.layout.histogram(),
       x = d3.scale.linear(),
       y = d3.scale.linear(),
-      r = d3.scale.log(),
-      xAxis = d3.svg.axis().scale(x).orient("bottom").tickSize(5, 0),
-      yAxis = d3.svg.axis().scale(y).orient("left").tickSize(5, 0)
+      r = d3.scale.linear(),
+      xAxis = d3.svg.axis().scale(x).orient("bottom"),
+      yAxis = d3.svg.axis().scale(y).orient("left")
+
+  var xAxisLabel = ''
+  var yAxisLabel = ''
+
 
   function chart(selection) {
     selection.each(function(data) {
@@ -38,9 +40,9 @@ function scatterPlot() {
 
       // Otherwise, create the skeletal chart.
       var gEnter = svg.enter().append("svg").append("g");
-      gEnter.append("g").attr("class", "dots");
       gEnter.append("g").attr("class", "x axis");
       gEnter.append("g").attr("class", "y axis");
+      gEnter.append("g").attr("class", "dots");
 
       // Update the outer dimensions.
       svg .attr("width", width)
@@ -66,16 +68,31 @@ function scatterPlot() {
       g.select(".x.axis")
           .attr("transform", "translate(0," + y.range()[0] + ")")
           .call(xAxis);
+      svg.selectAll('.xlabel').remove()
+      svg.append('text')
+          .attr("transform", "translate(" + (width - margin.right) + "," + (height - 3) + ")")
+          .attr('class', 'axis label xlabel')
+          .style("text-anchor", "end")
+          .text(xAxisLabel)
+
       // Update the y-axis.
       g.select(".y.axis")
           .attr("transform", "translate(" + x.range()[0] + ",0)")
           .call(yAxis);
+      svg.selectAll('.ylabel').remove()
+      svg.append('text')
+          .attr("transform", "translate(" + (margin.left + 10) + "," + (margin.top) + ")rotate(-90)")
+          .attr('class', 'axis label ylabel')
+          .style("text-anchor", "end")
+          .text(yAxisLabel)
     });
   }
 
   chart.margin = function(_) {
     if (!arguments.length) return margin;
-    margin = _;
+    for (prop in _) {
+      margin[prop] = _[prop];
+    }
     return chart;
   };
 
@@ -115,6 +132,18 @@ function scatterPlot() {
   };
   chart.yScale = function(_) {
     if (!arguments.length) return y;
+    return chart;
+  };
+
+  chart.xAxisLabel = function(_) {
+    if (!arguments.length) return xAxisLabel;
+    xAxisLabel = _;
+    return chart;
+  };
+
+  chart.yAxisLabel = function(_) {
+    if (!arguments.length) return yAxisLabel;
+    yAxisLabel = _;
     return chart;
   };
 

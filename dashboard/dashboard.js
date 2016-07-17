@@ -61,13 +61,15 @@ var histogram = histogramChart()
   .height(200)
   .range([0,104])
   .bins(50)
+  .tickFormat(d3.format(',d'))
 var stackedBar = hStackedBarChart()
   .width(width)
   .height(60)
-  .margin({top: 0, right: 10, bottom: 0, left: 50})
+  .margin({top: 0, right: 10, bottom: 20, left: 50})
 var bubbles = scatterPlot()
   .width(width)
   .height(300)
+  .margin({left: 50})
 
 /* get the data and render the page */
 d3_queue.queue()
@@ -91,7 +93,7 @@ function renderCharts (error, apiData) {
   // color.total_ghg_emissions_intensity_kgco2e_ft2.domain(arrayQuartiles(ghgVals))
 
   /* draw histogram for energy star */
-  histogram.colorScale(color.energy_star_score).bins(100)
+  histogram.colorScale(color.energy_star_score).bins(100).xAxisLabel('Energy Star Score').yAxisLabel('Buildings')
   chartHistogram.datum(estarVals).call(histogram)
   chartHistogram.call(histogramHighlight,-10)
 
@@ -102,7 +104,7 @@ function renderCharts (error, apiData) {
 
   /* draw bubble chart for estimated cost ? <<do we even have the data for this? */
   /* draw bubble chart for greenhouse gases (ghg) instead */
-  bubbles.colorScale(color.source_eui_kbtu_ft2)
+  bubbles.colorScale(color.source_eui_kbtu_ft2).xAxisLabel('Site EUI').yAxisLabel('GHG Emissions')
   chartBubble.datum(scatterPlotVals).call(bubbles)
   // chartBubble.call(chartBubbleHighlight,-10)
 

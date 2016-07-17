@@ -109,11 +109,13 @@ function mapDraw(err, apiData, collection){
       .range([0,104])
       .bins(50)
       .colorScale(color)
+      .xAxisLabel('Energy Star Score')
+      .yAxisLabel('Buildings')
     d3.select("#compare-chart")
       .datum(valuesArr)
     .call(histogram)
 
-    d3.select("#compare-chart").call(histogramHighlight,-10)
+    d3.select("#compare-chart").call(histogramHighlight,-100)
 
     d3.select('#test-button').on('click', function(){
       filterMapCategory('Hotel')
@@ -159,6 +161,7 @@ function mapDraw(err, apiData, collection){
         .range([0,d3.max(valuesArr)+4]) //why does +4 work??
         .bins(50)
         .colorScale(color)
+        .xAxisLabel(newMetric)
       d3.select("#compare-chart")
         .datum(valuesArr)
       .call(histogram)
@@ -208,7 +211,7 @@ function mapDraw(err, apiData, collection){
     }
 
     function histogramHighlight(selection, data){
-      if( isNaN(data) ) data = -10
+      if( isNaN(data) ) data = -100
       var x = histogram.xScale(),
           y = histogram.yScale(),
           margin = histogram.margin(),

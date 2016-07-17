@@ -1,10 +1,8 @@
 // TODO: tooltip for histogram bars to show count
-// TODO: add labels to x-axis
-// TODO: add y-axis tick marks
-// BUG: the y-axis does not re-scale after switching between metrics and returning to energy star score
+// BUG: Axis labels are drawn again on update
 
 function histogramChart() {
-  var margin = {top: 10, right: 10, bottom: 20, left: 10},
+  var margin = {top: 5, right: 5, bottom: 30, left: 25},
       width = 960,
       height = 500
 
@@ -14,7 +12,11 @@ function histogramChart() {
   var histogram = d3.layout.histogram(),
       x = d3.scale.linear(),
       y = d3.scale.linear(),
-      xAxis = d3.svg.axis().scale(x).orient("bottom").tickSize(5, 0);
+      xAxis = d3.svg.axis().scale(x).orient("bottom"),
+      yAxis = d3.svg.axis().scale(y).orient("left")
+
+  var xAxisLabel = ''
+  var yAxisLabel = ''
 
   function chart(selection) {
     selection.each(function(data) {
@@ -37,8 +39,9 @@ function histogramChart() {
 
       // Otherwise, create the skeletal chart.
       var gEnter = svg.enter().append("svg").append("g");
-      gEnter.append("g").attr("class", "bars");
       gEnter.append("g").attr("class", "x axis");
+      gEnter.append("g").attr("class", "y axis");
+      gEnter.append("g").attr("class", "bars");
 
       // Update the outer dimensions.
       svg .attr("width", width)
@@ -62,13 +65,32 @@ function histogramChart() {
       // Update the x-axis.
       g.select(".x.axis")
           .attr("transform", "translate(0," + y.range()[0] + ")")
-          .call(xAxis);
+          .call(xAxis)
+      svg.selectAll('.xlabel').remove()
+      svg.append('text')
+          .attr("transform", "translate(" + (width - margin.right) + "," + (height - 3) + ")")
+          .attr('class', 'axis label xlabel')
+          .style("text-anchor", "end")
+          .text(xAxisLabel)
+
+      // Update the y-axis.
+      g.selectAll(".y.axis")
+          .attr("transform", "translate(" + x.range()[0] + ",0)")
+          .call(yAxis)
+      svg.selectAll('.ylabel').remove()
+      svg.append('text')
+          .attr("transform", "translate(" + (margin.left + 10) + "," + (margin.top) + ")rotate(-90)")
+          .attr('class', 'axis label ylabel')
+          .style("text-anchor", "end")
+          .text(yAxisLabel)
     });
   }
 
   chart.margin = function(_) {
     if (!arguments.length) return margin;
-    margin = _;
+    for (prop in _) {
+      margin[prop] = _[prop];
+    }
     return chart;
   };
 
@@ -102,6 +124,18 @@ function histogramChart() {
     return chart;
   };
 
+  chart.xAxisLabel = function(_) {
+    if (!arguments.length) return xAxisLabel;
+    xAxisLabel = _;
+    return chart;
+  };
+
+  chart.yAxisLabel = function(_) {
+    if (!arguments.length) return yAxisLabel;
+    yAxisLabel = _;
+    return chart;
+  };
+
   chart.xScale = function(_) {
     if (!arguments.length) return x;
     return chart;
@@ -114,8 +148,9 @@ function histogramChart() {
   // Expose the histogram's value, range and bins method.
   d3.rebind(chart, histogram, "value", "range", "bins");
 
-  // Expose the x-axis' tickFormat method.
+  // Expose the axis' tickFormat method.
   d3.rebind(chart, xAxis, "tickFormat");
+  d3.rebind(chart, yAxis, "tickFormat");
 
   return chart;
 }
