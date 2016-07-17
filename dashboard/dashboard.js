@@ -121,6 +121,9 @@ function renderCharts (error, apiData) {
   //   ]
   // });
 
+  /* render info table */
+  digestTable(digestData('All'))
+
 
   $("select[name='category-selector']").change(function(){dispatcher.changeCategory(this.value)})
 }
@@ -138,7 +141,7 @@ dispatcher.on('changeCategory', function(newCategory){
   chartHistogram.datum(estarVals).call(histogram)
   chartStackedBar.datum(euiVals).call(stackedBar)
   chartBubble.datum(scatterPlotVals).call(bubbles)
-
+  digestTable(digestData(newCategory))
 })
 
 
@@ -221,6 +224,40 @@ function apiDataToXYR (xProp, yProp, rProp, categoryFilter) {
   return arr
 }
 
+function digestData (categoryFilter) {
+  var arr = returnedApiData
+  if (categoryFilter && categoryFilter !== 'All') {
+    arr = arr.filter(function(parcel){
+      return parcel.property_type_self_selected === categoryFilter
+    })
+  }
+  var result = arr.reduce(function (prev, curr) {
+    // # of Properties
+    // SF of floor area
+    // Energy Like for Like 2013-2014 (418 properties)
+    // Total GHG Emissions (MT CO2e)
+    // Compliance Rate
+    return {
+      count: prev.count + 1,
+      floor_area: prev.floor_area + +curr.floor_area,
+      total_ghg: (isNaN(+curr.latest_total_ghg_emissions_metric_tons_co2e)) ? prev.total_ghg : prev.total_ghg + +curr.latest_total_ghg_emissions_metric_tons_co2e,
+      compliance: (curr.latest_benchmark === 'Complied') ? prev.compliance + 1 : prev.compliance
+    }
+  }, {count:0,floor_area:0,total_ghg:0,compliance:0})
+  result.compliance = roundToTenth(100*(result.compliance/result.count))
+  result.total_ghg = roundToTenth(result.total_ghg)
+  result.type = categoryFilter
+  return result
+}
+
+function digestTable (digest) {
+  d3.select('#table-type').html(digest.type)
+  d3.select('#table-count').html(digest.count)
+  d3.select('#table-floor_area').html(digest.floor_area + ' SqFt')
+  d3.select('#table-total_ghg').html(digest.total_ghg + ' MT CO<sub>2</sub>')
+  d3.select('#table-compliance').html(digest.compliance + '%')
+}
+
 function onlyNumbers (val) {
   return (typeof parseInt(val) === 'number' && !isNaN(val)) ? parseInt(val) : -1
 }
@@ -274,4 +311,8 @@ function addOption(el,i, arr){
   option.value = el
   option.text = el.replace(/_/,' ')
   this.appendChild(option)
+}
+
+function roundToTenth (num){
+  return Math.round(10*num)/10
 }

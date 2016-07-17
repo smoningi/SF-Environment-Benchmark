@@ -381,7 +381,7 @@ function arrayQuartiles (sortedArr) {
   ]
 }
 
-function roundToTenth(num){
+function roundToTenth (num){
   return Math.round(10*num)/10
 }
 
