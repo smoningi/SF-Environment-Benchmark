@@ -32,7 +32,7 @@ function hStackedBarChart() {
       /* Otherwise, create the skeletal chart. */
       var gEnter = svg.enter().append("svg").append("g");
       gEnter.append("g").attr("class", "bars");
-      // gEnter.append("g").attr("class", "x axis");
+      gEnter.append("g").attr("class", "labels");
 
       /* Update the outer dimensions. */
       svg .attr("width", width)
@@ -46,23 +46,28 @@ function hStackedBarChart() {
       var bar = svg.select(".bars").selectAll(".bar").data(data);
       bar.enter().append("rect").attr('class', 'bar');
       bar.exit().remove();
-      bar .attr("width", function(d,i){ return (i===0) ? x(d) : (x(d) - x(data[i-1])) } )
-          .attr("x", function(d,i) { return (i===0) ? 0 : x(data[i-1]) })
+      bar .attr("width", function(d,i){ return (i===0) ? 0 : x(d) } )
+          .attr("x", function(d,i) { return (i===0) ? x(d) : x(data[i-1]) })
           .attr("y", function(d) { return y(1); })
           .attr("height", function(d) { return y.range()[0] - y(1) })
-          .attr('fill', function(d,i){ return color.range()[i] } )
+          .attr('fill', function(d,i){ return color.range()[i-1] } )
           .order()
 
-      /* Update the x-axis. */
-      // g.select(".x.axis")
-      //     .attr("transform", "translate(0," + y.range()[0] + ")")
-      //     .call(xAxis);
-
+      /* Update the axis labels. */
+      var label = svg.select('.labels').selectAll('.label').data(data);
+      label.enter().append('text').attr('class', 'label');
+      label.exit().remove();
+      label.style("text-anchor", "end")
+          .attr("transform", function(d){
+            return "translate(" + x(d) + "," + height + ")"
+          })
+          .text(function(d){return d})
     });
   }
 
   function arrayQuartiles (sortedArr) {
     return [
+      sortedArr[0],
       d3.quantile(sortedArr,0.25),
       d3.quantile(sortedArr,0.5),
       d3.quantile(sortedArr,0.75),
