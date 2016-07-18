@@ -149,7 +149,7 @@ function renderCharts (error, apiData) {
   digestTable(digestData('All'))
 
   $("select[name='category-selector']").change(function(){dispatcher.changeCategory(this.value)})
-  // $('.table-blocklot').click(function(){ dispatcher.selectBuilding($(this).data('id')) })
+  d3.selectAll('.dot').on('mouseover', function(d){ dispatcher.selectBuilding(d.id) })
 }
 
 var dispatcher = d3.dispatch('changeCategory', 'selectBuilding')
@@ -290,7 +290,7 @@ function digestData (categoryFilter) {
 function digestTable (digest) {
   d3.select('#table-type').html(digest.type)
   d3.select('#table-count').html(digest.count)
-  d3.select('#table-floor_area').html(digest.floor_area + ' SqFt')
+  d3.select('#table-floor_area').html(digest.floor_area + ' ft<sup>2</sup>')
   d3.select('#table-total_ghg').html(digest.total_ghg + ' MT CO<sub>2</sub>')
   d3.select('#table-compliance').html(digest.compliance + '%')
 }
@@ -301,8 +301,9 @@ function activePropertyTable (blockLot) {
      tablehtml += '<dt>Building Type</dt><dd>' + blockLot.property_type_self_selected + '</dd>'
      tablehtml += '<dt>Latest Benchmark Year</dt><dd>' + blockLot.latest_benchmark_year + '</dd>'
      tablehtml += '<dt>Energy Star Score</dt><dd>' + blockLot.latest_energy_star_score + '</dd>'
-     tablehtml += '<dt>Site EUI</dt><dd>' + blockLot.latest_site_eui_kbtu_ft2 + '</dd>'
-     tablehtml += '<dt>GHG Emissions (MT CO2)</dt><dd>' + blockLot.latest_total_ghg_emissions_metric_tons_co2e + '</dd>'
+     tablehtml += '<dt>Site EUI</dt><dd>' + blockLot.latest_site_eui_kbtu_ft2 + ' kbtu/ft<sup>2</sup></dd>'
+     tablehtml += '<dt>GHG Emissions</dt><dd>' + blockLot.latest_total_ghg_emissions_metric_tons_co2e + ' MT CO<sub>2</sub></dd>'
+     tablehtml += '<dt>Floor Area</dt><dd>' + numberWithCommas(blockLot.floor_area) + ' ft<sup>2</sup></dd>'
      tablehtml += '</dl>'
 
   $('#active-property').html(tablehtml)

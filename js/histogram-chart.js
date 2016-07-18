@@ -1,5 +1,4 @@
 // TODO: tooltip for histogram bars to show count
-// BUG: Axis labels are drawn again on update
 
 function histogramChart() {
   var margin = {top: 5, right: 5, bottom: 30, left: 25},

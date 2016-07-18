@@ -1,6 +1,5 @@
 function hStackedBarChart() {
   /* TODO use d3.stack instead */
-  /* TODO use x-axis to display values */
 
   var margin = {top: 0, right: 0, bottom: 20, left: 10},
       width = 960,
