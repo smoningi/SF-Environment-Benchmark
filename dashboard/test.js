@@ -4,12 +4,16 @@
 /* colorSwatches should be shared between map.js & dashboard.js */
 var colorSwatches = {
       energy_star_score: ['#FD6C16','#FEB921','#46AEE6','#134D9C'],
-      source_eui_kbtu_ft2: ['#f2f0f7','#cbc9e2', '#9e9ac8', '#6a51a3'],
+      total_ghg_emissions_intensity_kgco2e_ft2: ['#f4fde8','#b6e9ba','#76cec7','#3ea3d3'],
+      source_eui_kbtu_ft2: ['#134D9C','#46AEE6', '#FEB921', '#FD6C16'],
       site_eui_kbtu_ft2: ['#ffffe0','#ffa474','#db4551','#8b0000']
     };
 
 var color = {
-  source_eui_kbtu_ft2: d3.scale.threshold().range(colorSwatches.source_eui_kbtu_ft2)
+  energy_star_score: d3.scale.threshold().range(colorSwatches.energy_star_score),
+  total_ghg_emissions_intensity_kgco2e_ft2: d3.scale.threshold().range(colorSwatches.total_ghg_emissions_intensity_kgco2e_ft2),
+  source_eui_kbtu_ft2: d3.scale.threshold().range(colorSwatches.source_eui_kbtu_ft2),
+  site_eui_kbtu_ft2: d3.scale.threshold().range(colorSwatches.site_eui_kbtu_ft2)
 }
 
 /* categoryFilters should be shared between map.js & dashboard.js */
@@ -40,12 +44,32 @@ var returnedApiData = []
 /* page state data */
 var activeCategory = 'All'
 
+/* populate dropdown menu */
+var categorySelector = document.getElementById('category-selector')
+categorySelector.innerHTML = ""
+categoryFilters.forEach(addOption, categorySelector)
 
 /* pointers to dom elements */
+var chartHistogram = d3.select('#chart-histogram')
+var chartStackedBar = d3.select('#chart-stackedbar')
 var chartBubble = d3.select('#chart-bubble')
+var scorebox = document.getElementById('scorebox')
 
 /* global chart objects */
-
+var histogram = histogramChart()
+  .width(width)
+  .height(200)
+  .range([0,104])
+  .bins(50)
+  .tickFormat(d3.format(',d'))
+var stackedBar = hStackedBarChart()
+  .width(width)
+  .height(60)
+  .margin({top: 0, right: 10, bottom: 20, left: 50})
+var bubbles = scatterPlot()
+  .width(width)
+  .height(300)
+  .margin({left: 50})
 
 /* get the data and render the page */
 d3_queue.queue()
@@ -63,67 +87,65 @@ function renderCharts (error, apiData) {
   var scatterPlotVals = apiDataToXYR('latest_site_eui_kbtu_ft2', 'latest_total_ghg_emissions_metric_tons_co2e', 'floor_area')
   scatterPlotVals = scatterPlotVals.filter(function(d){ return d.x < 1000 }) /* 1000 here is arbitrary to cut out outlier of SFMOMA & some others*/
 
-  var digest = digestData("All")
+  /* color assigned by quartile */
+  color.energy_star_score.domain(arrayQuartiles(estarVals))
+  color.source_eui_kbtu_ft2.domain(arrayQuartiles(euiVals))
+  // color.total_ghg_emissions_intensity_kgco2e_ft2.domain(arrayQuartiles(ghgVals))
 
-  d3.select('#table-type').html(digest.type)
-  d3.select('#table-count').html(digest.count)
-  d3.select('#table-floor_area').html(digest.floor_area)
-  d3.select('#table-total_ghg').html(digest.total_ghg)
-  d3.select('#table-compliance').html(digest.compliance)
+  /* draw histogram for energy star */
+  histogram.colorScale(color.energy_star_score).bins(100).xAxisLabel('Energy Star Score').yAxisLabel('Buildings')
+  chartHistogram.datum(estarVals).call(histogram)
+  chartHistogram.call(histogramHighlight,-10)
 
+  /* draw stacked bar for energy use intensity */
+  stackedBar.colorScale(color.source_eui_kbtu_ft2)
+  chartStackedBar.datum(euiVals).call(stackedBar)
+  // chartStackedBar.call(stackedBarHighlight,-10)
 
+  /* draw bubble chart for estimated cost ? <<do we even have the data for this? */
+  /* draw bubble chart for greenhouse gases (ghg) instead */
+  bubbles.colorScale(color.source_eui_kbtu_ft2).xAxisLabel('Site EUI').yAxisLabel('GHG Emissions')
+  chartBubble.datum(scatterPlotVals).call(bubbles)
+  // chartBubble.call(chartBubbleHighlight,-10)
+
+  /* draw map */
+
+  /* draw table for data */
+  // $('#infotable').DataTable( {
+  //   data: returnedApiData,
+  //   columns: [
+  //     { title: "Address", data: "building_address" },
+  //     { title: "BlockLot", data: "ID" },
+  //     { title: "Building Name", data: "building_name" },
+  //     { title: "Floor Area", data: "floor_area" },
+  //     { title: "Property Type", data: "property_type_self_selected" },
+  //     { title: "Energy Star", data: "latest_energy_star_score" }
+  //   ]
+  // });
+
+  /* render info table */
+  digestTable(digestData('All'))
 
 
   $("select[name='category-selector']").change(function(){dispatcher.changeCategory(this.value)})
 }
 
-function digestData (categoryFilter) {
-  var arr = returnedApiData
-  if (categoryFilter && categoryFilter !== 'All') {
-    arr = arr.filter(function(parcel){
-      return parcel.property_type_self_selected === categoryFilter
-    })
-  }
-  var result = arr.reduce(function (prev, curr) {
-    // # of Properties
-    // SF of floor area
-    // Energy Like for Like 2013-2014 (418 properties)
-    // Total GHG Emissions (MT CO2e)
-    // Compliance Rate
-    return {
-      count: prev.count + 1,
-      floor_area: prev.floor_area + +curr.floor_area,
-      total_ghg: (isNaN(+curr.latest_total_ghg_emissions_metric_tons_co2e)) ? prev.total_ghg : prev.total_ghg + +curr.latest_total_ghg_emissions_metric_tons_co2e,
-      compliance: (curr.latest_benchmark === 'Complied') ? prev.compliance + 1 : prev.compliance
-    }
-  }, {count:0,floor_area:0,total_ghg:0,compliance:0})
-  result.compliance = roundToTenth(100*(result.compliance/result.count))
-  result.total_ghg = roundToTenth(result.total_ghg)
-  result.type = categoryFilter
-  return result
-}
-
-function roundToTenth (num){
-  return Math.round(10*num)/10
-}
-
-
-
-
-
-
-
 var dispatcher = d3.dispatch('changeCategory')
 dispatcher.on('changeCategory', function(newCategory){
   // filterMapCategory(newCategory) /* only activates last filter selected */
-  var estarVals = objArrayToSortedNumArray(apiDataToArray('latest_energy_star_score', newCategory))
-  estarVals = estarVals.filter(function (d) { return d > 0 })
-  var euiVals = objArrayToSortedNumArray(apiDataToArray('latest_site_eui_kbtu_ft2', newCategory))
-  euiVals = euiVals.filter(function (d) { return d > 0 && d < 1000 }) /* 1000 here is arbitrary to cut out outlier of SFMOMA & some others*/
+  var estarVals = objArrayToSortedNumArray(apiDataToArray('latest_energy_star_score', newCategory)).filter(function (d) { return d > 0 })
+  var euiVals = objArrayToSortedNumArray(apiDataToArray('latest_site_eui_kbtu_ft2', newCategory)).filter(function (d) { return d > 0 && d < 1000 }) /* 1000 here is arbitrary to cut out outlier of SFMOMA & some others*/
   var scatterPlotVals = apiDataToXYR('latest_site_eui_kbtu_ft2', 'latest_total_ghg_emissions_metric_tons_co2e', 'floor_area', newCategory)
   scatterPlotVals = scatterPlotVals.filter(function(d){ return d.x < 1000 }) /* 1000 here is arbitrary to cut out outlier of SFMOMA & some others*/
 
+  color.energy_star_score.domain(arrayQuartiles(estarVals))
+
+  chartHistogram.datum(estarVals).call(histogram)
+  chartStackedBar.datum(euiVals).call(stackedBar)
+  chartBubble.datum(scatterPlotVals).call(bubbles)
+  digestTable(digestData(newCategory))
 })
+
 
 /* parseData() should be shared between map.js & dashboard.js */
 function parseData (apiData) {
@@ -192,19 +214,50 @@ function apiDataToXYR (xProp, yProp, rProp, categoryFilter) {
       return parcel.property_type_self_selected === categoryFilter
     })
   }
-
   /* filter out values that don't exist */
   arr = arr.filter(function (parcel) {
     var thisparcel = [onlyNumbers(parcel[xProp]), onlyNumbers(parcel[yProp]), onlyNumbers(parcel[rProp])]
     return thisparcel.every(function (el) {return el > 0})
   })
-
   /* make the simplified xyr data array */
   arr = arr.map(function (parcel) {
     return { id: parcel.ID, x: +parcel[xProp], y: +parcel[yProp], r: +parcel[rProp] }
   })
-
   return arr
+}
+
+function digestData (categoryFilter) {
+  var arr = returnedApiData
+  if (categoryFilter && categoryFilter !== 'All') {
+    arr = arr.filter(function(parcel){
+      return parcel.property_type_self_selected === categoryFilter
+    })
+  }
+  var result = arr.reduce(function (prev, curr) {
+    // # of Properties
+    // SF of floor area
+    // Energy Like for Like 2013-2014 (418 properties)
+    // Total GHG Emissions (MT CO2e)
+    // Compliance Rate
+    return {
+      count: prev.count + 1,
+      floor_area: prev.floor_area + +curr.floor_area,
+      total_ghg: (isNaN(+curr.latest_total_ghg_emissions_metric_tons_co2e)) ? prev.total_ghg : prev.total_ghg + +curr.latest_total_ghg_emissions_metric_tons_co2e,
+      compliance: (curr.latest_benchmark === 'Complied') ? prev.compliance + 1 : prev.compliance
+    }
+  }, {count:0,floor_area:0,total_ghg:0,compliance:0})
+  result.compliance = roundToTenth(100*(result.compliance/result.count))
+  result.total_ghg = roundToTenth(result.total_ghg)
+  result.type = categoryFilter
+  return result
+}
+
+function digestTable (digest) {
+  d3.select('#table-type').html(digest.type)
+  d3.select('#table-count').html(digest.count)
+  d3.select('#table-floor_area').html(digest.floor_area + ' SqFt')
+  d3.select('#table-total_ghg').html(digest.total_ghg + ' MT CO<sub>2</sub>')
+  d3.select('#table-compliance').html(digest.compliance + '%')
 }
 
 function onlyNumbers (val) {
@@ -260,4 +313,8 @@ function addOption(el,i, arr){
   option.value = el
   option.text = el.replace(/_/,' ')
   this.appendChild(option)
+}
+
+function roundToTenth (num){
+  return Math.round(10*num)/10
 }
