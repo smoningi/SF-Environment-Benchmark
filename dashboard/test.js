@@ -111,17 +111,37 @@ function renderCharts (error, apiData) {
   /* draw map */
 
   /* draw table for data */
-  // $('#infotable').DataTable( {
-  //   data: returnedApiData,
-  //   columns: [
-  //     { title: "Address", data: "building_address" },
-  //     { title: "BlockLot", data: "ID" },
-  //     { title: "Building Name", data: "building_name" },
-  //     { title: "Floor Area", data: "floor_area" },
-  //     { title: "Property Type", data: "property_type_self_selected" },
-  //     { title: "Energy Star", data: "latest_energy_star_score" }
-  //   ]
-  // });
+  $('#infotable').DataTable( {
+    language: {
+      paginate: {
+        previous: '&lt;',
+        next: '&gt;'
+      }
+    },
+    bInfo: false,
+    data: returnedApiData,
+    columns: [
+      { title: "Address", data: "building_address" },
+      { title: "Building Name", data: "building_name" },
+      { title: "Floor Area", data: "floor_area" },
+      { title: "Property Type", data: "property_type_self_selected" },
+      { title: "BlockLot", data: "ID" }
+    ],
+    columnDefs: [
+      {
+        render: function ( data, type, row ) {
+          return numberWithCommas(data);
+        },
+        targets: 2
+      },
+      {
+        render: function (data, type, row) {
+          return '<a href="#" class="table-blocklot" data-id="'+ data +'">'+data+'</a>'
+        },
+        targets: 4
+      }
+    ]
+  });
 
   /* render info table */
   digestTable(digestData('All'))
@@ -317,4 +337,10 @@ function addOption(el,i, arr){
 
 function roundToTenth (num){
   return Math.round(10*num)/10
+}
+
+function numberWithCommas(x) {
+    var parts = x.toString().split(".");
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    return parts.join(".");
 }
