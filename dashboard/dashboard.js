@@ -137,6 +137,12 @@ function renderCharts (error, apiData) {
       },
       {
         render: function (data, type, row) {
+          return '<button class="btn btn-default" onClick="dispatcher.changeCategory(\''+ data +'\')">'+data+'</button>'
+        },
+        targets: 3
+      },
+      {
+        render: function (data, type, row) {
           return '<button class="btn btn-default table-blocklot" onClick="dispatcher.selectBuilding(\''+ data +'\')">'+data+'</button>'
         },
         targets: 4
@@ -169,6 +175,7 @@ dispatcher.on('changeCategory', function(newCategory){
 
   var tablesearch = (newCategory === "All") ? '' : newCategory
   $('#infotable').DataTable().search(tablesearch).draw()
+  d3.selectAll('.dot').on('mouseover', function(d){ dispatcher.selectBuilding(d.id) })
 })
 dispatcher.on('selectBuilding', function(newBlockLot){
   var blockLot = returnedApiData.find(function(el){
@@ -289,9 +296,9 @@ function digestData (categoryFilter) {
 
 function digestTable (digest) {
   d3.select('#table-type').html(digest.type)
-  d3.select('#table-count').html(digest.count)
-  d3.select('#table-floor_area').html(digest.floor_area + ' ft<sup>2</sup>')
-  d3.select('#table-total_ghg').html(digest.total_ghg + ' MT CO<sub>2</sub>')
+  d3.select('#table-count').html(numberWithCommas(digest.count))
+  d3.select('#table-floor_area').html(numberWithCommas(digest.floor_area) + ' ft<sup>2</sup>')
+  d3.select('#table-total_ghg').html(numberWithCommas(digest.total_ghg) + ' MT CO<sub>2</sub>')
   d3.select('#table-compliance').html(digest.compliance + '%')
 }
 
