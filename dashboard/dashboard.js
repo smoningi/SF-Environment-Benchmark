@@ -5,14 +5,15 @@
 var colorSwatches = {
       energy_star_score: ['#FD6C16','#FEB921','#46AEE6','#134D9C'],
       total_ghg_emissions_intensity_kgco2e_ft2: ['#f4fde8','#b6e9ba','#76cec7','#3ea3d3'],
-      source_eui_kbtu_ft2: ['#f2f0f7','#cbc9e2', '#9e9ac8', '#6a51a3'],
-      site_eui_kbtu_ft2: ['#ffffe0','#ffa474','#db4551','#8b0000']
+      source_eui_kbtu_ft2: ['#134D9C','#46AEE6', '#FEB921', '#FD6C16'],
+      site_eui_kbtu_ft2: ['#ffffe0','#ffa474','#db4551','#8b0000'],
+      highlight: '#ff00fc'
     };
 
 var color = {
   energy_star_score: d3.scale.threshold().range(colorSwatches.energy_star_score),
   total_ghg_emissions_intensity_kgco2e_ft2: d3.scale.threshold().range(colorSwatches.total_ghg_emissions_intensity_kgco2e_ft2),
-  source_eui_kbtu_ft2: d3.scale.threshold().range(colorSwatches.energy_star_score),
+  source_eui_kbtu_ft2: d3.scale.threshold().range(colorSwatches.source_eui_kbtu_ft2),
   site_eui_kbtu_ft2: d3.scale.threshold().range(colorSwatches.site_eui_kbtu_ft2)
 }
 
@@ -111,26 +112,47 @@ function renderCharts (error, apiData) {
   /* draw map */
 
   /* draw table for data */
-  // $('#infotable').DataTable( {
-  //   data: returnedApiData,
-  //   columns: [
-  //     { title: "Address", data: "building_address" },
-  //     { title: "BlockLot", data: "ID" },
-  //     { title: "Building Name", data: "building_name" },
-  //     { title: "Floor Area", data: "floor_area" },
-  //     { title: "Property Type", data: "property_type_self_selected" },
-  //     { title: "Energy Star", data: "latest_energy_star_score" }
-  //   ]
-  // });
+  $('#infotable').DataTable( {
+    language: {
+      paginate: {
+        previous: '&lt;',
+        next: '&gt;'
+      }
+    },
+    bInfo: false,
+    data: returnedApiData,
+    columns: [
+      { title: "Address", data: "building_address" },
+      { title: "Building Name", data: "building_name" },
+      { title: "Floor Area", data: "floor_area" },
+      { title: "Property Type", data: "property_type_self_selected" },
+      { title: "BlockLot", data: "ID" }
+    ],
+    columnDefs: [
+      {
+        render: function ( data, type, row ) {
+          return numberWithCommas(data);
+        },
+        targets: 2
+      },
+      {
+        render: function (data, type, row) {
+          return '<button class="btn btn-default table-blocklot" onClick="dispatcher.selectBuilding(\''+ data +'\')">'+data+'</button>'
+        },
+        targets: 4
+      },
+      { searchable: false, targets: [2,4] }
+    ]
+  });
 
   /* render info table */
   digestTable(digestData('All'))
 
-
   $("select[name='category-selector']").change(function(){dispatcher.changeCategory(this.value)})
+  d3.selectAll('.dot').on('mouseover', function(d){ dispatcher.selectBuilding(d.id) })
 }
 
-var dispatcher = d3.dispatch('changeCategory')
+var dispatcher = d3.dispatch('changeCategory', 'selectBuilding')
 dispatcher.on('changeCategory', function(newCategory){
   // filterMapCategory(newCategory) /* only activates last filter selected */
   var estarVals = objArrayToSortedNumArray(apiDataToArray('latest_energy_star_score', newCategory)).filter(function (d) { return d > 0 })
@@ -144,8 +166,21 @@ dispatcher.on('changeCategory', function(newCategory){
   chartStackedBar.datum(euiVals).call(stackedBar)
   chartBubble.datum(scatterPlotVals).call(bubbles)
   digestTable(digestData(newCategory))
-})
 
+  var tablesearch = (newCategory === "All") ? '' : newCategory
+  $('#infotable').DataTable().search(tablesearch).draw()
+})
+dispatcher.on('selectBuilding', function(newBlockLot){
+  var blockLot = returnedApiData.find(function(el){
+    return el.ID === newBlockLot.toString()
+  })
+  activePropertyTable(blockLot)
+  chartHistogram.call(histogramHighlight, blockLot.latest_energy_star_score)
+  chartStackedBar.call(stackedBarHighlight, blockLot.latest_site_eui_kbtu_ft2)
+  chartBubble.call(bubblesHighlight, {x:blockLot.latest_site_eui_kbtu_ft2, y:blockLot.latest_total_ghg_emissions_metric_tons_co2e, r:blockLot.floor_area})
+  // mapHighlight(newBlockLot)
+
+})
 
 /* parseData() should be shared between map.js & dashboard.js */
 function parseData (apiData) {
@@ -159,7 +194,7 @@ function parseData (apiData) {
     parcel.parcel1 = re1.exec(parcel.parcel_s)[1]
     parcel.parcel2 = re2.exec(parcel.parcel_s)[1]
     parcel.blklot = '' + parcel.parcel1 + parcel.parcel2
-    parcel.ID = parcel.blklot
+    parcel.ID = '' + parcel.blklot
     metrics.forEach(function (test) {
       parcel = latest(test, parcel)
     })
@@ -255,9 +290,24 @@ function digestData (categoryFilter) {
 function digestTable (digest) {
   d3.select('#table-type').html(digest.type)
   d3.select('#table-count').html(digest.count)
-  d3.select('#table-floor_area').html(digest.floor_area + ' SqFt')
+  d3.select('#table-floor_area').html(digest.floor_area + ' ft<sup>2</sup>')
   d3.select('#table-total_ghg').html(digest.total_ghg + ' MT CO<sub>2</sub>')
   d3.select('#table-compliance').html(digest.compliance + '%')
+}
+
+function activePropertyTable (blockLot) {
+  var tablehtml = '<dl class="dl-horizontal">'
+     tablehtml += '<dt>Address</dt><dd>' + blockLot.building_address + '</dd>'
+     tablehtml += '<dt>Building Type</dt><dd>' + blockLot.property_type_self_selected + '</dd>'
+     tablehtml += '<dt>Latest Benchmark Year</dt><dd>' + blockLot.latest_benchmark_year + '</dd>'
+     tablehtml += '<dt>Energy Star Score</dt><dd>' + blockLot.latest_energy_star_score + '</dd>'
+     tablehtml += '<dt>Site EUI</dt><dd>' + blockLot.latest_site_eui_kbtu_ft2 + ' kbtu/ft<sup>2</sup></dd>'
+     tablehtml += '<dt>GHG Emissions</dt><dd>' + blockLot.latest_total_ghg_emissions_metric_tons_co2e + ' MT CO<sub>2</sub></dd>'
+     tablehtml += '<dt>Floor Area</dt><dd>' + numberWithCommas(blockLot.floor_area) + ' ft<sup>2</sup></dd>'
+     tablehtml += '</dl>'
+
+  $('#active-property').html(tablehtml)
+
 }
 
 function onlyNumbers (val) {
@@ -269,7 +319,7 @@ function objArrayToSortedNumArray (objArray) {
 }
 
 function histogramHighlight (selection, data) {
-  if( isNaN(data) ) data = -10
+  if( isNaN(data) ) data = -100
   var x = histogram.xScale(),
       y = histogram.yScale(),
       margin = histogram.margin(),
@@ -282,8 +332,55 @@ function histogramHighlight (selection, data) {
     .attr("x", function(d) { return x(d) })
     .attr("y", 1)
     .attr("height", height - margin.top - margin.bottom )
-    .attr('fill', 'blue' )
+    .attr('fill', colorSwatches.highlight )
   hl.exit().remove()
+}
+
+function stackedBarHighlight (selection, data) {
+  if( isNaN(data) ) data = -100
+  var x = stackedBar.xScale(),
+      y = stackedBar.yScale(),
+      margin = stackedBar.margin(),
+      width = stackedBar.width(),
+      height = stackedBar.height()
+  var svg = selection.select('svg')
+  var hl = svg.select("g").selectAll('.highlight').data([data])
+  hl.enter().append("rect").attr('class', 'highlight')
+  hl.attr("width", 2)
+    .attr("x", function(d) { return x(d) })
+    .attr("y", 1)
+    .attr("height", height - margin.top - margin.bottom )
+    .attr('fill', colorSwatches.highlight )
+  hl.exit().remove()
+}
+
+function bubblesHighlight (selection, data) {
+   if( anyPropNA(data) ) data = { x:-100, y:-100, r:0 } // if any property of data is 'N/A', give default
+  var x = bubbles.xScale(),
+      y = bubbles.yScale(),
+      r = bubbles.rScale(),
+      margin = bubbles.margin(),
+      width = bubbles.width(),
+      height = bubbles.height()
+  var svg = selection.select('svg')
+  var hl = svg.select("g").selectAll('.highlight').data([data])
+  hl.enter().append("circle").attr('class', 'highlight')
+  hl.attr("r", function(d) { return r(d.r); })
+      .attr("cx", function(d) { return x(d.x); })
+      .attr("cy", function(d) { return y(d.y); })
+      .attr('fill', '#fff')
+      // .attr('fill-opacity', 0)
+      .attr('stroke', colorSwatches.highlight)
+      .attr('stroke-width', '2px')
+  hl.exit().remove()
+}
+
+function anyPropNA (obj) {
+  var result = false
+  for (var prop in obj) {
+    if (obj[prop] === "N/A") result = true
+  }
+  return result
 }
 
 function sortNumber (a,b) {
@@ -317,4 +414,10 @@ function addOption(el,i, arr){
 
 function roundToTenth (num){
   return Math.round(10*num)/10
+}
+
+function numberWithCommas(x) {
+    var parts = x.toString().split(".");
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    return parts.join(".");
 }

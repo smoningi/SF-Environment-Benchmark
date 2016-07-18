@@ -1,5 +1,4 @@
 // TODO: tooltip for dots
-// BUG: Axis labels are drawn again on update
 
 function scatterPlot() {
   var margin = {top: 10, right: 10, bottom: 30, left: 50},
@@ -62,6 +61,7 @@ function scatterPlot() {
           .attr('fill', function(d){ return color(d.x) } )
           .attr('fill-opacity', 0.6)
           // .attr('stroke', '#5b5b5b')
+          // .attr('data-id', function(d) { return d.id })
           .order()
 
       // Update the x-axis.
@@ -132,6 +132,10 @@ function scatterPlot() {
   };
   chart.yScale = function(_) {
     if (!arguments.length) return y;
+    return chart;
+  };
+  chart.rScale = function(_) {
+    if (!arguments.length) return r;
     return chart;
   };
 
