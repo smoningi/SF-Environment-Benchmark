@@ -134,6 +134,10 @@ function scatterPlot() {
     if (!arguments.length) return y;
     return chart;
   };
+  chart.rScale = function(_) {
+    if (!arguments.length) return r;
+    return chart;
+  };
 
   chart.xAxisLabel = function(_) {
     if (!arguments.length) return xAxisLabel;
