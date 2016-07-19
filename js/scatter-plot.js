@@ -1,4 +1,5 @@
 // TODO: tooltip for dots
+// TODO: axis labels with data-joins
 
 function scatterPlot() {
   var margin = {top: 10, right: 10, bottom: 30, left: 50},
@@ -21,6 +22,9 @@ function scatterPlot() {
 
   function chart(selection) {
     selection.each(function(data) {
+      /* data is expected to be an array of objects like: {x:num, y:num, r:num, id:str} where id is optional */
+      /* Sort the data so smaller radius dots will be drawn on top */
+      data = data.sort(function(a, b) { return b.r - a.r; })
 
       // Update the x-scale.
       x   .domain( d3.extent(data, function(d) { return d.x; }) )
@@ -42,6 +46,7 @@ function scatterPlot() {
       gEnter.append("g").attr("class", "x axis");
       gEnter.append("g").attr("class", "y axis");
       gEnter.append("g").attr("class", "dots");
+      gEnter.append("g").attr("class", "rLegend");
 
       // Update the outer dimensions.
       svg .attr("width", width)
@@ -60,7 +65,6 @@ function scatterPlot() {
           .attr("cy", function(d) { return y(d.y); })
           .attr('fill', function(d){ return color(d.x) } )
           .attr('fill-opacity', 0.6)
-          // .attr('stroke', '#5b5b5b')
           // .attr('data-id', function(d) { return d.id })
           .order()
 
@@ -85,7 +89,27 @@ function scatterPlot() {
           .attr('class', 'axis label ylabel')
           .style("text-anchor", "end")
           .text(yAxisLabel)
-    });
+
+      var legendSizes = d3.extent(data, function(d){return d.r})
+          legendSizes = [legendSizes[0], (legendSizes[0]+legendSizes[1])/2, legendSizes[1] ]
+
+      var rLegend = g.select(".rLegend")
+          .attr("transform", "translate(" + (width - margin.right - margin.left - r(legendSizes[2])) + "," + (height - margin.top - margin.bottom - r(legendSizes[2])) + ")")
+        .selectAll("g")
+          .data(legendSizes)
+        .enter().append("g");
+
+      rLegend.append("circle")
+          .attr("cy", function(d) { return -r(d) })
+          .attr("r", function(d) { return r(d) })
+          // style is set with css!
+
+      rLegend.append("text")
+          .attr("y", function(d) { return -2 * r(d) })
+          .attr("dy", "1.3em")
+          .text(d3.format(".1s"))
+          })
+
   }
 
   chart.margin = function(_) {
