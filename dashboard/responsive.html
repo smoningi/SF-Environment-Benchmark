@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>SF Building Dashboard</title>
+	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
+	<link rel="stylesheet" href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+
+	<script src="http://d3js.org/d3.v3.min.js" type="text/javascript"></script>
+	<script src="https://d3js.org/d3-queue.v2.min.js" type="text/javascript"></script>
+	<script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+	<script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+	<script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+	<script src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>
+	<!-- <link href='https://fonts.googleapis.com/css?family=Varela+Round' rel='stylesheet' type='text/css'> -->
+	<link rel="stylesheet" href="css/normalize.css">
+	<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+	<div class="wrap">
+
+		<header class="main-header">
+			<div class="container">
+				<!-- <h1 class="name"><a href="#">SF Benchmark Results</a></h1> -->
+				<ul class="main-nav">
+					<li>SF Benchmark Results</li>
+					<li>
+						<div class="btn-group metric-dropdown">
+								<button type="button" class="btn btn-md btn-default dropdown-toggle" id="metrics-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+									<small>Category</small>
+									<span class="caret"></span>
+								</button>
+								<ul class="dropdown-menu">
+									<li><a>Automobile Dealership</a></li>
+									<li><a>College/University</a></li>
+									<li><a>Distribution Center</a></li>
+									<li><a>Financial Office</a></li>
+									<li><a>Fitness Center/Health Club/Gym</a></li>
+									<li><a>Hospital (General Medical & Surgical)</a></li>
+									<li><a>Hotel</a></li>
+									<li><a>K-12 School</a></li>
+									<li><a>Manufacturing/Industrial Plant</a></li>
+									<li><a>Mixed Use Property</a></li>
+									<li><a>Medical Office</a></li>
+									<li><a>Non-Refrigerated Warehouse</a></li>
+									<li><a>Office</a></li>
+									<li><a>Other</a></li>
+									<li><a>Retail Store</a></li>
+									<li><a>Restaurant</a></li>
+									<li><a>Supermarket/Grocery Store</a></li>
+									<li><a>Worship Facility</a></li>
+								</ul>
+						</div>
+					</li>
+					<!-- <li><a href="#">item2</a></li>
+					<li><a href="#">item3</a></li>
+					<li><a href="#">item4</a></li> -->
+				</ul>
+			</div>
+		</header>
+
+		<div class="container">
+
+			<div class="primary col">
+				<div class="widget">
+					<div class="widget-heading">
+						<h2>Energy Star Score Distribution</h2>
+					</div>
+					<div class="widget-content">
+						<!-- <label for="">Energy Star Score Distribution</label> -->
+						<div id="chart-histogram" class="histogram-chart"></div>
+					</div>
+				</div>
+				<div class="widget">
+					<div class="widget-heading">
+						<h2>Energy Use Intensity (EUI)</h2>
+					</div>
+					<div class="widget-content">
+						<label for="">Energy Use Intensity</label>
+	          <div class="chart-stackedbar"></div>
+					</div>
+				</div>
+				<div class="widget">
+					<div class="widget-heading">
+						<h2>Greenhouse Gas (GHG) Site EUI</h2>
+					</div>
+					<div class="widget-content">
+						<label for="">Estimated Utility Cost/Site EUI</label>
+	          <div class="chart-bubble"></div>
+					</div>
+				</div>
+			</div><!--/.primary-->
+
+			<div class="secondary col">
+				<div class="widget" id="widget-map">
+					<div class="widget-heading">
+						<h2>Map View</h2>
+					</div>
+					<div class="widget-content">
+						<p>Fixed height: 480px</p>
+					</div>
+				</div>
+			</div><!--/.secondary-->
+
+			<div class="col col-full">
+				<div class="widget" id="widget-table">
+					<div class="widget-heading">
+						<h2>Table</h2>
+					</div>
+					<div class="widget-content">
+						<table id="infotable" class="table"></table>
+					</div>
+				</div>
+			</div>
+
+		</div><!--/.container-->
+
+	</div><!--/.wrap-->
+
+	<footer class="main-footer">
+	 <span>Sticky Footer</span>
+	</footer>
+	<script src="../js/histogram-chart.js"></script>
+	<script src="dashboard.js"></script>
+</body>
+</html>
