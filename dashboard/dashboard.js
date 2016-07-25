@@ -45,11 +45,6 @@ var returnedApiData = []
 /* page state data */
 var activeCategory = 'All'
 
-/* populate dropdown menu */
-var categorySelector = document.getElementById('category-selector')
-categorySelector.innerHTML = ""
-categoryFilters.forEach(addOption, categorySelector)
-
 /* pointers to dom elements */
 var chartHistogram = d3.select('#chart-histogram')
 var chartStackedBar = d3.select('#chart-stackedbar')
@@ -79,6 +74,7 @@ d3_queue.queue()
     .defer(d3.json, '../data/j2j3-acqj.json')  /* https://data.sfgov.org/resource/j2j3-acqj.json?$limit=2000 */
     .await(renderCharts)
 function renderCharts (error, apiData) {
+  $('.loading').remove()
   returnedApiData = parseData(apiData)
 
   var estarVals = objArrayToSortedNumArray(apiDataToArray('latest_energy_star_score'))
@@ -115,6 +111,7 @@ function renderCharts (error, apiData) {
 
   /* draw table for data */
   $('#infotable').DataTable( {
+    responsive: true,
     language: {
       paginate: {
         previous: '&lt;',
@@ -124,11 +121,11 @@ function renderCharts (error, apiData) {
     bInfo: false,
     data: returnedApiData,
     columns: [
-      { title: "Address", data: "building_address" },
-      { title: "Building Name", data: "building_name" },
-      { title: "Floor Area", data: "floor_area" },
-      { title: "Property Type", data: "property_type_self_selected" },
-      { title: "BlockLot", data: "ID" }
+      { title: "Address", data: "building_address", responsivePriority: 2 },
+      { title: "Building Name", data: "building_name", responsivePriority: 4 },
+      { title: "Floor Area", data: "floor_area", responsivePriority: 5 },
+      { title: "Property Type", data: "property_type_self_selected", responsivePriority: 3 },
+      { title: "BlockLot", data: "ID", responsivePriority: 1 }
     ],
     columnDefs: [
       {
@@ -404,23 +401,6 @@ function arrayQuartiles (sortedArr) {
     d3.quantile(sortedArr,0.5),
     d3.quantile(sortedArr,0.75)
   ]
-}
-
-function addOption(el,i, arr){
-  /*
-  * takes an array of strings and creates an option
-  * in the select element passed as 'this' in a forEach call:
-  *   var foo = document.getElementById('foo')
-  *   ['bar','baz', 'bar_baz'].forEach(addOption, foo)
-  * creates <option value="bar">Bar</option>
-  *         <option value="baz">Baz</option>
-  *         <option value="bar_baz">Bar Baz</option>
-  * inside the existing <select id="foo"></select>
-  */
-  var option = document.createElement("option")
-  option.value = el
-  option.text = el.replace(/_/,' ')
-  this.appendChild(option)
 }
 
 function roundToTenth (num){

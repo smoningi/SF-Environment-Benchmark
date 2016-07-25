@@ -16,6 +16,7 @@
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 	<script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
 	<script src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>
+	<script src="https://cdn.datatables.net/responsive/2.1.0/js/dataTables.responsive.min.js"></script>
 	<!-- <link href='https://fonts.googleapis.com/css?family=Varela+Round' rel='stylesheet' type='text/css'> -->
 	<link rel="stylesheet" href="css/normalize.css">
 	<link rel="stylesheet" href="css/style.css">
@@ -55,12 +56,9 @@
 						</div>
 					</li>
 					<li>
-						<select id="category-selector" name="category-selector" class="hidden form-control">
-							<option value="loading" selected>Loading...</option>
-						</select>
+
 					</li>
-					<!-- <li><a href="#">item2</a></li>
-					<li><a href="#">item3</a></li>
+				<!-- 	<li><a href="#">item3</a></li>
 					<li><a href="#">item4</a></li> -->
 				</ul>
 			</div>
@@ -75,6 +73,7 @@
 					</div>
 					<div class="widget-content">
 						<!-- <label for="">Energy Star Score Distribution</label> -->
+						<div class="loading">Loading...</div>
 						<div id="chart-histogram" class="histogram-chart"></div>
 					</div>
 				</div>
@@ -83,16 +82,18 @@
 						<h2>Energy Use Intensity (EUI)</h2>
 					</div>
 					<div class="widget-content">
-						<label for="">Energy Use Intensity</label>
+						<label for=""></label>
+						<div class="loading">Loading...</div>
 	          <div id="chart-stackedbar" class="chart-stackedbar"></div>
 					</div>
 				</div>
 				<div class="widget">
 					<div class="widget-heading">
-						<h2>Greenhouse Gas (GHG) Site EUI</h2>
+						<h2>GHG Emision vs. Site EUI</h2>
 					</div>
 					<div class="widget-content">
-						<label for="">Estimated Utility Cost/Site EUI</label>
+						<label for="">Radius sized by floor area</label>
+						<div class="loading">Loading...</div>
 	          <div id="chart-bubble" class="chart-bubble"></div>
 					</div>
 				</div>
@@ -107,6 +108,26 @@
 						<p>Fixed height: 480px</p>
 					</div>
 				</div>
+				<div class="widget">
+					<dl class="dl-horizontal">
+						<dt>Type of Building</dt><dd id="table-type">...</dd>
+						<dt># of Properties</dt><dd id="table-count">...</dd>
+						<dt>Floor Area</dt><dd id="table-floor_area">...</dd>
+						<dt>Total GHG Emissions</dt><dd id="table-total_ghg">...</dd>
+						<dt>Compliance Rate</dt><dd id="table-compliance">...</dd>
+					</dl>
+					<div id="active-property" class="table">
+						<dl class="dl-horizontal">
+							 <dt>Address</dt><dd>...</dd>
+							 <dt>Building Type</dt><dd>...</dd>
+							 <dt>Latest Benchmark Year</dt><dd>...</dd>
+							 <dt>Energy Star Score</dt><dd>...</dd>
+							 <dt>Site EUI</dt><dd>...</dd>
+							 <dt>GHG Emissions (MT CO2)</dt><dd>...</dd>
+							 <dt>Floor Area</dt><dd>...</dd>
+						 </dl>
+					</div>
+				</div>
 			</div><!--/.secondary-->
 
 			<div class="col col-full">
@@ -115,7 +136,7 @@
 						<h2>Table</h2>
 					</div>
 					<div class="widget-content">
-						<table id="infotable" class="table"></table>
+						<table id="infotable" class="table" style="width:100%"></table>
 					</div>
 				</div>
 			</div>
