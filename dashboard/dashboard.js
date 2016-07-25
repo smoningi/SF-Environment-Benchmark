@@ -227,14 +227,14 @@ function renderCharts (error, apiData) {
       { title: "Address", data: "building_address", responsivePriority: 2 },
       { title: "Building Name", data: "building_name", responsivePriority: 4 },
       { title: "Floor Area", data: "floor_area", responsivePriority: 5 },
-      { title: "Property Type", data: "property_type_self_selected", responsivePriority: 3 },
-      { title: "BlockLot", data: "ID", responsivePriority: 1 }
+      { title: "Property Type", data: "property_type_self_selected", responsivePriority: 3 }
     ],
     columnDefs: [
       {
         render: function ( data, type, row ) {
           return numberWithCommas(data);
         },
+        searchable: false,
         targets: 2
       },
       {
@@ -242,15 +242,13 @@ function renderCharts (error, apiData) {
           return '<button class="btn btn-default" onClick="dispatcher.changeCategory(\''+ data +'\')">'+data+'</button>'
         },
         targets: 3
-      },
-      {
-        render: function (data, type, row) {
-          return '<button class="btn btn-default table-blocklot" onClick="dispatcher.selectBuilding(\''+ data +'\')">'+data+'</button>'
-        },
-        targets: 4
-      },
-      { searchable: false, targets: [2,4] }
-    ]
+      }
+    ],
+    rowCallback: function( row, data, index) {
+      row.onclick = function(){
+        return dispatcher.selectBuilding(data.ID)
+      }
+    }
   });
 
   /* render info table */
