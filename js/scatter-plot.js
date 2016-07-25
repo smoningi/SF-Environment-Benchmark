@@ -59,14 +59,16 @@ function scatterPlot() {
       // Update the dots.
       var dot = svg.select(".dots").selectAll(".dot").data(data);
       dot.enter().append("circle").attr('class', 'dot');
-      dot.exit().remove();
-      dot .attr("r", function(d) { return r(d.r); })
+      dot.exit().transition().duration(1000).attr("r", function(d) { return 0 }).remove();
+      dot .attr("r", function(d) { return 0; })
           .attr("cx", function(d) { return x(d.x); })
           .attr("cy", function(d) { return y(d.y); })
           .attr('fill', function(d){ return color(d.x) } )
           .attr('fill-opacity', 0.6)
           // .attr('data-id', function(d) { return d.id })
           .order()
+      dot.transition().duration(1000)
+          .attr("r", function(d) { return r(d.r); })
 
       // Update the x-axis.
       g.select(".x.axis")

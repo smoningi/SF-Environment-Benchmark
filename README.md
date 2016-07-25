@@ -14,6 +14,7 @@ SF Environment Benchmark part of the Data Science Working Group at Code for San 
 
 ## Prototypes
  - [SF Energy and GHG Map Visualization](http://smoningi.github.io/SF-Environment-Benchmark/map/)
+ - [SF Environment Benchmark Dashboard](http://smoningi.github.io/SF-Environment-Benchmark/dashboard/)
 
 ## Getting Started
 

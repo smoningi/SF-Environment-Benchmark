@@ -53,13 +53,14 @@ function histogramChart() {
       // Update the bars.
       var bar = svg.select(".bars").selectAll(".bar").data(data);
       bar.enter().append("rect").attr('class', 'bar');
-      bar.exit().remove();
+      bar.exit().transition().duration(1000).attr('fill', '#fff' ).remove();
       bar .attr("width", x(data[0].dx) - 1)
           .attr("x", function(d) { return x(d.x); })
           .attr("y", function(d) { return y(d.y); })
           .attr("height", function(d) { return y.range()[0] - y(d.y); })
-          .attr('fill', function(d){ return color(d.x) } )
+          .attr('fill', '#fff' )
           .order()
+      bar.transition().duration(1000).attr('fill', function(d){ return color(d.x) } )
 
       // Update the x-axis.
       g.select(".x.axis")
