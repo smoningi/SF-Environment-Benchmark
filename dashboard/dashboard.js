@@ -72,6 +72,8 @@ var bubbles = scatterPlot()
   .height(300)
   .margin({left: 50})
 
+d3.select(window).on('resize', windowResize);
+
 /* get the data and render the page */
 d3_queue.queue()
     .defer(d3.json, '../data/j2j3-acqj.json')  /* https://data.sfgov.org/resource/j2j3-acqj.json?$limit=2000 */
@@ -161,7 +163,7 @@ function renderCharts (error, apiData) {
 
 var dispatcher = d3.dispatch('changeCategory', 'selectBuilding')
 dispatcher.on('changeCategory', function(newCategory){
-  
+
   // filterMapCategory(newCategory) /* only activates last filter selected */
   var estarVals = objArrayToSortedNumArray(apiDataToArray('latest_energy_star_score', newCategory)).filter(function (d) { return d > 0 })
   var euiVals = objArrayToSortedNumArray(apiDataToArray('latest_site_eui_kbtu_ft2', newCategory)).filter(function (d) { return d > 0 && d < 1000 }) /* 1000 here is arbitrary to cut out outlier of SFMOMA & some others*/
@@ -429,4 +431,18 @@ function numberWithCommas(x) {
     var parts = x.toString().split(".");
     parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     return parts.join(".");
+}
+
+function windowResize() {
+    // update width
+    width = parseInt(d3.select('#chart-histogram').style('width'), 10);
+    // do the actual resize...
+    histogram.width(width)
+    stackedBar.width(width)
+    bubbles.width(width)
+
+    chartHistogram.call(histogram)
+    chartStackedBar.call(stackedBar)
+    chartBubble.call(bubbles)
+
 }

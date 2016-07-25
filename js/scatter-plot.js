@@ -110,7 +110,7 @@ function scatterPlot() {
           .attr("y", function(d) { return -2 * r(d) })
           .attr("dy", "1.3em")
           .text(d3.format(".1s"))
-          })
+    })
 
   }
 
