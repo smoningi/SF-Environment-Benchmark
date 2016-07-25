@@ -155,11 +155,13 @@ function renderCharts (error, apiData) {
   digestTable(digestData('All'))
 
   $("select[name='category-selector']").change(function(){dispatcher.changeCategory(this.value)})
+  $("#category-selector-ul a").click(function(){dispatcher.changeCategory( $(this).html() )})
   d3.selectAll('.dot').on('mouseover', function(d){ dispatcher.selectBuilding(d.id) })
 }
 
 var dispatcher = d3.dispatch('changeCategory', 'selectBuilding')
 dispatcher.on('changeCategory', function(newCategory){
+  
   // filterMapCategory(newCategory) /* only activates last filter selected */
   var estarVals = objArrayToSortedNumArray(apiDataToArray('latest_energy_star_score', newCategory)).filter(function (d) { return d > 0 })
   var euiVals = objArrayToSortedNumArray(apiDataToArray('latest_site_eui_kbtu_ft2', newCategory)).filter(function (d) { return d > 0 && d < 1000 }) /* 1000 here is arbitrary to cut out outlier of SFMOMA & some others*/
@@ -375,8 +377,8 @@ function bubblesHighlight (selection, data) {
   hl.attr("r", function(d) { return r(d.r); })
       .attr("cx", function(d) { return x(d.x); })
       .attr("cy", function(d) { return y(d.y); })
-      .attr('fill', '#fff')
-      // .attr('fill-opacity', 0)
+      .attr('fill', function(d) { return color.source_eui_kbtu_ft2(d.x) })
+      .attr('fill-opacity', 1)
       .attr('stroke', colorSwatches.highlight)
       .attr('stroke-width', '2px')
   hl.exit().remove()
