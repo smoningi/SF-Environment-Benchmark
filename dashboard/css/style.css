@@ -108,7 +108,7 @@ a {
 	color: #999;
 }
 
-#infotable tr:hover {
+#infotable tbody tr:hover {
 	background-color: #eaebd8;
 }
 /* ---- Layout Containers ---- */

@@ -45,7 +45,7 @@ function hStackedBarChart() {
       var bar = svg.select(".bars").selectAll(".bar").data(data);
       bar.enter().append("rect").attr('class', 'bar');
       bar.exit().remove();
-      bar .attr("width", function(d,i){ return (i===0) ? 0 : x(d) } )
+      bar .attr("width", function(d,i){ return (i===0) ? 0 : x(d) } ) //TODO this doesn't subtract margins properly
           .attr("x", function(d,i) { return (i===0) ? x(d) : x(data[i-1]) })
           .attr("y", function(d) { return y(1); })
           .attr("height", function(d) { return y.range()[0] - y(1) })
@@ -56,9 +56,22 @@ function hStackedBarChart() {
       var label = svg.select('.labels').selectAll('.label').data(data);
       label.enter().append('text').attr('class', 'label');
       label.exit().remove();
-      label.style("text-anchor", "end")
-          .attr("transform", function(d){
-            return "translate(" + x(d) + "," + height + ")"
+      label.style("text-anchor", function(d, i){
+            if (i === 0) {return 'end'}
+            else if (i === 4 ) {return 'start'}
+            else {return 'middle'}
+          })
+          .style('alignment-baseline', function(d, i){
+            if (i === 0 || i === 4 ) return 'middle'
+            else if (i === 1 || i === 3 ){return 'before-edge'}
+            return 'after-edge'
+          })
+          .attr("transform", function(d,i){
+            var ypos
+            if (i === 0 || i === 4 ) ypos = 0.5
+            else if (i === 1 || i === 3 ){ypos = 0}
+            else {ypos = 1}
+            return "translate(" + x(d) + "," + y(ypos) + ")"
           })
           .text(function(d){return d})
     });
