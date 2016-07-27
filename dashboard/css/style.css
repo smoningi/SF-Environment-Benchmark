@@ -138,6 +138,10 @@ a {
 	font-weight: 700;
 }
 
+#widget-map {
+	display: none;
+}
+
 /* =================================
   Media Queries
 ==================================== */
@@ -188,11 +192,12 @@ a {
 
 	#widget-map {
 		height: 480px;
+		display: block;
 	}
 
 	/*#map {
 	    height: 100%;
-	    /*width: 100%;*/
+	    width: 100%;
 	    padding: 0px;
 	    margin: 0px;
 	    overflow: hidden;
