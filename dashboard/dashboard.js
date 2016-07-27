@@ -108,6 +108,109 @@ function renderCharts (error, apiData) {
   // chartBubble.call(chartBubbleHighlight,-10)
 
   /* draw map */
+  //Setting up leaflet map
+  var map = L.map('widget-map').setView([37.7833, -122.4167], 13);
+
+  //Getting tile from Mapbox
+  var mapreturnedApiData = [];
+
+  L.tileLayer('https://api.tiles.mapbox.com/v4/mapbox.dark/{z}/{x}/{y}.png?access_token={accessToken}', {
+      maxZoom: 18,
+      minZoom: 10,
+      attributionControl: false,
+      id: 'smoningi.a304c3dc',
+      accessToken: 'pk.eyJ1Ijoic21vbmluZ2kiLCJhIjoiQ21rN1pjSSJ9.WKrPFjjb7LRMBjyban698g'
+  }).addTo(map);
+
+  var mapSVG = d3.select(map.getPanes().overlayPane).append("svg"),
+      mapG = mapSVG.append("g").attr("class", "leaflet-zoom-hide");
+
+  d3_queue.queue()
+      .defer(d3.json, "../data/j2j3-acqj.json")  /* https://data.sfgov.org/resource/j2j3-acqj.json?$limit=2000 */
+      .defer(d3.json, "../data/justGeo.geojson")
+      .await(mapDraw);
+
+  function mapDraw(err, apiData, collection){
+      mapreturnedApiData = parseData(apiData)
+      collection.features.forEach(function(feature){
+        var data = returnedApiData.find(function(el){
+          return el.parcel_s === feature.properties.parcel_s
+        })
+        if (data != undefined) feature.properties = data
+      })
+
+      var mapColor = color.energy_star_score;
+
+      var chartData = apiDataToArray('latest_energy_star_score');
+      var valuesArr = objArrayToSortedNumArray(chartData).filter(function (d) { return d > 0 })
+      var thresholds = arrayQuartiles(valuesArr)
+      // color.energy_star_score.domain(thresholds)
+      mapColor.domain(thresholds)
+
+      var transform = d3.geo.transform({point: projectPoint}),
+          path = d3.geo.path().projection(transform);
+
+      var feature = mapG.selectAll("path")
+          .data(collection.features)
+          .enter()
+          .append("path")
+          .attr("id", function(d){
+            return d.properties.ID;
+          })
+          .style("stroke", "#B9E7FF")
+          .style("stroke-width",0.1)
+          .style("fill", function(d){
+            if(isNaN(d.properties['latest_energy_star_score'])){ //->>>>>>> Need a good isNaN color 
+              return "#FEB921";
+            } else{
+              return mapColor(parseInt(d.properties['latest_energy_star_score']));
+            }
+          })
+          .style("fill-opacity", 0.5)
+          .on("mouseover", function(d){
+            d3.select(this).style("fill-opacity",1)
+              .style("stroke", colorSwatches.highlight)
+              .style("stroke-width",2)
+              .style("fill", colorSwatches.highlight);
+          })
+          .on("mouseout", function(d){
+            d3.select(this).style("stroke", "#B9E7FF")
+              .style("stroke-width",0.1)
+              .style("fill", function(d){
+                return mapColor(parseInt(d.properties['latest_energy_star_score']));
+              });
+          });
+
+      map.on("viewreset", reset);
+      reset();
+
+
+      // Reposition the SVG to cover the features.
+      function reset() {
+          var bounds = path.bounds(collection),
+              topLeft = bounds[0],
+              bottomRight = bounds[1];
+
+          mapSVG.attr("width", bottomRight[0] - topLeft[0])
+              .attr("height", bottomRight[1] - topLeft[1])
+              .style("left", topLeft[0] + "px")
+              .style("top", topLeft[1] + "px");
+
+          mapG.attr("transform", "translate(" + -topLeft[0] + "," + -topLeft[1] + ")");
+
+          feature.attr("d", path);
+      }
+
+      // Use Leaflet to implement a D3 geometric transformation.
+      function projectPoint(x, y) {
+          var point = map.latLngToLayerPoint(new L.LatLng(y, x));
+          this.stream.point(point.x, point.y);
+      }
+
+    }
+
+
+
 
   /* draw table for data */
   $('#infotable').DataTable( {
@@ -343,6 +446,12 @@ function histogramHighlight (selection, data) {
     .attr('fill', colorSwatches.highlight )
   hl.exit().remove()
 }
+
+// function mapHighlight (selection, data) {
+//   if( isNaN(data) ) data = -100
+//
+//
+// }
 
 function stackedBarHighlight (selection, data) {
   if( isNaN(data) ) data = -100

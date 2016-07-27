@@ -190,6 +190,14 @@ a {
 		height: 480px;
 	}
 
+	/*#map {
+	    height: 100%;
+	    /*width: 100%;*/
+	    padding: 0px;
+	    margin: 0px;
+	    overflow: hidden;
+	}*/
+
 	.col-full {
 		width: 100% !important;
 		padding: 0 1.2em 0 1.1em;
