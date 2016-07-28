@@ -1,3 +1,5 @@
+// TODO: colorscale is not being recalculated for new data
+
 /* We should totally be using dc for this project. http://dc-js.github.io/dc.js/ */
 
 /* glogal reference objects */
@@ -99,7 +101,6 @@ function renderCharts (error, apiData) {
   /* draw stacked bar for energy use intensity */
   stackedBar.colorScale(color.source_eui_kbtu_ft2)
   chartStackedBar.datum(euiVals).call(stackedBar)
-  // chartStackedBar.call(stackedBarHighlight,-10)
 
   /* draw bubble chart for estimated cost ? <<do we even have the data for this? */
   /* draw bubble chart for greenhouse gases (ghg) instead */
@@ -268,6 +269,10 @@ dispatcher.on('changeCategory', function(newCategory){
   scatterPlotVals = scatterPlotVals.filter(function(d){ return d.x < 1000 }) /* 1000 here is arbitrary to cut out outlier of SFMOMA & some others*/
 
   color.energy_star_score.domain(arrayQuartiles(estarVals))
+  // color.source_eui_kbtu_ft2.range(d3.extent(euiVals)).domain(arrayQuartiles(euiVals))
+  // TODO: something like ^this^ 
+
+  stackedBar.colorScale(color.source_eui_kbtu_ft2)
 
   chartHistogram.datum(estarVals).call(histogram)
   chartStackedBar.datum(euiVals).call(stackedBar)

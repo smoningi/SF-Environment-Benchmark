@@ -18,7 +18,7 @@ function hStackedBarChart() {
       data = arrayQuartiles(data)
 
       /* Update the x-scale. */
-      x   .domain([0,d3.max(data)])
+      x   .domain(d3.extent(data))
           .range([0, width - margin.left - margin.right]);
 
       /* Update the y-scale. */
@@ -45,11 +45,11 @@ function hStackedBarChart() {
       var bar = svg.select(".bars").selectAll(".bar").data(data);
       bar.enter().append("rect").attr('class', 'bar');
       bar.exit().remove();
-      bar .attr("width", function(d,i){ return (i===0) ? 0 : x(d) } ) //TODO this doesn't subtract margins properly
-          .attr("x", function(d,i) { return (i===0) ? x(d) : x(data[i-1]) })
+      bar .attr("width", function(d,i){ return x(data[i+1]) - x(d) })
+          .attr("x", function(d,i) { return (i===0) ? 0 : x(d) })
           .attr("y", function(d) { return y(1); })
           .attr("height", function(d) { return y.range()[0] - y(1) })
-          .attr('fill', function(d,i){ return color.range()[i-1] } )
+          .attr('fill', function(d,i){ return color(d) } )
           .order()
 
       /* Update the axis labels. */
