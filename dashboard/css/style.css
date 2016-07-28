@@ -195,6 +195,9 @@ a {
 		display: block;
 	}
 
+	.leaflet-container {
+		z-index: 0;
+	}
 	/*#map {
 	    height: 100%;
 	    width: 100%;

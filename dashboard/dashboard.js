@@ -535,3 +535,31 @@ function windowResize() {
     chartBubble.call(bubbles)
 
 }
+
+//*******************************************
+/* CATEGORY FILTER DROPDOWN
+/********************************************/
+
+// populate single category select dropdown menu
+var filterOptions = '<li><a id="show-filter-options-modal" href="#">';
+for (var i=0;i < categoryFilters.length;i++) {
+    filterOptions += '<li><a href="#">'+categoryFilters[i]+'</a></li>';
+}
+$("#category-filters-dropdown").html(filterOptions);
+
+// update active class + button label
+$('.category-dropdown .dropdown-menu li').click(function() {
+    // $('#filters .category-dropdown .dropdown-menu li:first-child').removeClass('active');
+    $('.category-dropdown .dropdown-menu li').removeClass('active');
+    $(this).toggleClass('active');
+
+    var category = $(this).first().text();
+    if (category.length > 18) {
+      isEllipse = "...";
+    } else {
+      isEllipse = "";
+    }
+
+    // upon select, update dropdown-toggle label
+    $(".category-dropdown small").html(category.substring(0,18)+isEllipse);
+});
