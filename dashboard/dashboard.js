@@ -160,7 +160,7 @@ function renderCharts (error, apiData) {
           .style("stroke", "#B9E7FF")
           .style("stroke-width",0.1)
           .style("fill", function(d){
-            if(isNaN(d.properties['latest_energy_star_score'])){ //->>>>>>> Need a good isNaN color 
+            if(isNaN(d.properties['latest_energy_star_score'])){ //->>>>>>> Need a good isNaN color
               return "#FEB921";
             } else{
               return mapColor(parseInt(d.properties['latest_energy_star_score']));
@@ -256,8 +256,7 @@ function renderCharts (error, apiData) {
   /* render info table */
   digestTable(digestData('All'))
 
-  $("select[name='category-selector']").change(function(){dispatcher.changeCategory(this.value)})
-  $("#category-selector-ul a").click(function(){dispatcher.changeCategory( $(this).html() )})
+  $("#category-filters-dropdown a").click(function(){dispatcher.changeCategory( $(this).html() )})
   d3.selectAll('.dot').on('mouseover', function(d){ dispatcher.selectBuilding(d.id) })
 }
 
