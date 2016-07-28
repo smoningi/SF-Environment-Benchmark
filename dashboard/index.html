@@ -2,6 +2,7 @@
 <html>
 <head>
 	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
 	<title>SF Building Dashboard</title>
 	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
@@ -30,28 +31,12 @@
 				<ul class="main-nav">
 					<li>SF Benchmark Results</li>
 					<li>
-						<div class="btn-group metric-dropdown">
-								<button type="button" class="btn btn-md btn-default dropdown-toggle" id="metrics-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						<div class="btn-group category-dropdown">
+								<button type="button" class="btn btn-md btn-default dropdown-toggle" id="category-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 									<small>Category</small>
 									<span class="caret"></span>
 								</button>
-								<ul class="dropdown-menu" id="category-selector-ul">
-									<li><a>All</a></li>
-								  <li><a>Office</a></li>
-								  <li><a>Hotel</a></li>
-								  <li><a>Retail Store</a></li>
-								  <li><a>Other</a></li>
-								  <li><a>Mixed Use Property</a></li>
-								  <li><a>Non-Refrigerated Warehouse</a></li>
-								  <li><a>Worship Facility</a></li>
-								  <li><a>College/University</a></li>
-								  <li><a>Supermarket/Grocery Store</a></li>
-								  <li><a>Medical Office</a></li>
-								  <li><a>Manufacturing/Industrial Plant</a></li>
-								  <li><a>Distribution Center</a></li>
-								  <li><a>Automobile Dealership</a></li>
-								  <li><a>Restaurant</a></li>
-								  <li><a>N/A</a></li>
+								<ul id="category-filters-dropdown" class="dropdown-menu">
 								</ul>
 						</div>
 					</li>
@@ -101,9 +86,9 @@
 
 			<div class="secondary col">
 				<div class="widget" id="widget-map">
-					<div class="widget-heading">
+					<!-- <div class="widget-heading">
 						<h2>Map View</h2>
-					</div>
+					</div> -->
 					<div class="widget-content">
 						<div id="map"></div>
 					</div>
@@ -134,9 +119,10 @@
 				<div class="widget" id="widget-table">
 					<div class="widget-heading">
 						<h2>Table</h2>
+						Click on row to select that building
 					</div>
 					<div class="widget-content">
-						<table id="infotable" class="table" style="width:100%"></table>
+						<table id="infotable" class="table hover" style="width:100%"></table>
 					</div>
 				</div>
 			</div>

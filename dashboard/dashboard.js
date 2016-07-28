@@ -1,3 +1,5 @@
+// TODO: colorscale is not being recalculated for new data
+
 /* We should totally be using dc for this project. http://dc-js.github.io/dc.js/ */
 
 /* glogal reference objects */
@@ -61,7 +63,7 @@ var histogram = histogramChart()
 var stackedBar = hStackedBarChart()
   .width(width)
   .height(60)
-  .margin({top: 0, right: 10, bottom: 20, left: 50})
+  .margin({top: 10, right: 50, bottom: 10, left: 50})
 var bubbles = scatterPlot()
   .width(width)
   .height(300)
@@ -99,7 +101,6 @@ function renderCharts (error, apiData) {
   /* draw stacked bar for energy use intensity */
   stackedBar.colorScale(color.source_eui_kbtu_ft2)
   chartStackedBar.datum(euiVals).call(stackedBar)
-  // chartStackedBar.call(stackedBarHighlight,-10)
 
   /* draw bubble chart for estimated cost ? <<do we even have the data for this? */
   /* draw bubble chart for greenhouse gases (ghg) instead */
@@ -160,7 +161,7 @@ function renderCharts (error, apiData) {
           .style("stroke", "#B9E7FF")
           .style("stroke-width",0.1)
           .style("fill", function(d){
-            if(isNaN(d.properties['latest_energy_star_score'])){ //->>>>>>> Need a good isNaN color 
+            if(isNaN(d.properties['latest_energy_star_score'])){ //->>>>>>> Need a good isNaN color
               return "#FEB921";
             } else{
               return mapColor(parseInt(d.properties['latest_energy_star_score']));
@@ -227,14 +228,14 @@ function renderCharts (error, apiData) {
       { title: "Address", data: "building_address", responsivePriority: 2 },
       { title: "Building Name", data: "building_name", responsivePriority: 4 },
       { title: "Floor Area", data: "floor_area", responsivePriority: 5 },
-      { title: "Property Type", data: "property_type_self_selected", responsivePriority: 3 },
-      { title: "BlockLot", data: "ID", responsivePriority: 1 }
+      { title: "Property Type", data: "property_type_self_selected", responsivePriority: 3 }
     ],
     columnDefs: [
       {
         render: function ( data, type, row ) {
           return numberWithCommas(data);
         },
+        searchable: false,
         targets: 2
       },
       {
@@ -242,22 +243,19 @@ function renderCharts (error, apiData) {
           return '<button class="btn btn-default" onClick="dispatcher.changeCategory(\''+ data +'\')">'+data+'</button>'
         },
         targets: 3
-      },
-      {
-        render: function (data, type, row) {
-          return '<button class="btn btn-default table-blocklot" onClick="dispatcher.selectBuilding(\''+ data +'\')">'+data+'</button>'
-        },
-        targets: 4
-      },
-      { searchable: false, targets: [2,4] }
-    ]
+      }
+    ],
+    rowCallback: function( row, data, index) {
+      row.onclick = function(){
+        return dispatcher.selectBuilding(data.ID)
+      }
+    }
   });
 
   /* render info table */
   digestTable(digestData('All'))
 
-  $("select[name='category-selector']").change(function(){dispatcher.changeCategory(this.value)})
-  $("#category-selector-ul a").click(function(){dispatcher.changeCategory( $(this).html() )})
+  $("#category-filters-dropdown a").click(function(){dispatcher.changeCategory( $(this).html() )})
   d3.selectAll('.dot').on('mouseover', function(d){ dispatcher.selectBuilding(d.id) })
 }
 
@@ -271,6 +269,10 @@ dispatcher.on('changeCategory', function(newCategory){
   scatterPlotVals = scatterPlotVals.filter(function(d){ return d.x < 1000 }) /* 1000 here is arbitrary to cut out outlier of SFMOMA & some others*/
 
   color.energy_star_score.domain(arrayQuartiles(estarVals))
+  // color.source_eui_kbtu_ft2.range(d3.extent(euiVals)).domain(arrayQuartiles(euiVals))
+  // TODO: something like ^this^ 
+
+  stackedBar.colorScale(color.source_eui_kbtu_ft2)
 
   chartHistogram.datum(estarVals).call(histogram)
   chartStackedBar.datum(euiVals).call(stackedBar)
@@ -535,3 +537,31 @@ function windowResize() {
     chartBubble.call(bubbles)
 
 }
+
+//*******************************************
+/* CATEGORY FILTER DROPDOWN
+/********************************************/
+
+// populate single category select dropdown menu
+var filterOptions = '<li><a id="show-filter-options-modal" href="#">';
+for (var i=0;i < categoryFilters.length;i++) {
+    filterOptions += '<li><a href="#">'+categoryFilters[i]+'</a></li>';
+}
+$("#category-filters-dropdown").html(filterOptions);
+
+// update active class + button label
+$('.category-dropdown .dropdown-menu li').click(function() {
+    // $('#filters .category-dropdown .dropdown-menu li:first-child').removeClass('active');
+    $('.category-dropdown .dropdown-menu li').removeClass('active');
+    $(this).toggleClass('active');
+
+    var category = $(this).first().text();
+    if (category.length > 18) {
+      isEllipse = "...";
+    } else {
+      isEllipse = "";
+    }
+
+    // upon select, update dropdown-toggle label
+    $(".category-dropdown small").html(category.substring(0,18)+isEllipse);
+});

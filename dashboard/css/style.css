@@ -107,6 +107,10 @@ a {
 	font-size: .8em;
 	color: #999;
 }
+
+#infotable tbody tr:hover {
+	background-color: #eaebd8;
+}
 /* ---- Layout Containers ---- */
 
 .container {
@@ -136,6 +140,10 @@ a {
 .widget-heading h2 {
 	font-size: 18px;
 	font-weight: 700;
+}
+
+#widget-map {
+	display: none;
 }
 
 /* =================================
@@ -188,11 +196,15 @@ a {
 
 	#widget-map {
 		height: 480px;
+		display: block;
 	}
 
+	.leaflet-container {
+		z-index: 0;
+	}
 	/*#map {
 	    height: 100%;
-	    /*width: 100%;*/
+	    width: 100%;
 	    padding: 0px;
 	    margin: 0px;
 	    overflow: hidden;
