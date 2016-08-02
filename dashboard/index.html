@@ -40,11 +40,6 @@
 								</ul>
 						</div>
 					</li>
-					<li>
-
-					</li>
-				<!-- 	<li><a href="#">item3</a></li>
-					<li><a href="#">item4</a></li> -->
 				</ul>
 			</div>
 		</header>
@@ -55,10 +50,10 @@
 				<div class="widget">
 					<div class="widget-heading">
 						<h2>Energy Star Score Distribution</h2>
+						<span class="pull-right"><i class="fa fa-info-circle"></i></span>
 					</div>
 					<div class="widget-content">
-						<!-- <label for="">Energy Star Score Distribution</label> -->
-						<div class="loading">Loading...</div>
+						<div class="loading">Loading&mdash;</div>
 						<div id="chart-histogram" class="histogram-chart"></div>
 					</div>
 				</div>
@@ -67,65 +62,94 @@
 						<h2>Energy Use Intensity (EUI)</h2>
 					</div>
 					<div class="widget-content">
-						<label for=""></label>
-						<div class="loading">Loading...</div>
+						<div class="loading">Loading&mdash;</div>
 	          <div id="chart-stackedbar" class="chart-stackedbar"></div>
 					</div>
 				</div>
 				<div class="widget">
 					<div class="widget-heading">
-						<h2>GHG Emision vs. Site EUI</h2>
+						<h2>GHG Emission vs. Site EUI</h2>
 					</div>
 					<div class="widget-content">
 						<label for="">Radius sized by floor area</label>
-						<div class="loading">Loading...</div>
+						<div class="loading">Loading&mdash;</div>
 	          <div id="chart-bubble" class="chart-bubble"></div>
+					</div>
+				</div>
+				<div class="widget hide" id="widget-map">
+					<div class="widget-heading">
+						<!-- <h2>Map View</h2> -->
+					</div>
+					<div class="widget-content">
+						<div id="map"></div>
 					</div>
 				</div>
 			</div><!--/.primary-->
 
 			<div class="secondary col">
-				<div class="widget" id="widget-map">
-					<!-- <div class="widget-heading">
+				<div class="widget" id="widget-table">
+					<div class="widget-heading">
+						<h2>Buildings</h2>
+						<span><small>Click on row to select building</small></span>
+					</div>
+					<div class="widget-content">
+						<table id="infotable" class="table hover" style="width:100%"></table>
+					</div>
+				</div>
+				<!-- <div class="widget" id="widget-map">
+					<div class="widget-heading">
 						<h2>Map View</h2>
-					</div> -->
+					</div>
 					<div class="widget-content">
 						<div id="map"></div>
 					</div>
-				</div>
+				</div> -->
 				<div class="widget">
+					<div class="widget-heading">
+						<h2>Summary</h2>
+						<span><i class="fa fa-info-circle"></i></span>
+					</div>
 					<dl class="dl-horizontal">
-						<dt>Type of Building</dt><dd id="table-type">...</dd>
-						<dt># of Properties</dt><dd id="table-count">...</dd>
-						<dt>Floor Area</dt><dd id="table-floor_area">...</dd>
-						<dt>Total GHG Emissions</dt><dd id="table-total_ghg">...</dd>
-						<dt>Compliance Rate</dt><dd id="table-compliance">...</dd>
+						<dt>Type of Building</dt><dd id="table-type">&mdash;</dd>
+						<dt># of Properties</dt><dd id="table-count">&mdash;</dd>
+						<dt>Floor Area</dt><dd id="table-floor_area">&mdash;</dd>
+						<dt>Total GHG Emissions</dt><dd id="table-total_ghg">&mdash;</dd>
+						<dt>Compliance Rate</dt><dd id="table-compliance">&mdash;</dd>
 					</dl>
 					<div id="active-property" class="table">
 						<dl class="dl-horizontal">
-							 <dt>Address</dt><dd>...</dd>
-							 <dt>Building Type</dt><dd>...</dd>
-							 <dt>Latest Benchmark Year</dt><dd>...</dd>
-							 <dt>Energy Star Score</dt><dd>...</dd>
-							 <dt>Site EUI</dt><dd>...</dd>
-							 <dt>GHG Emissions (MT CO2)</dt><dd>...</dd>
-							 <dt>Floor Area</dt><dd>...</dd>
+							 <dt>Address</dt><dd>&mdash;</dd>
+							 <dt>Building Type</dt><dd>&mdash;</dd>
+							 <dt>Latest Benchmark Year</dt><dd>&mdash;</dd>
+							 <dt>Energy Star Score</dt><dd>&mdash;</dd>
+							 <dt>Site EUI</dt><dd>&mdash;</dd>
+							 <dt>GHG Emissions (MT CO<sup>2</sup>)</dt><dd>&mdash;</dd>
+							 <dt>Floor Area</dt><dd>&mdash;</dd>
 						 </dl>
 					</div>
 				</div>
 			</div><!--/.secondary-->
 
-			<div class="col col-full">
+			<!-- <div class="col col-full hide">
+				<div class="widget" id="widget-map">
+					<div class="widget-heading">
+						<h2>Map View</h2>
+					</div>
+					<div class="widget-content">
+						<div id="map"></div>
+					</div>
+				</div>
+
 				<div class="widget" id="widget-table">
 					<div class="widget-heading">
-						<h2>Table</h2>
+						<h2>Buildings</h2>
 						Click on row to select that building
 					</div>
 					<div class="widget-content">
 						<table id="infotable" class="table hover" style="width:100%"></table>
 					</div>
 				</div>
-			</div>
+			</div> -->
 
 		</div><!--/.container-->
 
@@ -134,7 +158,7 @@
 
 
 	<footer class="main-footer">
-	 <span>Sticky Footer</span>
+	 <span>%src% %date%</span>
 	</footer>
 	<script src="../js/scatter-plot.js"></script>
 	<script src="../js/histogram-chart.js"></script>
