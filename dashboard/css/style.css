@@ -83,34 +83,6 @@ a {
 	width: 100%
 }
 
-#infotable thead th {
-	font-size: .9em
-}
-
-#infotable tbody tr {
-	font-size: .8em
-}
-
-#infotable tr.odd {
-	background: #d9e4ea;
-}
-
-#infotable_filter .input-sm {
-	height: 16px;
-}
-
-
-#infotable_length,
-#infotable_filter,
-#infotable_info,
-#infotable_paginate {
-	font-size: .8em;
-	color: #999;
-}
-
-#infotable tbody tr:hover {
-	background-color: #eaebd8;
-}
 /* ---- Layout Containers ---- */
 
 .container {
@@ -140,6 +112,11 @@ a {
 .widget-heading h2 {
 	font-size: 18px;
 	font-weight: 700;
+	display: inline-block;
+}
+.widget-heading span {
+	float: right;
+	color: #777;
 }
 
 #widget-map {
@@ -215,6 +192,24 @@ a {
 		padding: 0 1.2em 0 1.1em;
 	}
 
+	dd, dt {
+		line-height: 1em;
+	}
+	dd {
+		background-color: #00649a;
+		padding: 4px 4px 4px 8px !important;
+		color: #fff;
+		border: 1px #fff solid;
+		font-size: 1.1em;
+		font-weight: 700;
+	}
+	dt {
+		font-weight: 500;
+		font-size: 1.1em;
+		/*text-transform: uppercase;*/
+		color: #777;
+		padding: 8px 0 0 0 !important;
+	}
 }
 
 
@@ -242,4 +237,56 @@ a {
   fill: #777;
   font: 10px sans-serif;
   text-anchor: middle;
+}
+
+/* =================================
+  Styles for Tables
+==================================== */
+
+dd, dt {
+	line-height: 1em;
+}
+dd {
+	/*background-color: #00649a;*/
+	/*padding: 8px 0 0px 8px;*/
+	/*color: #fff;*/
+	border: 1px #fff solid;
+	font-size: 1.1em;
+	font-weight: 700;
+	padding: 4px 0 16px 0;
+}
+dt {
+	font-weight: 500;
+	font-size: .8em;
+	text-transform: uppercase;
+	color: #777;
+}
+
+#infotable thead th {
+	font-size: .9em
+}
+
+#infotable tbody tr {
+	font-size: .8em
+}
+
+#infotable tr.odd {
+	background: #d9e4ea;
+}
+
+#infotable_filter .input-sm {
+	height: 16px;
+}
+
+
+#infotable_length,
+#infotable_filter,
+#infotable_info,
+#infotable_paginate {
+	font-size: .8em;
+	color: #999;
+}
+
+#infotable tbody tr:hover {
+	background-color: #eaebd8;
 }
