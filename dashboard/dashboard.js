@@ -240,7 +240,7 @@ function renderCharts (error, apiData) {
       },
       {
         render: function (data, type, row) {
-          return '<button class="btn btn-default" onClick="dispatcher.changeCategory(\''+ data +'\')">'+data+'</button>'
+          return '<span class="likelink" onClick="dispatcher.changeCategory(\''+ data +'\')">'+data+'</span>'
         },
         targets: 3
       }
@@ -270,7 +270,7 @@ dispatcher.on('changeCategory', function(newCategory){
 
   color.energy_star_score.domain(arrayQuartiles(estarVals))
   // color.source_eui_kbtu_ft2.range(d3.extent(euiVals)).domain(arrayQuartiles(euiVals))
-  // TODO: something like ^this^ 
+  // TODO: something like ^this^
 
   stackedBar.colorScale(color.source_eui_kbtu_ft2)
 

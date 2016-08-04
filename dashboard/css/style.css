@@ -243,3 +243,8 @@ a {
   font: 10px sans-serif;
   text-anchor: middle;
 }
+
+.likelink {
+  text-decoration: underline;
+  color: blue;
+}
