@@ -63,6 +63,7 @@ function mapDraw(err, apiData, collection){
     var chartData = apiDataToArray(activeMetric)
     var valuesArr = objArrayToSortedNumArray(chartData).filter(function (d) { return d > 0 })
     var thresholds = arrayQuartiles(valuesArr)
+    debugger
     color.domain(thresholds)
 
     var transform = d3.geo.transform({point: projectPoint}),
