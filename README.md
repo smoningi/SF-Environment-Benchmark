@@ -1,3 +1,9 @@
+# Deprecation warning
+
+### This repo is being deprecated in favor of the [SFBrigade fork](https://github.com/sfbrigade/datasci-SF-Environment-Benchmark), to be more aligned with Data Science Working Group best practice procedures.
+#### Please refer to this https://github.com/sfbrigade/datasci-SF-Environment-Benchmark repo for future work
+
+***
 # [SF-Environment-Benchmark](http://smoningi.github.io/SF-Environment-Benchmark/map/)
 Set of applications to visualize SF building energy consumption and greenhouse gas emissions.
 
