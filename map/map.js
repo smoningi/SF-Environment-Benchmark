@@ -35,7 +35,7 @@ var returnedApiData = [];
 L.tileLayer('https://api.tiles.mapbox.com/v4/mapbox.dark/{z}/{x}/{y}.png?access_token={accessToken}', {
     maxZoom: 18,
     minZoom: 13,
-    attributionControl: false,
+    attributionControl: true,
     id: 'smoningi.a304c3dc',
     accessToken: 'pk.eyJ1Ijoic21vbmluZ2kiLCJhIjoiQ21rN1pjSSJ9.WKrPFjjb7LRMBjyban698g'
 }).addTo(map);
