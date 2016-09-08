@@ -286,6 +286,20 @@ function mapDraw(err, apiData, collection){
         } else { // boxNumber == null or N/A
             scorebox.style.color = '#333';
         }
+      } else if (colorMetric == 'total_ghg_emissions_intensity_kgco2e_ft2') {
+        scorebox.style.color = '#333';
+      } else if (colorMetric == 'source_eui_kbtu_ft2') {
+        if (boxNumber > 175) {
+          scorebox.style.color = '#fff';
+        } else {
+          scorebox.style.color = '#333';
+        }
+      } else if (colorMetric == 'site_eui_kbtu_ft2') {
+        if (boxNumber > 74.75) {
+          scorebox.style.color = '#fff';
+        } else {
+          scorebox.style.color = '#333';
+        }
       } else {
         scorebox.style.color = '#333';
       }
