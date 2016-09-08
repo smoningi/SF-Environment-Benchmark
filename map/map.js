@@ -295,7 +295,7 @@ function mapDraw(err, apiData, collection){
           scorebox.style.color = '#333';
         }
       } else if (colorMetric == 'site_eui_kbtu_ft2') {
-        if (boxNumber > 74.75) {
+        if (boxNumber > 49) {
           scorebox.style.color = '#fff';
         } else {
           scorebox.style.color = '#333';
