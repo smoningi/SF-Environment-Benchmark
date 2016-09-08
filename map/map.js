@@ -63,9 +63,8 @@ function mapDraw(err, apiData, collection){
     var chartData = apiDataToArray(activeMetric)
     var valuesArr = objArrayToSortedNumArray(chartData).filter(function (d) { return d > 0 })
     var thresholds = arrayQuartiles(valuesArr)
-    debugger
     color.domain(thresholds)
-
+    console.log(valuesArr.every(function(el){return (typeof el === 'number')}))
     var transform = d3.geo.transform({point: projectPoint}),
         path = d3.geo.path().projection(transform);
     var feature = g.selectAll("path")
@@ -374,8 +373,13 @@ function apiDataToArray (prop,categoryFilter) {
 }
 
 function objArrayToSortedNumArray (objArray) {
-  return objArray.map(function (el){ return el.value }).sort(function (a,b) { return a - b })
+  // objArray contains values of NaNs, which different browsers treat differently, we need to filter those out before passing to this function
+  var res = objArray.filter(function(el) {return isFinite(+el.value)}).map(function (el, idx){ var val = +el.value; if (isNaN(val)) console.log(el.value, idx); return val }).sort(function (a,b) { return a - b })
+  // console.log("res[0]: ", objArray[1660], ", mean:",d3.mean(res), ", count:", res.length)
+  return res
 }
+
+
 
 function arrayQuartiles (sortedArr) {
   return [
