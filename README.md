@@ -18,6 +18,8 @@ The original goal of the SF Environment Benchmark project was to visualize build
 | Tyler Field | @tyler | Visualization |
 | Geoffrey Pay | @gpay | Visualization |
 | Baolin Liu | | Modeling |
+| Anna Kiefer | @askiefer | |
+| Eric Youngson | @eayoungs | |
 
 ## Tech
 - D3
