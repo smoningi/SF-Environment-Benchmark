@@ -12,6 +12,7 @@ The original goal of the SF Environment Benchmark project was to visualize build
 
 
 ## Contributing DSWG Members
+| Slack | Channel | #datasci-energyenv |
 | Name | Slack Handle | Contribution |
 | ---| --- | --- |
 | Sanat Moningi | @sanat | Visualization |
