@@ -12,15 +12,15 @@ The original goal of the SF Environment Benchmark project was to visualize build
 
 
 ## Contributing DSWG Members
-| Slack | Channel | #datasci-energyenv |
+### Slack Channel: \#datasci-energyenv
 | Name | Slack Handle | Contribution |
 | ---| --- | --- |
 | Sanat Moningi | @sanat | Visualization |
 | Tyler Field | @tyler | Visualization |
 | Geoffrey Pay | @gpay | Visualization |
 | Baolin Liu | | Modeling |
-| Anna Kiefer | @askiefer | |
-| Eric Youngson | @eayoungs | |
+| Anna Kiefer | @askiefer | Planning |
+| Eric Youngson | @eayoungs | Planning |
 
 ## Tech
 - D3
