@@ -73,7 +73,7 @@ d3.select(window).on('resize', windowResize);
 
 /* get the data and render the page */
 d3_queue.queue()
-    .defer(d3.json, '../data/j2j3-acqj.json')  /* https://data.sfgov.org/resource/j2j3-acqj.json?$limit=2000 */
+    .defer(d3.json, '../data/75rg-imyz.json')  /* https://data.sfgov.org/resource/j2j3-acqj.json?$limit=2000 */
     .await(renderCharts)
 function renderCharts (error, apiData) {
   $('.loading').remove()
