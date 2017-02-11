@@ -1,6 +1,5 @@
 var soda = require('soda-js');
 var fs = require('fs');
-
 var consumer = new soda.Consumer('data.sfgov.org');
 
 consumer.query()
@@ -10,7 +9,7 @@ consumer.query()
   	 .order('namelast') */
   .getRows()
     .on('success', function(rows) { console.log(rows); 
-    								fs.writeFile("test.json", rows, function(err) {
+    								fs.writeFile("./data/75rg-imyz.json", JSON.stringify(rows), function(err) {
     								if(err) {
     								    return console.log(err);
     							   } });})
