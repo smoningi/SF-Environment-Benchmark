@@ -13,10 +13,12 @@ let test2JSON = JSON.parse('[{"_2010_reason_for_exemption":"Exempt - SqFt Not Su
 let consumer = new soda.Consumer('data.sfgov.org')
 
 let whereOffice = {property_type_self_selected: "Office"}
-let testquery = "where=floor_area%20between%2010000%20and%2014000"
+let testquery = "SELECT * WHERE property_type_self_selected='Office' AND floor_area > 100000 AND floor_area < 200000 LIMIT 5"
+// see https://dev.socrata.com/docs/queries/query.html
+// let testquery = "floor_area between '10000' and '14000'"
 // propertyQuery( 1, { parcel_s: '0267/009' }, null, handleSingleBuildingResponse )
 
-propertyQuery( 10, whereOffice, testquery, handlePropertyTypeResponse )
+propertyQuery( 10, null, testquery, handlePropertyTypeResponse )
 
 
 
@@ -29,10 +31,11 @@ propertyQuery( 10, whereOffice, testquery, handlePropertyTypeResponse )
 * @param {function} handler - callback handler function for returned json
 */
 function propertyQuery(limit, whereparams, soqlQuery, handler) {
-  consumer.query(soqlQuery)
+  consumer.query()
     .withDataset(DATASOURCE)
     .limit(limit)
     .where(whereparams)
+    .soql(soqlQuery)
     .getRows()
       // this might be starting down the road to callback hell
       .on('success', handler)
@@ -54,7 +57,8 @@ function handleSingleBuildingResponse(rows) {
 */
 function handlePropertyTypeResponse(rows) {
   let res = rows.map(parseSingleRecord)
-  console.log(res)
+  res.forEach((el)=>{return console.log(el.property_type_self_selected, el.floor_area)})
+  // console.log(res)
 }
 
 /**
