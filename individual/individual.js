@@ -12,12 +12,11 @@ let test2JSON = JSON.parse('[{"_2010_reason_for_exemption":"Exempt - SqFt Not Su
 /* use soda-js to query */
 let consumer = new soda.Consumer('data.sfgov.org')
 
-/* Storing parcel data globally */
-// let returnedApiData = []
+let whereOffice = {property_type_self_selected: "Office"}
+let testquery = "where=floor_area%20between%2010000%20and%2014000"
+// propertyQuery( 1, { parcel_s: '0267/009' }, null, handleSingleBuildingResponse )
 
-// propertyQuery( 1, { parcel_s: '0267/009' }, handleSingleBuildingResponse );
-// propertyQuery( 10, {property_type_self_selected: "Office"}, handlePropertyTypeResponse )
-
+propertyQuery( 10, whereOffice, testquery, handlePropertyTypeResponse )
 
 
 
@@ -29,8 +28,8 @@ let consumer = new soda.Consumer('data.sfgov.org')
 * @param {object} whereparams - query params, generally of the form {parcel_s: "####/###"} or {property_type_self_selected: "Office"}
 * @param {function} handler - callback handler function for returned json
 */
-function propertyQuery(limit,whereparams, handler) {
-  consumer.query()
+function propertyQuery(limit, whereparams, soqlQuery, handler) {
+  consumer.query(soqlQuery)
     .withDataset(DATASOURCE)
     .limit(limit)
     .where(whereparams)
@@ -180,4 +179,3 @@ function onlyNumbers (val) {
 //     parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 //     return parts.join(".");
 // }
-
