@@ -12,13 +12,14 @@ let test2JSON = JSON.parse('[{"_2010_reason_for_exemption":"Exempt - SqFt Not Su
 /* use soda-js to query */
 let consumer = new soda.Consumer('data.sfgov.org')
 
+let specificParcel = {parcel_s: '0267/009'}
 let whereOffice = {property_type_self_selected: "Office"}
 let testquery = "SELECT * WHERE property_type_self_selected='Office' AND floor_area > 100000 AND floor_area < 200000 LIMIT 5"
 // see https://dev.socrata.com/docs/queries/query.html
-// let testquery = "floor_area between '10000' and '14000'"
-// propertyQuery( 1, { parcel_s: '0267/009' }, null, handleSingleBuildingResponse )
 
-propertyQuery( 10, null, testquery, handlePropertyTypeResponse )
+// propertyQuery( 1, specificParcel, null, handleSingleBuildingResponse )
+// propertyQuery( 10, whereOffice, null, handlePropertyTypeResponse )
+propertyQuery( null, null, testquery, handlePropertyTypeResponse )
 
 
 
