@@ -7,6 +7,7 @@ const BLK = /(.+)\//
 const LOT = /[\/\.](.+)/
 
 /* use soda-js to query */
+// ref: https://github.com/socrata/soda-js
 let consumer = new soda.Consumer('data.sfgov.org')
 
 let specificParcel = {parcel_s: '0267/009'}
@@ -74,9 +75,10 @@ function formQueryString(params){
 }
 
 /**
-* propertyQuery - query for a single parcel
+* propertyQuery - query sfdata for a parcel or parcels
 * @param {number} limit - how many entries to return
 * @param {object} whereparams - query params, generally of the form {parcel_s: "####/###"} or {property_type_self_selected: "Office"}
+* @param {string} soqlQuery - complete SOQL query string.  it seems this will override parameters in 'limit' and 'whereparams' if not null
 * @param {function} handler - callback handler function for returned json
 * @returns some sort of promise
 */
@@ -93,8 +95,8 @@ function propertyQuery(limit, whereparams, soqlQuery, handler) {
 }
 
 /**
-* handleSingleBuildingResponse - do something with the returned data
-* @param {array} rows - returned from consumer.query.getRows
+* handleSingleBuildingResponse - do something with the returned data, expects only one row
+* @param {array} rows - returned from consumer.query.getRows, expects rows.length === 0
 */
 function handleSingleBuildingResponse(rows) {
   let res = parseSingleRecord(rows[0])
@@ -114,7 +116,7 @@ function handlePropertyTypeResponse(rows) {
 /**
 * parseSingleRecord - parse the returned property record object
 * @param {object} record - the record object returned from SODA
-* @returns {object} the record with some new properties
+* @return {object} the record from @param with our "latest_" properties added 
 */
 function parseSingleRecord(record){
   if (record.parcel_s === undefined) {return null}
@@ -133,7 +135,7 @@ function parseSingleRecord(record){
 * latest - query for a single parcel
 * @param {string} metric - the parcel metric being recorded
 * @param {object} entry - the parcel record object
-* @returns {object} the record with some new properties
+* @return {object} - the entry param with new "latest_" properties
 */
 function latest (metric, entry) {
   var years = [2011,2012,2013,2014,2015]
@@ -156,12 +158,14 @@ function latest (metric, entry) {
 }
 
 /**
-* apiDataToArray - digest record array to get
-* @param {string} prop -
-* @param {string} categoryFilter -
+* apiDataToArray - digest record array to get a simpler, standardized array
+* @param {array} data - the input array of data records
+* @param {string} prop - the property we're interested in standardizing
+* @param {string} categoryFilter - only return parcels which have this property_type_self_selected
+* @return {array} an array of objects with form {id: parcelId, value: propValue}
 */
-function apiDataToArray (prop, categoryFilter) {
-  var arr = returnedApiData
+function apiDataToArray (data, prop, categoryFilter) {
+  var arr = data
   if (categoryFilter && categoryFilter !== 'All') {
     arr = arr.filter(function(parcel){
       return parcel.property_type_self_selected === categoryFilter
