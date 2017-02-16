@@ -1,35 +1,84 @@
 "use strict";
 
 //TODO: CHANGE limit on returned properties in function propertyTypeQuery()
-const DATASOURCE = 'j2j3-acqj'
+const DATASOURCE = 'j2j3-acqj' // ? '75rg-imyz'
 const METRICS = ['benchmark','energy_star_score','site_eui_kbtu_ft2','source_eui_kbtu_ft2','percent_better_than_national_median_site_eui','percent_better_than_national_median_source_eui','total_ghg_emissions_metric_tons_co2e','total_ghg_emissions_intensity_kgco2e_ft2','weather_normalized_site_eui_kbtu_ft2','weather_normalized_source_eui_kbtu_ft2']
 const BLK = /(.+)\//
 const LOT = /[\/\.](.+)/
-
-let testJSON  = JSON.parse('[{"_2010_reason_for_exemption":"Exempt - SqFt Not Subject This Year","_2011_reason_for_exemption":"Exempt - SqFt Not Subject This Year","_2014_energy_star_score":"16","_2014_percent_better_than_national_median_site_eui":"49.6","_2014_percent_better_than_national_median_source_eui":"49.6","_2014_site_eui_kbtu_ft2":"108","_2014_source_eui_kbtu_ft2":"189.2","_2014_total_ghg_emissions_intensity_kgco2e_ft2":"6.8","_2014_total_ghg_emissions_metric_tons_co2e":"95.4","_2014_weather_normalized_site_eui_kbtu_ft2":"110.1","_2014_weather_normalized_source_eui_kbtu_ft2":"191.4","_2015_energy_star_score":"27","_2015_percent_better_than_national_median_site_eui":"28","_2015_percentage_better_than_national_median_source_eui":"28","_2015_site_eui_kbtu_ft2":"95.4","_2015_source_eui_kbtu_ft2":"165","_2015_total_ghg_emissions_intensity_kgco2e_ft2":"6","_2015_total_ghg_emissions_metric_tons_co2e":"83.9","_2015_weather_normalized_site_eui_kbtu_ft2":"95.4","_2015_weather_normalized_source_eui_kbtu_ft2":"165","benchmark_2010_status":"Exempt","benchmark_2011_status":"Exempt","benchmark_2012_status":"Complied","benchmark_2013_status":"Violation - Did Not Report","benchmark_2014_status":"Complied","benchmark_2015_status":"Complied","building_address":"130 BUSH ST","building_name":"The Heineman Building (130 Bush St)","energy_audit_due_date":"4/1/2013","energy_audit_status":"Complied","floor_area":"14100","full_address":{"type":"Point","coordinates":[-122.400143,37.791259]},"full_address_address":"130 BUSH ST","full_address_city":"San Francisco","full_address_state":"CA","full_address_zip":"94104","parcel_s":"0267/009","pim_link":"http://propertymap.sfplanning.org/?&search=0267/009","postal_code":"94104","property_type_self_selected":"Office"}]');
-let test2JSON = JSON.parse('[{"_2010_reason_for_exemption":"Exempt - SqFt Not Subject This Year","_2011_reason_for_exemption":"Exempt - SqFt Not Subject This Year","_2014_energy_star_score":"16","_2014_percent_better_than_national_median_site_eui":"49.6","_2014_percent_better_than_national_median_source_eui":"49.6","_2014_site_eui_kbtu_ft2":"108","_2014_source_eui_kbtu_ft2":"189.2","_2014_total_ghg_emissions_intensity_kgco2e_ft2":"6.8","_2014_total_ghg_emissions_metric_tons_co2e":"95.4","_2014_weather_normalized_site_eui_kbtu_ft2":"110.1","_2014_weather_normalized_source_eui_kbtu_ft2":"191.4","_2015_energy_star_score":"27","_2015_percent_better_than_national_median_site_eui":"28","_2015_percentage_better_than_national_median_source_eui":"28","_2015_site_eui_kbtu_ft2":"95.4","_2015_source_eui_kbtu_ft2":"165","_2015_total_ghg_emissions_intensity_kgco2e_ft2":"6","_2015_total_ghg_emissions_metric_tons_co2e":"83.9","_2015_weather_normalized_site_eui_kbtu_ft2":"95.4","_2015_weather_normalized_source_eui_kbtu_ft2":"165","benchmark_2010_status":"Exempt","benchmark_2011_status":"Exempt","benchmark_2012_status":"Complied","benchmark_2013_status":"Violation - Did Not Report","benchmark_2014_status":"Complied","benchmark_2015_status":"Complied","building_address":"130 BUSH ST","building_name":"The Heineman Building (130 Bush St)","energy_audit_due_date":"4/1/2013","energy_audit_status":"Complied","floor_area":"14100","full_address":{"type":"Point","coordinates":[-122.400143,37.791259]},"full_address_address":"130 BUSH ST","full_address_city":"San Francisco","full_address_state":"CA","full_address_zip":"94104","parcel_s":"0267/009","pim_link":"http://propertymap.sfplanning.org/?&search=0267/009","postal_code":"94104","property_type_self_selected":"Office"},{"_2010_reason_for_exemption":"Exempt - SqFt Not Subject This Year","_2011_reason_for_exemption":"Exempt - SqFt Not Subject This Year","_2013_percent_better_than_national_median_site_eui":"-76.7","_2013_percent_better_than_national_median_source_eui":"-76.7","_2013_site_eui_kbtu_ft2":"14.4","_2013_source_eui_kbtu_ft2":"34.5","_2013_total_ghg_emissions_intensity_kgco2e_ft2":"1","_2013_total_ghg_emissions_metric_tons_co2e":"16.6","_2013_weather_normalized_site_eui_kbtu_ft2":"14.6","_2013_weather_normalized_source_eui_kbtu_ft2":"34.7","_2014_percent_better_than_national_median_site_eui":"-69.5","_2014_percent_better_than_national_median_source_eui":"-69.5","_2014_site_eui_kbtu_ft2":"16.5","_2014_source_eui_kbtu_ft2":"45.1","_2014_total_ghg_emissions_intensity_kgco2e_ft2":"1.3","_2014_total_ghg_emissions_metric_tons_co2e":"20.3","_2014_weather_normalized_site_eui_kbtu_ft2":"18.1","_2014_weather_normalized_source_eui_kbtu_ft2":"46.7","_2015_energy_star_score":"98","_2015_percent_better_than_national_median_site_eui":"-61.4","_2015_percentage_better_than_national_median_source_eui":"-61.4","_2015_site_eui_kbtu_ft2":"18.8","_2015_source_eui_kbtu_ft2":"53.3","_2015_total_ghg_emissions_intensity_kgco2e_ft2":"1.5","_2015_total_ghg_emissions_metric_tons_co2e":"23.5","_2015_weather_normalized_site_eui_kbtu_ft2":"19.1","_2015_weather_normalized_source_eui_kbtu_ft2":"53.6","benchmark_2010_status":"Exempt","benchmark_2011_status":"Exempt","benchmark_2012_status":"Violation - Did Not Report","benchmark_2013_status":"Complied","benchmark_2014_status":"Complied","benchmark_2015_status":"Complied","building_address":"1045 17TH ST","building_name":"1045 17TH ST","energy_audit_due_date":"4/1/2013","energy_audit_status":"Complied","floor_area":"16162","full_address":{"type":"Point","coordinates":[-122.39455,37.765277]},"full_address_address":"1045 17TH ST","full_address_city":"San Francisco","full_address_state":"CA","full_address_zip":"94107","parcel_s":"3987/008","pim_link":"http://propertymap.sfplanning.org/?&search=3987/008","postal_code":"94107","property_type_self_selected":"Office"},{"_2011_energy_star_score":"100","_2011_percent_better_than_national_median_site_eui":"-73.4","_2011_site_eui_kbtu_ft2":"39","_2011_total_ghg_emissions_metric_tons_co2e":"243.78","_2011_weather_normalized_site_eui_kbtu_ft2":"39","_2013_energy_star_score":"100","_2013_percent_better_than_national_median_site_eui":"-75.9","_2013_percent_better_than_national_median_source_eui":"-75.9","_2013_site_eui_kbtu_ft2":"23.4","_2013_source_eui_kbtu_ft2":"46.9","_2013_total_ghg_emissions_intensity_kgco2e_ft2":"1.5","_2013_total_ghg_emissions_metric_tons_co2e":"142.4","_2013_weather_normalized_site_eui_kbtu_ft2":"23.8","_2013_weather_normalized_source_eui_kbtu_ft2":"47.2","_2014_energy_star_score":"100","_2014_percent_better_than_national_median_site_eui":"-74.4","_2014_percent_better_than_national_median_source_eui":"-74.4","_2014_site_eui_kbtu_ft2":"22.6","_2014_source_eui_kbtu_ft2":"48.5","_2014_total_ghg_emissions_intensity_kgco2e_ft2":"1.5","_2014_total_ghg_emissions_metric_tons_co2e":"141.5","_2014_weather_normalized_site_eui_kbtu_ft2":"25","_2014_weather_normalized_source_eui_kbtu_ft2":"51","_2015_energy_star_score":"100","_2015_percent_better_than_national_median_site_eui":"-78","_2015_percentage_better_than_national_median_source_eui":"-78","_2015_site_eui_kbtu_ft2":"19.7","_2015_source_eui_kbtu_ft2":"42.3","_2015_total_ghg_emissions_intensity_kgco2e_ft2":"1.3","_2015_total_ghg_emissions_metric_tons_co2e":"123.3","_2015_weather_normalized_site_eui_kbtu_ft2":"20.9","_2015_weather_normalized_source_eui_kbtu_ft2":"43.6","benchmark_2010_status":"Complied","benchmark_2011_status":"Complied","benchmark_2012_status":"Violation - Did Not Report","benchmark_2013_status":"Complied","benchmark_2014_status":"Complied","benchmark_2015_status":"Complied","building_address":"1663 MISSION ST","building_name":"Speyer & Schwartz","energy_audit_due_date":"4/1/2013","energy_audit_status":"Complied","floor_area":"91995","full_address":{"type":"Point","coordinates":[-122.419537,37.771303]},"full_address_address":"1663 MISSION ST","full_address_city":"San Francisco","full_address_state":"CA","full_address_zip":"94103","parcel_s":"3514/030","pim_link":"http://propertymap.sfplanning.org/?&search=3514/030","postal_code":"94103","property_type_self_selected":"Office"},{"_2010_reason_for_exemption":"Exempt - SqFt Not Subject This Year","_2012_energy_star_score":"77","_2012_percent_better_than_national_median_site_eui":"-29.2","_2012_site_eui_kbtu_ft2":"69.2","_2012_source_eui_kbtu_ft2":"157.2","_2012_total_ghg_emissions_metric_tons_co2e":"236","_2012_weather_normalized_site_eui_kbtu_ft2":"69.8","_2012_weather_normalized_source_eui_kbtu_sq_ft":"159.2","_2013_energy_star_score":"87","_2013_site_eui_kbtu_ft2":"59.4","_2013_source_eui_kbtu_ft2":"130.8","_2013_total_ghg_emissions_intensity_kgco2e_ft2":"4.1","_2013_total_ghg_emissions_metric_tons_co2e":"189.8","_2013_weather_normalized_site_eui_kbtu_ft2":"59.6","_2013_weather_normalized_source_eui_kbtu_ft2":"131","_2014_energy_star_score":"72","_2014_site_eui_kbtu_ft2":"72.9","_2014_source_eui_kbtu_ft2":"166.3","_2014_total_ghg_emissions_intensity_kgco2e_ft2":"5.1","_2014_total_ghg_emissions_metric_tons_co2e":"236.6","_2014_weather_normalized_site_eui_kbtu_ft2":"72.9","_2014_weather_normalized_source_eui_kbtu_ft2":"166.3","_2015_energy_star_score":"71","_2015_site_eui_kbtu_ft2":"74.9","_2015_source_eui_kbtu_ft2":"169","_2015_total_ghg_emissions_intensity_kgco2e_ft2":"5.2","_2015_total_ghg_emissions_metric_tons_co2e":"241.8","_2015_weather_normalized_site_eui_kbtu_ft2":"75.7","_2015_weather_normalized_source_eui_kbtu_ft2":"168.7","benchmark_2010_status":"Exempt","benchmark_2011_status":"Complied","benchmark_2012_status":"Complied","benchmark_2013_status":"Complied","benchmark_2014_status":"Complied","benchmark_2015_status":"Complied","building_address":"620 FOLSOM ST","building_name":"620 Folsom Street","energy_audit_due_date":"11/15/2012","energy_audit_status":"Complied","floor_area":"46451","full_address":{"type":"Point","coordinates":[-122.397382,37.785018]},"full_address_address":"620 FOLSOM ST","full_address_city":"San Francisco","full_address_state":"CA","full_address_zip":"94105","parcel_s":"3735/010","pim_link":"http://propertymap.sfplanning.org/?&search=3735/010","postal_code":"94105","property_type_self_selected":"Office"},{"_2010_reason_for_exemption":"Exempt - SqFt Not Subject This Year","_2011_reason_for_exemption":"Exempt - SqFt Not Subject This Year","_2013_energy_star_score":"20","_2013_percent_better_than_national_median_site_eui":"40","_2013_percent_better_than_national_median_source_eui":"40","_2013_site_eui_kbtu_ft2":"106.9","_2013_source_eui_kbtu_ft2":"305.6","_2013_total_ghg_emissions_intensity_kgco2e_ft2":"8.3","_2013_total_ghg_emissions_metric_tons_co2e":"116.3","_2013_weather_normalized_site_eui_kbtu_ft2":"104.4","_2013_weather_normalized_source_eui_kbtu_ft2":"303","_2014_energy_star_score":"20","_2014_percent_better_than_national_median_site_eui":"40.8","_2014_percent_better_than_national_median_source_eui":"40.8","_2014_site_eui_kbtu_ft2":"104.2","_2014_source_eui_kbtu_ft2":"297.9","_2014_total_ghg_emissions_intensity_kgco2e_ft2":"8.1","_2014_total_ghg_emissions_metric_tons_co2e":"113.4","_2014_weather_normalized_site_eui_kbtu_ft2":"108.9","_2014_weather_normalized_source_eui_kbtu_ft2":"302.8","_2015_energy_star_score":"27","_2015_site_eui_kbtu_ft2":"100.8","_2015_source_eui_kbtu_ft2":"284.2","_2015_total_ghg_emissions_intensity_kgco2e_ft2":"7.8","_2015_total_ghg_emissions_metric_tons_co2e":"108.9","_2015_weather_normalized_site_eui_kbtu_ft2":"102.4","_2015_weather_normalized_source_eui_kbtu_ft2":"285.8","benchmark_2010_status":"Exempt","benchmark_2011_status":"Exempt","benchmark_2012_status":"Complied","benchmark_2013_status":"Complied","benchmark_2014_status":"Complied","benchmark_2015_status":"Complied","building_address":"455 9TH ST","building_name":"455 9TH ST","energy_audit_due_date":"4/1/2014","energy_audit_status":"Complied","floor_area":"14000","full_address":{"type":"Point","coordinates":[-122.40918,37.771787]},"full_address_address":"455 9TH ST","full_address_city":"San Francisco","full_address_state":"CA","full_address_zip":"94103","parcel_s":"3757/046","pim_link":"http://propertymap.sfplanning.org/?&search=3757/046","postal_code":"94103","property_type_self_selected":"Office"}]');
 
 /* use soda-js to query */
 let consumer = new soda.Consumer('data.sfgov.org')
 
 let specificParcel = {parcel_s: '0267/009'}
-let whereOffice = {property_type_self_selected: "Office"}
-let testquery = "SELECT * WHERE property_type_self_selected='Office' AND floor_area > 100000 AND floor_area < 200000 LIMIT 5"
-// see https://dev.socrata.com/docs/queries/query.html
+let testquery = {
+  columns: 'property_type_self_selected, parcel_s, floor_area',
+  where: whereArray( 'Office', [100000, 200000] ),
+  limit: 5
+}
 
+// console.log( formQueryString(testquery) )
 // propertyQuery( 1, specificParcel, null, handleSingleBuildingResponse )
-// propertyQuery( 10, whereOffice, null, handlePropertyTypeResponse )
-propertyQuery( null, null, testquery, handlePropertyTypeResponse )
+// propertyQuery( null, null, testquery, handlePropertyTypeResponse )
+// propertyQuery( null, null, formQueryString(testquery), handlePropertyTypeResponse )
 
 
 
 
+/**
+* whereArray - form the 'where array' that goes into formQueryString
+* @param {string} propertyType - property_type_self_selected
+* @param {array} range - [min,max] of floor_area
+* @returns {array} the 'where array'
+*/
+function whereArray(propertyType, range){
+  let res = [
+    "property_type_self_selected='" + propertyType + "'",
+    'floor_area > ' + range[0],
+    'floor_area < ' + range[1]
+  ]
+  return res
+}
+
+/**
+* formQueryString - form a SOQL query string
+* for multi-condition WHERE, otherwise use soda-js Consumer
+* see https://dev.socrata.com/docs/queries/query.html
+* @param {object} params - query params, limited in implementation
+* @returns {string} the query string
+*/
+function formQueryString(params){
+  let query = 'SELECT '
+
+  if (params.columns){
+    // params.columns is a string of comma separated column headings
+    query += params.columns + ' '
+  } else {
+    query += '* '
+  }
+
+  if (params.where){
+    // params.where is an array of conditions written out as strings
+    query += 'WHERE ' + params.where[0] + ' '
+    let i = 1, len = params.where.length
+    if (len > 1){
+      for (; i<len; i++) { query += 'AND ' + params.where[i] + ' ' }
+    }
+  }
+
+  if (params.limit){
+    //params.limit is an integer
+    query += 'LIMIT ' + params.limit
+  }
+
+  return query
+}
 
 /**
 * propertyQuery - query for a single parcel
 * @param {number} limit - how many entries to return
 * @param {object} whereparams - query params, generally of the form {parcel_s: "####/###"} or {property_type_self_selected: "Office"}
 * @param {function} handler - callback handler function for returned json
+* @returns some sort of promise
 */
 function propertyQuery(limit, whereparams, soqlQuery, handler) {
   consumer.query()
@@ -57,14 +106,15 @@ function handleSingleBuildingResponse(rows) {
 * @param {array} rows - returned from consumer.query.getRows
 */
 function handlePropertyTypeResponse(rows) {
-  let res = rows.map(parseSingleRecord)
-  res.forEach((el)=>{return console.log(el.property_type_self_selected, el.floor_area)})
-  // console.log(res)
+  // let res = rows.map(parseSingleRecord)
+  // res.forEach((el)=>{return console.log(el.property_type_self_selected, el.floor_area)})
+  console.log(rows)
 }
 
 /**
 * parseSingleRecord - parse the returned property record object
 * @param {object} record - the record object returned from SODA
+* @returns {object} the record with some new properties
 */
 function parseSingleRecord(record){
   if (record.parcel_s === undefined) {return null}
@@ -83,6 +133,7 @@ function parseSingleRecord(record){
 * latest - query for a single parcel
 * @param {string} metric - the parcel metric being recorded
 * @param {object} entry - the parcel record object
+* @returns {object} the record with some new properties
 */
 function latest (metric, entry) {
   var years = [2011,2012,2013,2014,2015]
