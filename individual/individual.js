@@ -19,7 +19,6 @@ let testquery = {
 
 // console.log( formQueryString(testquery) )
 // propertyQuery( 1, specificParcel, null, handleSingleBuildingResponse )
-// propertyQuery( null, null, testquery, handlePropertyTypeResponse )
 // propertyQuery( null, null, formQueryString(testquery), handlePropertyTypeResponse )
 
 
@@ -29,7 +28,7 @@ let testquery = {
 * whereArray - form the 'where array' that goes into formQueryString
 * @param {string} propertyType - property_type_self_selected
 * @param {array} range - [min,max] of floor_area
-* @returns {array} the 'where array'
+* @return {array} the 'where array'
 */
 function whereArray(propertyType, range){
   let res = [
@@ -45,7 +44,7 @@ function whereArray(propertyType, range){
 * for multi-condition WHERE, otherwise use soda-js Consumer
 * see https://dev.socrata.com/docs/queries/query.html
 * @param {object} params - query params, limited in implementation
-* @returns {string} the query string
+* @return {string} the query string
 */
 function formQueryString(params){
   let query = 'SELECT '
@@ -80,7 +79,7 @@ function formQueryString(params){
 * @param {object} whereparams - query params, generally of the form {parcel_s: "####/###"} or {property_type_self_selected: "Office"}
 * @param {string} soqlQuery - complete SOQL query string.  it seems this will override parameters in 'limit' and 'whereparams' if not null
 * @param {function} handler - callback handler function for returned json
-* @returns some sort of promise
+* @return some sort of promise
 */
 function propertyQuery(limit, whereparams, soqlQuery, handler) {
   consumer.query()
@@ -116,7 +115,7 @@ function handlePropertyTypeResponse(rows) {
 /**
 * parseSingleRecord - parse the returned property record object
 * @param {object} record - the record object returned from SODA
-* @return {object} the record from @param with our "latest_" properties added 
+* @return {object} the record from @param with our "latest_" properties added
 */
 function parseSingleRecord(record){
   if (record.parcel_s === undefined) {return null}
