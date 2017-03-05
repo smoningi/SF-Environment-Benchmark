@@ -30,23 +30,53 @@ let testquery = {
   // limit: 10
 }
 
-/* d3.scale to get "similar" sized buildings */
-let floorsizes = [
-    10000,
-    50000,
-   100000,
-   500000,
-  1000000
-]
-let floorsizenames = [
-  '<10K',
-  '10K-50K',
-  '50K-100K',
-  '100K-500K',
-  '500K-1M',
-  '>1M'
-]
-let ts = d3.scale.threshold().domain(floorsizes).range(floorsizenames);
+let groups = {
+  office:{
+    names: [
+      '<25k',
+      '25-50k',
+      '50-100k',
+      '100-300k',
+      '>300k'
+    ],
+    floorArea: [
+      25000,
+      50000,
+      100000,
+      300000
+    ]
+  },
+  hotel: {
+    names: [
+      '<25k',
+      '25-50k',
+      '50-100k',
+      '100-250k',
+      '>250k'
+    ],
+    floorArea: [
+      25000,
+      50000,
+      100000,
+      250000
+    ]
+  },
+  retail: {
+    names: [
+      '<20k',
+      '>20k'
+    ],
+    floorArea: [
+      20000
+    ]
+  }
+}
+for (let category in groups){
+  /* d3.scale to get "similar" sized buildings */
+  groups[category].scale = d3.scale.threshold()
+        .domain(groups[category].floorArea)
+        .range(groups[category].names);
+}
 
 /* example queries */
 // console.log( formQueryString(testquery) )
@@ -161,7 +191,8 @@ function handleSingleBuildingResponse(rows) {
   singleBuildingData = parseSingleRecord(rows[0]) //save data in global var
 
   let type = singleBuildingData.property_type_self_selected
-  let minMax = ts.invertExtent(ts(+singleBuildingData.floor_area))
+  // let minMax = ts.invertExtent(ts(+singleBuildingData.floor_area))
+  let minMax = groups[type].scale.invertExtent(groups[type].scale(+singleBuildingData.floor_area))
   propertyQuery( null, null, formQueryString({where: whereArray( type, minMax )}), handlePropertyTypeResponse )
 }
 
