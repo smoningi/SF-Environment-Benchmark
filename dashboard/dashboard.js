@@ -69,7 +69,23 @@ var bubbles = scatterPlot()
   .height(300)
   .margin({left: 50})
 
+/* var soda = require('soda-js');
+var fs = require('fs');
+var consumer = new soda.Consumer('data.sfgov.org') */
+
 d3.select(window).on('resize', windowResize);
+/*
+consumer.query()
+  .withDataset('75rg-imyz')
+  .limit(2000)
+  .getRows()
+    .on('success', function(rows) { console.log(rows); 
+                    fs.writeFile("./data/75rg-imyz.json", JSON.stringify(rows), function(err) {
+                    if(err) {
+                        return console.log(err);
+                     } });})
+    .on('error', function(error) { console.error(error); });
+*/
 
 /* get the data and render the page */
 d3_queue.queue()
