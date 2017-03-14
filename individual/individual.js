@@ -31,7 +31,7 @@ let testquery = {
 }
 
 let groups = {
-  office:{
+  Office:{
     names: [
       '<25k',
       '25-50k',
@@ -46,7 +46,7 @@ let groups = {
       300000
     ]
   },
-  hotel: {
+  Hotel: {
     names: [
       '<25k',
       '25-50k',
@@ -61,7 +61,7 @@ let groups = {
       250000
     ]
   },
-  retail: {
+  Retail: {
     names: [
       '<20k',
       '>20k'
@@ -95,13 +95,57 @@ var histogram = histogramChart()
   .bins(50)
   .tickFormat(d3.format(',d'))
 
+/* variables for the ring chart */
+var ringRange = [0,100];
+var ringColorDomain = colorSwatches.foo;
+var ringColorRange = [40, 60, 80, 100];
+var ringHeight = 200;
+var ringWidth = 200;
+/**
+ * Use c3.js for ring chart
+ */
+var ringChart = c3.generate({
+   bindto: '#ringchart',
+   data: {
+       columns: [
+           ['data', 0]
+       ],
+       type: 'gauge'
+   },
+   gauge: {
+     // units: 'units',
+     label: {
+        show:false, // to turn off the min/max labels.
+        format: function(value, ratio) {
+            return value + ' out of ' + ringRange[1];
+        }
+     },
+     min: ringRange[0], // 0 is default, //can handle negative min e.g. vacuum / voltage / current flow / rate of change
+     max: ringRange[1],
+     width: 20, // for adjusting arc thickness
+     startingAngle: 0,
+     fullCircle: true
+   },
+   color: {
+       pattern: ringColorDomain, // the three color levels for the percentage values.
+       threshold: {
+          unit: 'value', // percentage is default
+          max: ringRange[1], // 100 is default
+           values: ringColorRange
+       }
+   },
+   size: {
+       height: ringHeight,
+       width: ringWidth
+   }
+});
+
+
+
+
 /* query machine go! */
 let singleBuildingData
 let categoryData
-
-
-
-
 
 propertyQuery( 1, {parcel_s: '3721/014'}, null, handleSingleBuildingResponse )
 
@@ -194,6 +238,10 @@ function handleSingleBuildingResponse(rows) {
   // let minMax = ts.invertExtent(ts(+singleBuildingData.floor_area))
   let minMax = groups[type].scale.invertExtent(groups[type].scale(+singleBuildingData.floor_area))
   propertyQuery( null, null, formQueryString({where: whereArray( type, minMax )}), handlePropertyTypeResponse )
+
+  ringChart.load({
+    columns: [['data', +singleBuildingData.latest_energy_star_score]]
+  });
 }
 
 /**
@@ -273,6 +321,8 @@ function apiDataToArray (data) {
   })
   return arr
 }
+
+
 
 // /**
 // * digestData - reduces data from api into summary form
