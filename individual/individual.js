@@ -23,12 +23,12 @@ let color = {
 let consumer = new soda.Consumer('data.sfgov.org')
 
 /* variables for testing */
-let specificParcel = {parcel_s: '0267/009'}
-let testquery = {
-  // columns: 'property_type_self_selected, parcel_s, floor_area',
-  where: whereArray( 'Office', [100000, 200000] ),
-  // limit: 10
-}
+// let specificParcel = {parcel_s: '0267/009'}
+// let testquery = {
+//   // columns: 'property_type_self_selected, parcel_s, floor_area',
+//   where: whereArray( 'Office', [100000, 200000] ),
+//   // limit: 10
+// }
 
 let groups = {
   Office:{
@@ -101,6 +101,7 @@ var ringColorDomain = colorSwatches.foo;
 var ringColorRange = [40, 60, 80, 100];
 var ringHeight = 200;
 var ringWidth = 200;
+
 /**
  * Use c3.js for ring chart
  */
@@ -147,7 +148,12 @@ var ringChart = c3.generate({
 let singleBuildingData
 let categoryData
 
-propertyQuery( 1, {parcel_s: '3721/014'}, null, handleSingleBuildingResponse )
+
+if(! offline){
+  propertyQuery( 1, {parcel_s: '3721/014'}, null, handleSingleBuildingResponse )
+}else{
+    handleSingleBuildingResponse(offline.single)
+}
 
 
 
@@ -237,7 +243,12 @@ function handleSingleBuildingResponse(rows) {
   let type = singleBuildingData.property_type_self_selected
   // let minMax = ts.invertExtent(ts(+singleBuildingData.floor_area))
   let minMax = groups[type].scale.invertExtent(groups[type].scale(+singleBuildingData.floor_area))
-  propertyQuery( null, null, formQueryString({where: whereArray( type, minMax )}), handlePropertyTypeResponse )
+  if(! offline){
+    propertyQuery( null, null, formQueryString({where: whereArray( type, minMax )}), handlePropertyTypeResponse )
+  } else {
+    handlePropertyTypeResponse(offline.multiple)
+  }
+
 
   ringChart.load({
     columns: [['data', +singleBuildingData.latest_energy_star_score]]
