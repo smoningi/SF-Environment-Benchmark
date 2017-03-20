@@ -13,26 +13,20 @@ body {
 	color: black;
 	font-weight: bold;
 	border-radius: 0;
-	border-top: 5px solid #73BE63;
+	border-top: 5px solid #81C16B;
 }
 .nav-pills>li {
 	background-color: #f5f5f5;
 	color: gray;
-	width: 24.83%;
+	width: 33.15%;
 	font-size: 14px;
 	text-align: center;
 }
-@media screen and (max-width: 1170px) {
+
+@media screen and (max-width: 968px) {
 	.nav-pills>li {
-		width: 24.5%;
-	}
-	.nav-pills>li>a {
-		font-size: 10px;
-	}
-}
-@media screen and (max-width: 900px) {
-	.nav-pills>li {
-		width: 24.5%;
+		width: 33.1%;
+		font-size: 12px;
 	}
 }
 
@@ -45,15 +39,17 @@ body {
 a {
 	color: #007FD4;
 }
-
+.nav>li>a {
+	padding: 5px 15px;
+}
 .panel-body {
 	-webkit-box-shadow: 1px 1px #999;
     -moz-box-shadow: 0 6px 4px -4px #999;
     box-shadow: 0 2px 19px 0 rgba(0,0,0,0.14);
     border-radius: 0;
     border: none;
-    padding-top: 10%;
-    background-color: background-color: #FBFCFA;
+    padding-top: 6%;
+    background-color: #FBFCFA;
 }
 .panel-body.bottom {
 	z-index: -1;
@@ -62,7 +58,7 @@ a {
 	box-shadow: 0 -2px 10px 0 rgba(0,0,0,0.07);
 }
 body {
-    padding-top: 73px;
+    padding-top: 60px;
     padding-right: 0;
     padding-left: 0;
   }
@@ -70,13 +66,13 @@ body {
 	margin: 0;
 }
 .navbar {
-	background: linear-gradient(90deg, #81C56A 0%, #73BE63 100%);
+	background: linear-gradient(90deg, #81C55D 0%, #81C16B 100%);
 	color: white;
 	-webkit-box-shadow: 0 8px 6px -6px #999;
     -moz-box-shadow: 0 8px 6px -6px #999;
     box-shadow: 0 8px 6px -6px #999;
     border: none;
-    height: 72px;
+    height: 60px;
 }
 .dashboard-header {
 	color: gray;
@@ -86,7 +82,7 @@ body {
 	color: #81C16B;
 }
 .ranking-text {
-	padding: 5%;
+	padding: 6%;
 	font-size: 18px;
 	color: #0C0C0C;
 }
@@ -129,11 +125,12 @@ body {
 	box-shadow: 0 2px 4px 0 rgba(0,0,0,0.14);
 	height: 50px;
 	font-size: 16px;
-	line-height: 24px;
+	line-height: 30px;
 	letter-spacing: 1px;
 	color: white;
 }
-.btn-lg: hover {
+
+.btn-primary:hover, .btn-primary:focus {
 	background-color: #c45f00;
 }
 .address {
@@ -180,7 +177,7 @@ h5 {
 .link {
 	padding-top: 4%;
 	color: #007FD4;;
-	font-size: 16px;
+	font-size: 14px;
 	line-height: 24px;
 	letter-spacing: 1px;
 	text-decoration: underline;
@@ -217,5 +214,31 @@ h5 {
 	border-left: 1px solid lightgray;
 }
 .border-bottom {
-	border-bottom: 1px solid lightgray;
+	border-bottom: 1px solid #EEEEEE;
+}
+.ranking {
+	width: 164px;
+	height: 15px;
+	font-size: 14px;
+	text-align: center;
+	line-height: 18px;
+	color: #81C16B;
+}
+.panel-bottom {
+	padding: 0;
+	z-index: -1;
+}
+.glyphicon-question-sign:before {
+	padding-left: 5px;
+	color: darkgray;
+}
+
+/* charts */
+
+.histogram-chart, .chart-stackedbar {
+	padding-top: 8%;
+	width: ;
+}
+.chart-stackedbar {
+	padding-bottom: 7%;
 }
