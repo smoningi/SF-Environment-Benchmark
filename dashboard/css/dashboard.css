@@ -41,7 +41,11 @@ body {
 		font-size: 12px;
 	}
 }
-
+.fa.fa-building {
+	padding-right: 5%;
+	font-size: 30px;
+	color: #C6CED3;
+}
 #tabs .tab-content {
   color : white;
   color: black;
@@ -62,6 +66,9 @@ a {
     border: none;
     padding-top: 6%;
     background-color: #FBFCFA;
+}
+.building-name {
+	font-size: 30px;
 }
 .panel-body.side {
 	z-index: 2;
@@ -104,6 +111,12 @@ body {
 	padding: 6%;
 	font-size: 18px;
 	color: #0C0C0C;
+}
+.ranking-num {
+	font-size: 36px;
+}
+.ranking-units {
+	font-size: 14px;
 }
 .dashboard-num-large {
 	font-size: 56px;
@@ -186,6 +199,7 @@ h4 {
 }
 h5 {
 	color: #B4B8BB;
+	padding-bottom: 4%;
 }
 .nav {
 	padding-left: 1px;
