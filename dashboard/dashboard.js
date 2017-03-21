@@ -415,6 +415,7 @@ function apiDataToArray (data) {
 * @return null
 */
 function populateInfoBoxes (singleBuildingData,categoryData,floorAreaRange) {
+  d3.selectAll('.foo-num-estar-score').text(singleBuildingData.latest_energy_star_score)
   d3.selectAll('.foo-num-site-eui').text(singleBuildingData.latest_site_eui_kbtu_ft2)
   d3.selectAll('.foo-num-ghg-emissions').text(singleBuildingData.latest_total_ghg_emissions_metric_tons_co2e)
   d3.selectAll('.foo-building-type').text(singleBuildingData.property_type_self_selected)
