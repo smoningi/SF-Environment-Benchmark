@@ -290,7 +290,7 @@ function handlePropertyTypeResponse(rows) {
   /* draw histogram for energy star */
   estarHistogram.colorScale(color.energy_star_score).bins(100).xAxisLabel('Energy Star Score').yAxisLabel('Buildings')
   estarHistogramElement.datum(estarVals).call(estarHistogram)
-  // estarHistogramElement.call(histogramHighlight,-10)
+  estarHistogramElement.call(histogramHighlight,singleBuildingData.latest_energy_star_score, estarHistogram)
 
   /* draw histogram for ghg */
   ghgHistogram
@@ -300,7 +300,7 @@ function handlePropertyTypeResponse(rows) {
     .xAxisLabel('GHG Emissions (Metric Tons CO2)')
     .yAxisLabel('Buildings')
   ghgHistogramElement.datum(ghgVals).call(ghgHistogram)
-  // ghgHistogramElement.call(histogramHighlight,-10)
+  ghgHistogramElement.call(histogramHighlight,singleBuildingData.latest_total_ghg_emissions_metric_tons_co2e,ghgHistogram)
 
   /* draw stacked bar for energy use intensity */
   var euiChart = hStackedBarChart()
@@ -308,8 +308,8 @@ function handlePropertyTypeResponse(rows) {
     .height(60)
     .colorScale(color.site_eui_kbtu_ft2)
     .margin({top: 10, right: 50, bottom: 10, left: 50})
-
   euiChartElement.datum(euiVals).call(euiChart)
+  euiChartElement.call(stackedBarHighlight, singleBuildingData.latest_site_eui_kbtu_ft2, euiChart)
 
   populateInfoBoxes(singleBuildingData, categoryData, floorAreaRange)
 }
@@ -479,4 +479,40 @@ function numberWithCommas(x) {
     var parts = x.toString().split(".");
     parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     return parts.join(".");
+}
+
+function histogramHighlight (selection, data, chart) {
+  if( isNaN(data) ) data = -100
+  var x = chart.xScale(),
+      y = chart.yScale(),
+      margin = chart.margin(),
+      width = chart.width(),
+      height = chart.height()
+  var svg = selection.select('svg')
+  var hl = svg.select("g").selectAll('.highlight').data([data])
+  hl.enter().append("rect").attr('class', 'highlight')
+  hl.attr("width", 2)
+    .attr("x", function(d) { return x(d) })
+    .attr("y", 1)
+    .attr("height", height - margin.top - margin.bottom )
+    .attr('fill', colorSwatches.highlight )
+  hl.exit().remove()
+}
+
+function stackedBarHighlight (selection, data, chart) {
+  if( isNaN(data) ) data = -100
+  var x = chart.xScale(),
+      y = chart.yScale(),
+      margin = chart.margin(),
+      width = chart.width(),
+      height = chart.height()
+  var svg = selection.select('svg')
+  var hl = svg.select("g").selectAll('.highlight').data([data])
+  hl.enter().append("rect").attr('class', 'highlight')
+  hl.attr("width", 2)
+    .attr("x", function(d) { return x(d) })
+    .attr("y", 1)
+    .attr("height", height - margin.top - margin.bottom )
+    .attr('fill', colorSwatches.highlight )
+  hl.exit().remove()
 }
