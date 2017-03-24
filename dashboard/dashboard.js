@@ -287,6 +287,11 @@ function handlePropertyTypeResponse(rows) {
   let euiVals = objArrayToSortedNumArray(categoryData,'latest_site_eui_kbtu_ft2')
   euiVals = euiVals.filter(function (d) { return d > 0 && d < 1000 }) /* 1000 here is arbitrary to cut out outlier of SFMOMA & some others*/
 
+  // Add z-score here
+  /* let zscoreVals = objArrayToSortedNumArray(categoryData, 'latest_energy_star_score')
+  zscoreVals = estarVals.filter(function (d) { return d > 0 }) */
+  categoryData.zscoreVal = singleBuildingData.latest_energy_star_score
+
   /* draw histogram for energy star */
   estarHistogram.colorScale(color.energy_star_score).bins(100).xAxisLabel('Energy Star Score').yAxisLabel('Buildings')
   estarHistogramElement.datum(estarVals).call(estarHistogram)
@@ -416,6 +421,7 @@ function apiDataToArray (data) {
 */
 function populateInfoBoxes (singleBuildingData,categoryData,floorAreaRange) {
   d3.selectAll('.foo-num-estar-score').text(singleBuildingData.latest_energy_star_score)
+  d3.selectAll('.foo-num-local-zscore').text(categoryData.zscoreVal)
   d3.selectAll('.foo-num-site-eui').text(singleBuildingData.latest_site_eui_kbtu_ft2)
   d3.selectAll('.foo-num-ghg-emissions').text(singleBuildingData.latest_total_ghg_emissions_metric_tons_co2e)
   d3.selectAll('.foo-building-type').text(singleBuildingData.property_type_self_selected)
