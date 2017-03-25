@@ -287,10 +287,14 @@ function handlePropertyTypeResponse(rows) {
   let euiVals = objArrayToSortedNumArray(categoryData,'latest_site_eui_kbtu_ft2')
   euiVals = euiVals.filter(function (d) { return d > 0 && d < 1000 }) /* 1000 here is arbitrary to cut out outlier of SFMOMA & some others*/
 
-  // Add z-score here
-  /* let zscoreVals = objArrayToSortedNumArray(categoryData, 'latest_energy_star_score')
-  zscoreVals = estarVals.filter(function (d) { return d > 0 }) */
-  categoryData.zscoreVal = singleBuildingData.latest_energy_star_score
+  /** Calculate z-score (Wasted a lot of time trying to get JS libs to work here, seems to be a lot easer to
+  *                      explicitly calculat it--admittedly, it could be me as I'm not super JavaScript savvy)
+  *       Libraries explored:
+  *         - jStat: https://github.com/jstat/jstat
+  *         - simple-statistics: https://github.com/simple-statistics/simple-statistics
+  */
+  // categoryData.zscoreVal = jstat.zscore(singleBuildingData.latest_energy_star_score, estarVals)
+  categoryData.zscoreVal = (singleBuildingData.latest_energy_star_score - d3.mean(estarVals)) / d3.deviation(estarVals)
 
   /* draw histogram for energy star */
   estarHistogram.colorScale(color.energy_star_score).bins(100).xAxisLabel('Energy Star Score').yAxisLabel('Buildings')
