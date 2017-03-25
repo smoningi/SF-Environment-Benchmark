@@ -13,14 +13,12 @@ var colorSwatches = {
       energy_star_score: ['#FD6C16','#FEB921','#46AEE6','#134D9C'],
       total_ghg_emissions_intensity_kgco2e_ft2: ['#f4fde8','#b6e9ba','#76cec7','#3ea3d3'],
       site_eui_kbtu_ft2: ['#134D9C','#46AEE6', '#FEB921', '#FD6C16'],
-      site_eui_kbtu_ft2: ['#ffffe0','#ffa474','#db4551','#8b0000'],
       highlight: '#ff00fc'
     };
 
 var color = {
   energy_star_score: d3.scale.threshold().range(colorSwatches.energy_star_score),
   total_ghg_emissions_intensity_kgco2e_ft2: d3.scale.threshold().range(colorSwatches.total_ghg_emissions_intensity_kgco2e_ft2),
-  site_eui_kbtu_ft2: d3.scale.threshold().range(colorSwatches.site_eui_kbtu_ft2),
   site_eui_kbtu_ft2: d3.scale.threshold().range(colorSwatches.site_eui_kbtu_ft2)
 }
 
@@ -110,51 +108,7 @@ var ghgHistogram = histogramChart()
 
 var euiChartElement = d3.select('#eui-stackedbar')
 
-/* variables for the ring chart */
-var ringRange = [0,100];
-var ringColorDomain = colorSwatches.foo;
-var ringColorRange = [40, 60, 80, 100];
-var ringHeight = 200;
-var ringWidth = 200;
 
-/**
- * Use c3.js for ring chart
- */
-var ringChart = c3.generate({
-   bindto: '#circle-chart',
-   data: {
-       columns: [
-           ['data', 0]
-       ],
-       type: 'gauge'
-   },
-   gauge: {
-     // units: 'units',
-     label: {
-        show:false, // to turn off the min/max labels.
-        format: function(value, ratio) {
-            return value + ' out of ' + ringRange[1];
-        }
-     },
-     min: ringRange[0], // 0 is default, //can handle negative min e.g. vacuum / voltage / current flow / rate of change
-     max: ringRange[1],
-     width: 20, // for adjusting arc thickness
-     startingAngle: 0,
-     fullCircle: true
-   },
-   color: {
-       pattern: ringColorDomain, // the three color levels for the percentage values.
-       threshold: {
-          unit: 'value', // percentage is default
-          max: ringRange[1], // 100 is default
-           values: ringColorRange
-       }
-   },
-   size: {
-       height: ringHeight,
-       width: ringWidth
-   }
-});
 
 
 
@@ -265,10 +219,6 @@ function handleSingleBuildingResponse(rows) {
   } else {
     handlePropertyTypeResponse(offline.multiple)
   }
-
-  ringChart.load({
-    columns: [['data', +singleBuildingData.latest_energy_star_score]]
-  });
 }
 
 /**
@@ -287,6 +237,12 @@ function handlePropertyTypeResponse(rows) {
   let euiVals = objArrayToSortedNumArray(categoryData,'latest_site_eui_kbtu_ft2')
   euiVals = euiVals.filter(function (d) { return d > 0 && d < 1000 }) /* 1000 here is arbitrary to cut out outlier of SFMOMA & some others*/
 
+  /* set color domains */
+  var estarQuartiles = arrayQuartiles(estarVals)
+  color.energy_star_score.domain(estarQuartiles)
+  color.total_ghg_emissions_intensity_kgco2e_ft2.domain(arrayQuartiles(ghgVals))
+  color.site_eui_kbtu_ft2.domain(arrayQuartiles(euiVals))
+
   /* draw histogram for energy star */
   estarHistogram.colorScale(color.energy_star_score).bins(100).xAxisLabel('Energy Star Score').yAxisLabel('Buildings')
   estarHistogramElement.datum(estarVals).call(estarHistogram)
@@ -303,8 +259,9 @@ function handlePropertyTypeResponse(rows) {
   ghgHistogramElement.call(histogramHighlight,singleBuildingData.latest_total_ghg_emissions_metric_tons_co2e,ghgHistogram)
 
   /* draw stacked bar for energy use intensity */
+  var width = parseInt(euiChartElement.style('width'))
   var euiChart = hStackedBarChart()
-    .width(200)
+    .width(width)
     .height(60)
     .colorScale(color.site_eui_kbtu_ft2)
     .margin({top: 10, right: 50, bottom: 10, left: 50})
@@ -312,6 +269,54 @@ function handlePropertyTypeResponse(rows) {
   euiChartElement.call(stackedBarHighlight, singleBuildingData.latest_site_eui_kbtu_ft2, euiChart)
 
   populateInfoBoxes(singleBuildingData, categoryData, floorAreaRange)
+
+  /* variables for the ring chart */
+  var ringRange = [0,100];
+  var ringHeight = 200;
+  var ringWidth = 200;
+
+  /**
+   * Use c3.js for ring chart
+   */
+  var ringChart = c3.generate({
+     bindto: '#circle-chart',
+     data: {
+         columns: [
+             ['data', 0]
+         ],
+         type: 'gauge'
+     },
+     gauge: {
+       // units: 'units',
+       label: {
+          show:false, // to turn off the min/max labels.
+          format: function(value, ratio) {
+              return value + ' out of ' + ringRange[1];
+          }
+       },
+       min: ringRange[0], // 0 is default, //can handle negative min e.g. vacuum / voltage / current flow / rate of change
+       max: ringRange[1],
+       width: 20, // for adjusting arc thickness
+       startingAngle: 0,
+       fullCircle: true
+     },
+     color: {
+         pattern: colorSwatches.energy_star_score, // the three color levels for the percentage values.
+         threshold: {
+            unit: 'value', // percentage is default
+            max: ringRange[1], // 100 is default
+            values: estarQuartiles
+         }
+     },
+     size: {
+         height: ringHeight,
+         width: ringWidth
+     }
+  });
+
+  ringChart.load({
+    columns: [['data', +singleBuildingData.latest_energy_star_score]]
+  });
 }
 
 /**
@@ -515,4 +520,12 @@ function stackedBarHighlight (selection, data, chart) {
     .attr("height", height - margin.top - margin.bottom )
     .attr('fill', colorSwatches.highlight )
   hl.exit().remove()
+}
+
+function arrayQuartiles (sortedArr) {
+  return [
+    d3.quantile(sortedArr,0.25),
+    d3.quantile(sortedArr,0.5),
+    d3.quantile(sortedArr,0.75)
+  ]
 }
