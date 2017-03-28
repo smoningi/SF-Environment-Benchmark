@@ -243,6 +243,15 @@ function handlePropertyTypeResponse(rows) {
   color.total_ghg_emissions_intensity_kgco2e_ft2.domain(arrayQuartiles(ghgVals))
   color.site_eui_kbtu_ft2.domain(arrayQuartiles(euiVals))
 
+  /** Calculate z-score (Wasted a lot of time trying to get JS libs to work here, seems to be a lot easer to
+  *                      explicitly calculat it--admittedly, it could be me as I'm not super JavaScript savvy)
+  *       Libraries explored:
+  *         - jStat: https://github.com/jstat/jstat
+  *         - simple-statistics: https://github.com/simple-statistics/simple-statistics
+  */
+  // categoryData.zscoreVal = jstat.zscore(singleBuildingData.latest_energy_star_score, estarVals)
+  categoryData.zscoreVal = (singleBuildingData.latest_energy_star_score - d3.mean(estarVals)) / d3.deviation(estarVals)
+
   /* draw histogram for energy star */
   estarHistogram.colorScale(color.energy_star_score).bins(100).xAxisLabel('Energy Star Score').yAxisLabel('Buildings')
   estarHistogramElement.datum(estarVals).call(estarHistogram)
@@ -421,6 +430,7 @@ function apiDataToArray (data) {
 */
 function populateInfoBoxes (singleBuildingData,categoryData,floorAreaRange) {
   d3.selectAll('.foo-num-estar-score').text(singleBuildingData.latest_energy_star_score)
+  d3.selectAll('.foo-num-local-zscore').text(categoryData.zscoreVal)
   d3.selectAll('.foo-num-site-eui').text(singleBuildingData.latest_site_eui_kbtu_ft2)
   d3.selectAll('.foo-num-ghg-emissions').text(singleBuildingData.latest_total_ghg_emissions_metric_tons_co2e)
   d3.selectAll('.foo-building-type').text(singleBuildingData.property_type_self_selected)
