@@ -18,7 +18,7 @@ body {
 	padding-left: 10px;
 }
 .navbar-brand>img {
-	width: 20em;
+	width: 17em;
 }
 .nav-pills>li>a {
 	color: gray;
@@ -295,10 +295,6 @@ h5 {
 
 /* charts */
 
-.histogram-chart, .chart-stackedbar {
-	padding-top: 8%;
-	width: ;
-}
 .chart-stackedbar {
 	padding-bottom: 7%;
 }
