@@ -120,12 +120,28 @@ let floorAreaRange
 
 
 // if(! offline){
-  propertyQuery( 1, {parcel_s: '3721/014'}, null, handleSingleBuildingResponse )
+  var urlVars = getUrlVars();
+  // APN numbers look like 3721/014 and come from SF Open Data --
+  // -- see example: https://data.sfgov.org/Energy-and-Environment/Existing-Commercial-Buildings-Energy-Performance-O/j2j3-acqj
+  console.log("Trying APN: " + urlVars['apn']);
+  propertyQuery( 1, {parcel_s: urlVars['apn']}, null, handleSingleBuildingResponse )
 // }else{
 //     handleSingleBuildingResponse(offline.single)
 // }
 
 
+// Get URL parameters
+// see also: http://snipplr.com/view/19838
+// Usage: `map = getUrlVars()` while at example.html?foo=asdf&bar=jkls
+// sets map['foo']='asdf' and map['bar']='jkls'
+function getUrlVars() {
+  var vars = {};
+  window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi,
+    function(m,key,value) {
+      vars[key] = value;
+    });
+  return vars;
+}
 
 
 
