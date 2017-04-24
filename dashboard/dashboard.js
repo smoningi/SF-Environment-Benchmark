@@ -121,10 +121,15 @@ let floorAreaRange
 
 // if(! offline){
   var urlVars = getUrlVars();
-  // APN numbers look like 3721/014 and come from SF Open Data --
-  // -- see example: https://data.sfgov.org/Energy-and-Environment/Existing-Commercial-Buildings-Energy-Performance-O/j2j3-acqj
-  console.log("Trying APN: " + urlVars['apn']);
-  propertyQuery( 1, {parcel_s: urlVars['apn']}, null, handleSingleBuildingResponse )
+  if (urlVars.apn == undefined){
+      console.error("Not a valid APN")
+      //TODO: alert the user
+  } else {
+    // APN numbers look like 3721/014 and come from SF Open Data --
+    // -- see example: https://data.sfgov.org/Energy-and-Environment/Existing-Commercial-Buildings-Energy-Performance-O/j2j3-acqj
+    console.log("Trying APN: " + urlVars['apn']);
+    propertyQuery( 1, {parcel_s: urlVars['apn']}, null, handleSingleBuildingResponse )
+  }
 // }else{
 //     handleSingleBuildingResponse(offline.single)
 // }
@@ -227,14 +232,21 @@ function handleSingleBuildingResponse(rows) {
   singleBuildingData = parseSingleRecord(rows[0]) //save data in global var
 
   let type = singleBuildingData.property_type_self_selected
-  // let minMax = ts.invertExtent(ts(+singleBuildingData.floor_area))
-  let minMax = groups[type].scale.invertExtent(groups[type].scale(+singleBuildingData.floor_area))
-  floorAreaRange = minMax
-  // if(! offline){
-    propertyQuery( null, null, formQueryString({where: whereArray( type, minMax )}), handlePropertyTypeResponse )
-  // } else {
-  //   handlePropertyTypeResponse(offline.multiple)
-  // }
+
+  /* check to see if  the returned building is one of our supported building types */
+  if (Object.keys(groups).indexOf(type) == -1) {
+    console.error("not a supported building type");
+    //TODO: alert the user
+  } else {
+    // let minMax = ts.invertExtent(ts(+singleBuildingData.floor_area))
+    let minMax = groups[type].scale.invertExtent(groups[type].scale(+singleBuildingData.floor_area))
+    floorAreaRange = minMax
+    // if(! offline){
+      propertyQuery( null, null, formQueryString({where: whereArray( type, minMax )}), handlePropertyTypeResponse )
+    // } else {
+    //   handlePropertyTypeResponse(offline.multiple)
+    // }
+  }
 }
 
 /**
