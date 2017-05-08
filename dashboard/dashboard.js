@@ -231,6 +231,9 @@ function propertyQuery(limit, whereparams, soqlQuery, handler) {
 * @param {array} rows - returned from consumer.query.getRows, expects rows.length === 0
 */
 function handleSingleBuildingResponse(rows) {
+  if (typeof rows[0] == 'undefined') {
+    return $('#view-load').html('The record for the chosen building was not found')
+  }
   singleBuildingData = parseSingleRecord(rows[0]) //save data in global var
 
   let type = singleBuildingData.property_type_self_selected
@@ -238,8 +241,7 @@ function handleSingleBuildingResponse(rows) {
   /* check to see if  the returned building is one of our supported building types */
   if (Object.keys(groups).indexOf(type) == -1) {
     console.error("not a supported building type");
-    //TODO; check the following works correctly
-    $('#view-load').html('The chosen building type is no supported by this dashboard interface')
+    $('#view-load').html('The chosen building type is not supported by this dashboard interface')
   } else {
     // let minMax = ts.invertExtent(ts(+singleBuildingData.floor_area))
     let minMax = groups[type].scale.invertExtent(groups[type].scale(+singleBuildingData.floor_area))
