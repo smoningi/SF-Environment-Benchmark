@@ -128,6 +128,8 @@ let floorAreaRange
     // APN numbers look like 3721/014 and come from SF Open Data --
     // -- see example: https://data.sfgov.org/Energy-and-Environment/Existing-Commercial-Buildings-Energy-Performance-O/j2j3-acqj
     console.log("Trying APN: " + urlVars['apn']);
+    $('#view-welcome').addClass('hidden')
+    $('#view-load').removeClass('hidden')
     propertyQuery( 1, {parcel_s: urlVars['apn']}, null, handleSingleBuildingResponse )
   }
 // }else{
@@ -236,7 +238,8 @@ function handleSingleBuildingResponse(rows) {
   /* check to see if  the returned building is one of our supported building types */
   if (Object.keys(groups).indexOf(type) == -1) {
     console.error("not a supported building type");
-    //TODO: alert the user
+    //TODO; check the following works correctly
+    $('#view-load').html('The chosen building type is no supported by this dashboard interface')
   } else {
     // let minMax = ts.invertExtent(ts(+singleBuildingData.floor_area))
     let minMax = groups[type].scale.invertExtent(groups[type].scale(+singleBuildingData.floor_area))
@@ -356,6 +359,9 @@ function handlePropertyTypeResponse(rows) {
   ringChart.load({
     columns: [['data', +singleBuildingData.latest_energy_star_score]]
   });
+
+  $('#view-load').addClass('hidden')
+  $('#view-content').removeClass('hidden')
 }
 
 /**
