@@ -67,7 +67,7 @@
 	            <div class="panel-body side flex-grow">
                 	<div class="col-xs-12">
                 		<div class="row center">
-                			<h5>BENCHMARKING PROFILE</h5>
+                			<div class="profile-header">BENCHMARKING PROFILE</div>
                 		</div>
                 		<div class="row center">
                 			<img src="../assets/hotel-icon.svg" alt="hotel-icon" id="building-icon">
@@ -78,7 +78,7 @@
                 			<h4 id="building-city-address">San Francisco, CA 94103</h4> -->
                 			<span class="address" id="building-street-address">55 5th St</span><br>
                 			<span class="address" id="building-city-address">San Francisco, CA 94103</span>
-                		</div>
+                		</div><br>
                 		<div class="row center">
                 		<div class="col-xs-1"></div>
                 			<div class="col-xs-5 building-units">
@@ -100,10 +100,12 @@
                 			</div>
                 		</div><br>
                 		<div class="row center">
-                			<span class="ranking">LOCAL RANKING</span>
+                			<span class="ranking">LOCAL RANKING 2015</span>
                 		</div>
+                		<br>
                 		<div class="row center">
-                			#<span id="building-ranking">28</span> out of <span id="total-building-type"></span> buildings<a href="#" data-toggle="tooltip" id="local-ranking-tooltip" title="Based on score and energy use intensity, the Hotel Zetta's energy use ranks #28 out of 50 hotel buildings sized between 100,000-250,000 square feet."><span class="glyphicon glyphicon-question-sign"></span></a>
+                			<span class="building-ranking">#<span id="building-ranking">28</span></span><br>
+                			<span class="ranking">out of <span id="total-building-type"></span> similar-sized <span id="building-type"></span>buildings<a href="#" data-toggle="tooltip" id="local-ranking-tooltip" title="Based on score and energy use intensity, the Hotel Zetta's energy use ranks #28 out of 50 hotel buildings sized between 100,000-250,000 square feet."> ?</a></span>
                 		</div><br>
                 		<div class="row center">
                 			<a href="https://sfenvironment.org/article/how-to-comply-with-benchmarking-in-san-francisco" class="btn btn-primary btn-round-lg btn-lg">BENCHMARK NOW</a>
@@ -155,17 +157,17 @@
 	        		<div class="row center">
 	        			<div class="col-xs-2"></div>
 	        			<div class="col-xs-8">
-	        			<div class="chart-title">ENERGY STAR SCORE FOR <span class="building-type">HOTEL</span> BUILDINGS IN SAN FRANCISCO<br><span id="bulding-type-sq-ft">150,000-200,000</span> SQUARE FEET</div>
+	        			<div class="chart-title">ENERGY STAR SCORE FOR <span class="building-type"> HOTEL</span> BUILDINGS IN SAN FRANCISCO<br><span id="bulding-type-sq-ft">150,000-200,000</span> SQUARE FEET</div>
 	        			</div>
 	        			<div class="col-xs-2"></div>
 	        		</div>
 	        		<div class="row center">
-			        	<div class="col-xs-3"></div>
-	        			<div class="col-xs-6">
+			        	<div class="col-xs-2"></div>
+	        			<div class="col-xs-8">
 	        				<!-- <div class="loading">Loading&mdash;</div> -->
 	        				<div id="energy-star-score-histogram" class="histogram-chart"></div>
 	        			</div>
-	        			<div class="col-xs-3"></div>
+	        			<div class="col-xs-2"></div>
 	        		</div>
 	        		<div class="row">
 			        	<div class="col-xs-12 panel-bottom">
