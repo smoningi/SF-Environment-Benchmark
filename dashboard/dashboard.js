@@ -13,7 +13,7 @@ var colorSwatches = {
       energy_star_score: ['#EF839E','#ECD68C','#80D9AF','#4FAD8E'],
       // total_ghg_emissions_intensity_kgco2e_ft2: ['#4FAD8E','#80D9AF','#ECD68C','#EF839E'],
       // total_ghg_emissions_intensity_kgco2e_ft2: ['#f4fde8','#b6e9ba','#76cec7','#3ea3d3'],
-      site_eui_kbtu_ft2: ['#EF839E','#ECD68C', '#80D9AF', '#4FAD8E'],
+      site_eui_kbtu_ft2: ['#4FAD8E','#80D9AF', '#ECD68C', '#EF839E'],
       highlight: '#ff00fc'
     };
 
