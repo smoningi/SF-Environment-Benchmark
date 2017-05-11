@@ -10,9 +10,10 @@ const LOT = /[\/\.](.+)/
 /* glogal reference objects */
 /* colorSwatches should be shared between map.js & dashboard.js */
 var colorSwatches = {
-      energy_star_score: ['#FD6C16','#FEB921','#46AEE6','#134D9C'],
-      total_ghg_emissions_intensity_kgco2e_ft2: ['#f4fde8','#b6e9ba','#76cec7','#3ea3d3'],
-      site_eui_kbtu_ft2: ['#134D9C','#46AEE6', '#FEB921', '#FD6C16'],
+      energy_star_score: ['#EF839E','#ECD68C','#80D9AF','#4FAD8E'],
+      // total_ghg_emissions_intensity_kgco2e_ft2: ['#4FAD8E','#80D9AF','#ECD68C','#EF839E'],
+      // total_ghg_emissions_intensity_kgco2e_ft2: ['#f4fde8','#b6e9ba','#76cec7','#3ea3d3'],
+      site_eui_kbtu_ft2: ['#EF839E','#ECD68C', '#80D9AF', '#4FAD8E'],
       highlight: '#ff00fc'
     };
 
@@ -470,7 +471,8 @@ function populateInfoBoxes (singleBuildingData,categoryData,floorAreaRange) {
   d3.select('#building-energy-star-score').text(singleBuildingData.latest_energy_star_score)
   d3.select('#building-eui').text(singleBuildingData.latest_site_eui_kbtu_ft2)
   d3.selectAll('.building-ghg-emissions ').text(singleBuildingData.latest_total_ghg_emissions_metric_tons_co2e)
-  d3.selectAll('.building-type').text(singleBuildingData.property_type_self_selected)
+  d3.selectAll('.building-type-lower').text(singleBuildingData.property_type_self_selected.toLowerCase())
+  d3.selectAll('.building-type-upper').text(singleBuildingData.property_type_self_selected.toUpperCase())
   d3.select('#building-floor-area').text(numberWithCommas(singleBuildingData.floor_area))
   // d3.selectAll('.foo-building-compliance').text(singleBuildingData.)
   d3.selectAll('.building-name').text(singleBuildingData.building_name)
@@ -488,7 +490,11 @@ function populateInfoBoxes (singleBuildingData,categoryData,floorAreaRange) {
 
   //TODO: change #local-ranking-tooltip
   // the following doesn't quite work:
-  // d3.select("#local-ranking-tooltip").attr("title","Based on score and energy use intensity, " + singleBuildingData.building_name +"'s energy use ranks #" + euirank[0] +" out of " + euirank[0] + " " + singleBuildingData.property_type_self_selected + " buildings sized between " + numberWithCommas(floorAreaRange[0]) + '-' + numberWithCommas(floorAreaRange[1]) + " square feet.")
+  $("#local-ranking-tooltip").attr("data-original-title",
+    "Based on score and energy use intensity, " + singleBuildingData.building_name +"'s energy use ranks #"
+    + euirank[0] +" out of " + euirank[1] + " " + singleBuildingData.property_type_self_selected.toLowerCase() +
+    " buildings sized between " + numberWithCommas(floorAreaRange[0])
+    + '-' + numberWithCommas(floorAreaRange[1]) + " square feet.")
 }
 
 /**
