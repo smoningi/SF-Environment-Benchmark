@@ -21,23 +21,25 @@ body {
 	width: 17em;
 }
 .nav-pills>li>a {
-	color: gray;
+	color: #B4B8BB;
 }
 .nav-pills>li.active>a,
 .nav-pills>li.active>a:focus,
 .nav-pills>li.active>a:hover {
 	background-color: white;
-	color: black;
+	color: #3D3D3D;
 	font-weight: bold;
 	border-radius: 0;
-	border-top: 5px solid #008163;
+	border-top: 5px solid #00B08C;
+	line-height: 15px;
 }
 .nav-pills>li {
-	background-color: #E5E8E5;
-	color: gray;
+	background-color: #FBFCFA;
 	width: 33.15%;
-	font-size: 14px;
+	font-size: 12px;
 	text-align: center;
+	line-height: 15px;
+	letter-spacing: 1px;
 }
 
 @media screen and (max-width: 968px) {
@@ -57,9 +59,6 @@ body {
   padding: 15px;
 }
 
-a {
-	color: #007FD4;
-}
 #energy-use img {
 	padding-bottom: 4%;
 	padding-top: 4%;
@@ -71,6 +70,7 @@ a {
 #building-icon {
 	padding-bottom: 5%;
 	padding-right: 4%;
+	width: 12%;
 }
 .nav>li>a {
 	padding: 5px 15px;
@@ -82,12 +82,17 @@ a {
     border-radius: 0;
     border: none;
     padding-top: 6%;
-    background-color: #FBFCFA;
+    background-color: #00B08C;
     height: 100vh;
 }
 .building-name.side {
-	font-size: 26px;
-	font-weight: 600;
+	font-size: 24px;
+	font-weight: 500;
+	color: white;
+	line-height: 18px;
+	opacity: 100%;
+	letter-spacing: 1px;
+	text-align: center;
 }
 .panel-body.side {
 	z-index: 2;
@@ -109,13 +114,15 @@ body {
 	margin: 0;
 }
 .navbar {
-	background: linear-gradient(90deg, #E5E8E5 0%, #E5E8E5 100%);
-	color: white;
+	/*background: linear-gradient(90deg, #E5E8E5 0%, #E5E8E5 100%);*/
 	-webkit-box-shadow: 0 8px 6px -6px #999;
     -moz-box-shadow: 0 8px 6px -6px #999;
     box-shadow: 0 8px 6px -6px #999;
     border: none;
     height: 60px;
+	border-radius: 2px;
+	background-color: #FFFFFF;
+}
 }
 .dashboard-header {
 	color: gray;
@@ -127,14 +134,13 @@ body {
 .chart-title {
 	padding: 6%;
 	font-size: 14px;
-	color: #0C0C0C;
+	color: #3D3D3D;
 	letter-spacing: 1.2px;
-	/*font-weight: 600;*/
 }
 .ranking-text {
 	padding: 6%;
 	font-size: 16px;
-	color: #0C0C0C;
+	color: #3D3D3D;
 }
 .ranking-num {
 	font-size: 32px;
@@ -173,9 +179,9 @@ body {
 	padding-top: 20%;
 }
 .btn-lg {
-	background-color: #E07F48;
+	background-color: #F78C66;
 	border: none;
-	border-radius: 33px;
+	border-radius: 100px;
 	font-size: 16px;
 	width: 80%;
 	box-shadow: 0 2px 4px 0 rgba(0,0,0,0.14);
@@ -190,14 +196,20 @@ body {
 	background-color: #c45f00;
 }
 .address {
-	font-size: 14px;
-	color: #3D3D3D;
+	font-size: 17px;
+	color: #FFFFFF;
+	line-height: 24px;
 }
 .side-panel-text {
 	font-size: 14px;
-	color: #0C0C0C;
+	color: #FFFFFF;
 	padding-top: 10%;
 	padding-bottom: 10%;
+	font-weight: bold;
+	letter-spacing: 1px;
+	line-height: 24px;
+	text-align: center;
+}
 }
 .building-units, .building-data {
 	font-size: 12px;
@@ -207,13 +219,24 @@ body {
 
 .building-units {
 	text-align: right;
-	color: #3D3D3D;
+	color: #6ED9BE;
 }
 .building-data {
 	padding-right: 8%;
 	padding-left: 8%;
 	text-align: left;
-	color: #0C0C0C;
+	color: #6ED9BE;
+}
+.building-ranking {
+	color: #FFFFFF;
+	font-size: 35px;
+	letter-spacing: 1px;
+	line-height: 32px;
+	text-align: center;
+	font-weight: 200;
+}
+#local-ranking-tooltip {
+	color: #6ED9BE;
 }
 
 h2 {
@@ -223,9 +246,10 @@ h2 {
 h4 {
 	color: #3D3D3D;
 }
-h5 {
-	color: #B4B8BB;
+.profile-header {
+	color: #6ED9BE;
 	padding-bottom: 4%;
+	font-size: 12px;
 }
 .nav {
 	padding-left: 1px;
@@ -234,19 +258,24 @@ h5 {
 	padding: 6%;
 }
 .link {
+	padding-bottom: 5%;
+	text-decoration: underline;
+}
+.link a {
 	padding-top: 2%;
-	padding-bottom: 2%;
-	color: #007FD4;;
+	color: #FFFFFF;
 	font-size: 14px;
 	line-height: 24px;
 	letter-spacing: 1px;
 	text-decoration: underline;
+	font-weight: 500;
 }
+
 .panel-bottom-header {
-	font-size: 20px;
-	color: #0C0C0C;
-	font-weight: 600;
-	line-height: 24px;
+	font-size: 18px;
+	color: #3D3D3D;
+	font-weight: 500;
+	line-height: 25px;
 	letter-spacing: 2px;
 }
 .panel-bottom-text {
@@ -274,15 +303,15 @@ h5 {
 	border-left: 1px solid lightgray;
 }
 .border-bottom {
-	border-bottom: 1px dotted darkgray;
+	border-bottom: 2px dotted darkgray;
 }
 .ranking {
 	width: 164px;
 	height: 15px;
-	font-size: 14px;
+	font-size: 12px;
 	text-align: center;
 	line-height: 18px;
-	color: #008163;
+	color: #6ED9BE;
 }
 .panel-bottom {
 	padding: 4%;

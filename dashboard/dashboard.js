@@ -473,6 +473,7 @@ function populateInfoBoxes (singleBuildingData,categoryData,floorAreaRange) {
   d3.selectAll('.building-ghg-emissions ').text(singleBuildingData.latest_total_ghg_emissions_metric_tons_co2e)
   d3.selectAll('.building-type-lower').text(singleBuildingData.property_type_self_selected.toLowerCase())
   d3.selectAll('.building-type-upper').text(singleBuildingData.property_type_self_selected.toUpperCase())
+
   d3.select('#building-floor-area').text(numberWithCommas(singleBuildingData.floor_area))
   // d3.selectAll('.foo-building-compliance').text(singleBuildingData.)
   d3.selectAll('.building-name').text(singleBuildingData.building_name)
