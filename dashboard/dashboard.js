@@ -11,8 +11,7 @@ const LOT = /[\/\.](.+)/
 /* colorSwatches should be shared between map.js & dashboard.js */
 var colorSwatches = {
       energy_star_score: ['#EF839E','#ECD68C','#80D9AF','#4FAD8E'],
-      // total_ghg_emissions_intensity_kgco2e_ft2: ['#4FAD8E','#80D9AF','#ECD68C','#EF839E'],
-      // total_ghg_emissions_intensity_kgco2e_ft2: ['#f4fde8','#b6e9ba','#76cec7','#3ea3d3'],
+      total_ghg_emissions_intensity_kgco2e_ft2: ['#4FAD8E', '#80D9AF', '#ECD68C', '#EF839E'],
       site_eui_kbtu_ft2: ['#4FAD8E','#80D9AF', '#ECD68C', '#EF839E'],
       highlight: '#ff00fc'
     };
@@ -105,6 +104,8 @@ var ghgWidth = 500 //parseInt(ghgHistogramElement.style('width'))
 var ghgHistogram = histogramChart()
   .width(ghgWidth)
   .height(200)
+  .range([0,1650])
+  .bins(100)
   .tickFormat(d3.format(',d'))
 
 var euiChartElement = d3.select('#eui-stackedbar')
@@ -294,7 +295,7 @@ function handlePropertyTypeResponse(rows) {
   /* draw histogram for ghg */
   ghgHistogram
     .range([0,d3.max(ghgVals)])
-    .colorScale(color.energy_star_score)
+    .colorScale(color.total_ghg_emissions_intensity_kgco2e_ft2)
     .bins(100)
     .xAxisLabel('GHG Emissions (Metric Tons CO2)')
     .yAxisLabel('Buildings')
