@@ -95,6 +95,7 @@ body {
 	text-align: center;
 }
 .panel-body.side {
+	/* height: 850px; */
 	z-index: 2;
 }
 .flex-grow {
@@ -107,9 +108,6 @@ body {
 	background-color: #F4F2F0;
 	box-shadow: 0 -2px 10px 0 rgba(0,0,0,0.07);
 }
-body {
-
-  }
 .container {
 	margin: 0;
 }
@@ -255,7 +253,8 @@ h4 {
 	padding-left: 1px;
 }
 .links {
-	padding: 6%;
+	padding-left: 6%;
+	padding-right: 6%;
 }
 .link {
 	padding-bottom: 5%;

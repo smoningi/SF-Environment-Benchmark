@@ -1,5 +1,15 @@
 "use strict";
 
+  $('.panel-body.side.flex-grow').height('800px');
+
+  $('#eui-tab, #ghg-tab').on('click', function() {
+    $('.panel-body.side.flex-grow').height('');
+  });
+
+  $('#energy-star-tab').on('click', function() {
+    $('.panel-body.side.flex-grow').height('800px');
+  });
+
 //TODO: CHANGE limit on returned properties in function propertyTypeQuery()
 const DATASOURCE = '75rg-imyz' // 'j2j3-acqj'
 const METRICS = ['benchmark','energy_star_score','site_eui_kbtu_ft2','source_eui_kbtu_ft2','percent_better_than_national_median_site_eui','percent_better_than_national_median_source_eui','total_ghg_emissions_metric_tons_co2e','total_ghg_emissions_intensity_kgco2e_ft2','weather_normalized_site_eui_kbtu_ft2','weather_normalized_source_eui_kbtu_ft2']
