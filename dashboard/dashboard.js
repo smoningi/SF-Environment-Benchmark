@@ -10,9 +10,9 @@ const LOT = /[\/\.](.+)/
 /* glogal reference objects */
 /* colorSwatches should be shared between map.js & dashboard.js */
 var colorSwatches = {
-      energy_star_score: ['#FD6C16','#FEB921','#46AEE6','#134D9C'],
-      total_ghg_emissions_intensity_kgco2e_ft2: ['#f4fde8','#b6e9ba','#76cec7','#3ea3d3'],
-      site_eui_kbtu_ft2: ['#134D9C','#46AEE6', '#FEB921', '#FD6C16'],
+      energy_star_score: ['#EF839E','#ECD68C','#80D9AF','#4FAD8E'],
+      total_ghg_emissions_intensity_kgco2e_ft2: ['#4FAD8E', '#80D9AF', '#ECD68C', '#EF839E'],
+      site_eui_kbtu_ft2: ['#4FAD8E','#80D9AF', '#ECD68C', '#EF839E'],
       highlight: '#ff00fc'
     };
 
@@ -104,6 +104,8 @@ var ghgWidth = 500 //parseInt(ghgHistogramElement.style('width'))
 var ghgHistogram = histogramChart()
   .width(ghgWidth)
   .height(200)
+  .range([0,1650])
+  .bins(100)
   .tickFormat(d3.format(',d'))
 
 var euiChartElement = d3.select('#eui-stackedbar')
@@ -128,6 +130,8 @@ let floorAreaRange
     // APN numbers look like 3721/014 and come from SF Open Data --
     // -- see example: https://data.sfgov.org/Energy-and-Environment/Existing-Commercial-Buildings-Energy-Performance-O/j2j3-acqj
     console.log("Trying APN: " + urlVars['apn']);
+    $('#view-welcome').addClass('hidden')
+    $('#view-load').removeClass('hidden')
     propertyQuery( 1, {parcel_s: urlVars['apn']}, null, handleSingleBuildingResponse )
   }
 // }else{
@@ -229,6 +233,9 @@ function propertyQuery(limit, whereparams, soqlQuery, handler) {
 * @param {array} rows - returned from consumer.query.getRows, expects rows.length === 0
 */
 function handleSingleBuildingResponse(rows) {
+  if (typeof rows[0] == 'undefined') {
+    return $('#view-load').html('The record for the chosen building was not found')
+  }
   singleBuildingData = parseSingleRecord(rows[0]) //save data in global var
 
   let type = singleBuildingData.property_type_self_selected
@@ -236,7 +243,7 @@ function handleSingleBuildingResponse(rows) {
   /* check to see if  the returned building is one of our supported building types */
   if (Object.keys(groups).indexOf(type) == -1) {
     console.error("not a supported building type");
-    //TODO: alert the user
+    $('#view-load').html('The chosen building type is not supported by this dashboard interface')
   } else {
     // let minMax = ts.invertExtent(ts(+singleBuildingData.floor_area))
     let minMax = groups[type].scale.invertExtent(groups[type].scale(+singleBuildingData.floor_area))
@@ -288,7 +295,7 @@ function handlePropertyTypeResponse(rows) {
   /* draw histogram for ghg */
   ghgHistogram
     .range([0,d3.max(ghgVals)])
-    .colorScale(color.energy_star_score)
+    .colorScale(color.total_ghg_emissions_intensity_kgco2e_ft2)
     .bins(100)
     .xAxisLabel('GHG Emissions (Metric Tons CO2)')
     .yAxisLabel('Buildings')
@@ -356,6 +363,9 @@ function handlePropertyTypeResponse(rows) {
   ringChart.load({
     columns: [['data', +singleBuildingData.latest_energy_star_score]]
   });
+
+  $('#view-load').addClass('hidden')
+  $('#view-content').removeClass('hidden')
 }
 
 /**
@@ -462,8 +472,9 @@ function populateInfoBoxes (singleBuildingData,categoryData,floorAreaRange) {
   d3.select('#building-energy-star-score').text(singleBuildingData.latest_energy_star_score)
   d3.select('#building-eui').text(singleBuildingData.latest_site_eui_kbtu_ft2)
   d3.selectAll('.building-ghg-emissions ').text(singleBuildingData.latest_total_ghg_emissions_metric_tons_co2e)
-  d3.selectAll('.building-type').text(singleBuildingData.property_type_self_selected.toUpperCase())
-  d3.selectAll('.building-type').text(singleBuildingData.property_type_self_selected.toLowerCase())
+  d3.selectAll('.building-type-lower').text(singleBuildingData.property_type_self_selected.toLowerCase())
+  d3.selectAll('.building-type-upper').text(singleBuildingData.property_type_self_selected.toUpperCase())
+
   d3.select('#building-floor-area').text(numberWithCommas(singleBuildingData.floor_area))
   // d3.selectAll('.foo-building-compliance').text(singleBuildingData.)
   d3.selectAll('.building-name').text(singleBuildingData.building_name)
@@ -481,7 +492,11 @@ function populateInfoBoxes (singleBuildingData,categoryData,floorAreaRange) {
 
   //TODO: change #local-ranking-tooltip
   // the following doesn't quite work:
-  // d3.select("#local-ranking-tooltip").attr("title","Based on score and energy use intensity, " + singleBuildingData.building_name +"'s energy use ranks #" + euirank[0] +" out of " + euirank[0] + " " + singleBuildingData.property_type_self_selected + " buildings sized between " + numberWithCommas(floorAreaRange[0]) + '-' + numberWithCommas(floorAreaRange[1]) + " square feet.")
+  $("#local-ranking-tooltip").attr("data-original-title",
+    "Based on score and energy use intensity, " + singleBuildingData.building_name +"'s energy use ranks #"
+    + euirank[0] +" out of " + euirank[1] + " " + singleBuildingData.property_type_self_selected.toLowerCase() +
+    " buildings sized between " + numberWithCommas(floorAreaRange[0])
+    + '-' + numberWithCommas(floorAreaRange[1]) + " square feet.")
 }
 
 /**
