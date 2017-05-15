@@ -2,12 +2,12 @@
 
   $('.panel-body.side.flex-grow').height('800px');
 
-  $('#eui-tab, #ghg-tab').on('click', function() {
-    $('.panel-body.side.flex-grow').height('');
-  });
-
-  $('#energy-star-tab').on('click', function() {
-    $('.panel-body.side.flex-grow').height('800px');
+  $('.nav.nav-pills li a').on('click', function() {
+    if (($(this).is('#eui-tab')) || ($(this).is('#ghg-tab'))) {
+      $('.panel-body.side.flex-grow').height('');
+    } else {
+      $('.panel-body.side.flex-grow').height('800px');
+    }
   });
 
 //TODO: CHANGE limit on returned properties in function propertyTypeQuery()
