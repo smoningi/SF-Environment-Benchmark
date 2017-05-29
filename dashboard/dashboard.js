@@ -325,54 +325,49 @@ function handlePropertyTypeResponse(rows) {
 
   populateInfoBoxes(singleBuildingData, categoryData, floorAreaRange)
 
-  /* variables for the ring chart */
+
+  /**
+   * Use unpolished code for ring chart:
+   */
   var ringRange = [0,100];
   var ringHeight = 150;
   var ringWidth = 150;
+  var ringThick = 14;
+  var ringRadius = d3.min([ringHeight,ringWidth])/2
 
-  /**
-   * Use c3.js for ring chart
-   */
-  //  TODO: override standard mouseover behavior (hide data)
-  var ringChart = c3.generate({
-     bindto: '#energy-star-score-radial',
-     data: {
-         columns: [
-             ['data', 0]
-         ],
-         type: 'gauge'
-     },
-     gauge: {
-       // units: 'units',
-       label: {
-          show:false, // to turn off the min/max labels.
-          format: function(value, ratio) {
-            return value + ' out of ' + ringRange[1];
-          }
-       },
-       min: ringRange[0], // 0 is default, //can handle negative min e.g. vacuum / voltage / current flow / rate of change
-       max: ringRange[1],
-       width: 14, // for adjusting arc thickness
-       startingAngle: 0,
-       fullCircle: true
-     },
-     color: {
-         pattern: colorSwatches.energy_star_score, // the three color levels for the percentage values.
-         threshold: {
-            unit: 'value', // percentage is default
-            max: ringRange[1], // 100 is default
-            values: estarQuartiles
-         }
-     },
-     size: {
-         height: ringHeight,
-         width: ringWidth
-    }
-  });
+  var arc = d3.svg.arc()
+  .outerRadius(ringRadius)
+  .innerRadius(ringRadius - ringThick)
+  .startAngle(0)
 
-  ringChart.load({
-    columns: [['data', +singleBuildingData.latest_energy_star_score]]
-  });
+  var ringElement = d3.select('#energy-star-score-radial')
+  var ringSvg = ringElement.append("svg")
+  .attr("width", ringWidth)
+  .attr("height", ringHeight)
+  .append("g")
+  .attr("transform", "translate(" + ringWidth / 2 + "," + ringHeight / 2 + ")");
+
+  var bg = ringSvg.append('path')
+  .datum({ endAngle: 2 * Math.PI })
+  .attr('fill', '#c6c6c6')
+  .attr('d', arc)
+
+  var fg = ringSvg.append('path')
+  .datum({ endAngle:  arcAngle(singleBuildingData.latest_energy_star_score)  })
+  .attr('fill', function(d){return color.energy_star_score(singleBuildingData.latest_energy_star_score) })
+  .attr('d', arc)
+
+  // ringSvg.append('text').text('out of 100')
+  ringSvg.append('text')
+      .attr('text-anchor', 'middle')
+      .attr('alignment-baseline', 'middle')
+      .text(singleBuildingData.latest_energy_star_score + ' out of 100')
+
+  function arcAngle(value, max){
+    max = max || 100
+    return (2*Math.PI*value)/max
+  }
+  /* end unpolished code for ring chart */
 
   $('#view-load').addClass('hidden')
   $('#view-content').removeClass('hidden')
