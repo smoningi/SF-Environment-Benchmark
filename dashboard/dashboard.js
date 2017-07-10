@@ -1,15 +1,5 @@
 "use strict";
 
-  $('.panel-body.side.flex-grow').height('800px');
-
-  $('.nav.nav-pills li a').on('click', function() {
-    if (($(this).is('#eui-tab')) || ($(this).is('#ghg-tab'))) {
-      $('.panel-body.side.flex-grow').height('');
-    } else {
-      $('.panel-body.side.flex-grow').height('800px');
-    }
-  });
-
 //TODO: CHANGE limit on returned properties in function propertyTypeQuery()
 const DATASOURCE = '75rg-imyz' // 'j2j3-acqj'
 const METRICS = ['benchmark','energy_star_score','site_eui_kbtu_ft2','source_eui_kbtu_ft2','percent_better_than_national_median_site_eui','percent_better_than_national_median_source_eui','total_ghg_emissions_metric_tons_co2e','total_ghg_emissions_intensity_kgco2e_ft2','weather_normalized_site_eui_kbtu_ft2','weather_normalized_source_eui_kbtu_ft2']
@@ -23,7 +13,7 @@ var colorSwatches = {
       energy_star_score: ['#EF839E','#ECD68C','#80D9AF','#4FAD8E'],
       total_ghg_emissions_intensity_kgco2e_ft2: ['#4FAD8E', '#80D9AF', '#ECD68C', '#EF839E'],
       site_eui_kbtu_ft2: ['#4FAD8E','#80D9AF', '#ECD68C', '#EF839E'],
-      highlight: '#0d32d4'
+      highlight: 'lightgray'
     };
 
 var color = {
@@ -327,8 +317,8 @@ function handlePropertyTypeResponse(rows) {
 
   /* variables for the ring chart */
   var ringRange = [0,100];
-  var ringHeight = 150;
-  var ringWidth = 150;
+  var ringHeight = 130;
+  var ringWidth = 130;
 
   /**
    * Use c3.js for ring chart
@@ -375,6 +365,8 @@ function handlePropertyTypeResponse(rows) {
 
   ringChart.load({
     columns: [['data', +singleBuildingData.latest_energy_star_score]]
+    
+    // columns: [['data', +singleBuildingData.latest_energy_star_score]]
   });
 
   $('#view-load').addClass('hidden')
@@ -606,3 +598,10 @@ function arrayQuartiles (sortedArr) {
     d3.quantile(sortedArr,0.75)
   ]
 }
+
+function setSidePanelHeight(){
+  var contentHeight = $('#view-content').height()
+  $('.panel-body.side.flex-grow').height(contentHeight - 10);
+}
+setTimeout(setSidePanelHeight, 1000)
+
