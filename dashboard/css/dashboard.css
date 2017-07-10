@@ -31,6 +31,7 @@ body {
 	background-color: white;
 	color: #3D3D3D;
 	border-top: 5px solid #1D8064;
+	border-bottom: 1px solid #F2F2F2;
 }
 .nav-pills>li {
 	background-color: #FBFCFA;
@@ -133,7 +134,8 @@ body {
 	letter-spacing: 1.2px;
 }
 .ranking-text {
-	padding: 6%;
+	padding: 3%;
+	margin-top: 2%;
 	font-size: 16px;
 	color: #3D3D3D;
 }
@@ -293,7 +295,8 @@ h4 {
 	border-left: 1px solid lightgray;
 }
 .border-bottom {
-	border-bottom: 2px dotted darkgray;
+	border-bottom: 2px dotted lightgray;
+	padding-bottom: 2%;
 }
 .ranking {
 	width: 164px;

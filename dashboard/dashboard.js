@@ -315,60 +315,50 @@ function handlePropertyTypeResponse(rows) {
 
   populateInfoBoxes(singleBuildingData, categoryData, floorAreaRange)
 
-  /* variables for the ring chart */
-  var ringRange = [0,100];
-  var ringHeight = 130;
-  var ringWidth = 130;
-
   /**
-   * Use c3.js for ring chart
+   * Use unpolished code for ring chart:
    */
-  //  TODO: override standard mouseover behavior (hide data)
-  var ringChart = c3.generate({
-     bindto: '#energy-star-score-radial',
-     data: {
-         columns: [
-             ['data', 0]
-         ],
-         type: 'gauge'
-     },
-     gauge: {
-       // units: 'units',
-       label: {
-          show:false, // to turn off the min/max labels.
-          format: function(value, ratio) {
-            return value + ' out of ' + ringRange[1];
-          }
-       },
-       min: ringRange[0], // 0 is default, //can handle negative min e.g. vacuum / voltage / current flow / rate of change
-       max: ringRange[1],
-       width: 14, // for adjusting arc thickness
-       startingAngle: 0,
-       fullCircle: true
-     },
-     tooltip: {
-      show: false
-    },
-     color: {
-         pattern: colorSwatches.energy_star_score, // the three color levels for the percentage values.
-         threshold: {
-            unit: 'value', // percentage is default
-            max: ringRange[1], // 100 is default
-            values: estarQuartiles
-         }
-     },
-     size: {
-         height: ringHeight,
-         width: ringWidth
-    }
-  });
+  var ringRange = [0,100];
+  var ringHeight = 100;
+  var ringWidth = 100;
+  var ringThick = 8;
+  var ringRadius = d3.min([ringHeight,ringWidth])/2
 
-  ringChart.load({
-    columns: [['data', +singleBuildingData.latest_energy_star_score]]
-    
-    // columns: [['data', +singleBuildingData.latest_energy_star_score]]
-  });
+  var arc = d3.svg.arc()
+  .outerRadius(ringRadius)
+  .innerRadius(ringRadius - ringThick)
+  .startAngle(0)
 
+  var euirank = rankBuildings(singleBuildingData.ID, categoryData, 'latest_weather_normalized_site_eui_kbtu_ft2')
+
+  var ringElement = d3.select('#energy-star-score-radial')
+  var ringSvg = ringElement.append("svg")
+  .attr("width", ringWidth)
+  .attr("height", ringHeight)
+  .append("g")
+  .attr("transform", "translate(" + ringWidth / 2 + "," + ringHeight / 2 + ")");
+
+  var bg = ringSvg.append('path')
+  .datum({ endAngle: 2 * Math.PI })
+  .attr('fill', '#c6c6c6')
+  .attr('d', arc)
+
+  var fg = ringSvg.append('path')
+  .datum({ endAngle:  arcAngle(euirank[0]) })
+  .attr('fill', function(d){return color.energy_star_score(euirank[0]) })
+  .attr('d', arc)
+
+  // ringSvg.append('text').text('out of 100')
+  ringSvg.append('text')
+      .attr('text-anchor', 'middle')
+      .attr('alignment-baseline', 'middle')
+      .text(euirank[0] + ' out of 100')
+
+  function arcAngle(value, max){
+    max = max || 100
+    return (2*Math.PI*value)/max
+  }
+  /* end unpolished code for ring chart */
   $('#view-load').addClass('hidden')
   $('#view-content').removeClass('hidden')
 }
@@ -492,6 +482,7 @@ function populateInfoBoxes (singleBuildingData,categoryData,floorAreaRange) {
   d3.selectAll('.building-type-sq-ft').text(numberWithCommas(floorAreaRange[0]) + '-' + numberWithCommas(floorAreaRange[1]))
 
   let euirank = rankBuildings(singleBuildingData.ID, categoryData, 'latest_weather_normalized_site_eui_kbtu_ft2')
+
   d3.select('#building-ranking').text(euirank[0])
   d3.select('#total-building-type').text(euirank[1])
 
