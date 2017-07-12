@@ -300,7 +300,8 @@ function handlePropertyTypeResponse(rows) {
   /* draw histogram for energy star */
   estarHistogram.colorScale(color.energy_star_score).bins(100).xAxisLabel('Energy Star Score').yAxisLabel('Buildings')
   estarHistogramElement.datum(estarVals).call(estarHistogram)
-  estarHistogramElement.call(histogramHighlight,singleBuildingData.latest_energy_star_score, estarHistogram)
+
+  estarHistogramElement.call(histogramHighlight,singleBuildingData.latest_energy_star_score, estarHistogram,singleBuildingData.building_name)
 
   /* draw histogram for ghg */
   ghgHistogram
@@ -310,7 +311,7 @@ function handlePropertyTypeResponse(rows) {
     .xAxisLabel('GHG Emissions (Metric Tons CO2)')
     .yAxisLabel('Buildings')
   ghgHistogramElement.datum(ghgVals).call(ghgHistogram)
-  ghgHistogramElement.call(histogramHighlight,singleBuildingData.latest_total_ghg_emissions_metric_tons_co2e,ghgHistogram)
+  ghgHistogramElement.call(histogramHighlight,singleBuildingData.latest_total_ghg_emissions_metric_tons_co2e,ghgHistogram,singleBuildingData.building_name)
 
   /* draw stacked bar for energy use intensity */
   // var euiWidth = parseInt(euiChartElement.style('width'))
@@ -556,7 +557,8 @@ function numberWithCommas(x) {
     return parts.join(".");
 }
 
-function histogramHighlight (selection, data, chart) {
+function histogramHighlight (selection, data, chart, label) {
+  label = (label != undefined) ? `${label} - ${data}` : `${data}`
   if( isNaN(data) ) data = -100
   var x = chart.xScale(),
       y = chart.yScale(),
@@ -565,12 +567,31 @@ function histogramHighlight (selection, data, chart) {
       height = chart.height()
   var svg = selection.select('svg')
   var hl = svg.select("g").selectAll('.highlight').data([data])
-  hl.enter().append("rect").attr('class', 'highlight')
-  hl.attr("width", 2)
-    .attr("x", function(d) { return x(d) - 1 })
-    .attr("y", 0)
-    .attr("height", height )
-    .attr('fill', colorSwatches.highlight )
+
+  var lineFunction = d3.svg.line()
+        .x(function(d) { return d.x; })
+        .y(function(d) { return d.y; })
+        .interpolate("linear")
+
+  var hlline = [
+    {x:x(data), y:0},
+    {x:x(data), y: height - margin.bottom}
+  ]
+
+  hl.enter().append("path")
+        .attr('class', 'highlight')
+        .attr("d", lineFunction(hlline))
+        .attr("stroke", colorSwatches.highlight)
+        .attr("stroke-width", 3)
+        .attr("stroke-dasharray", "5,3")
+        .attr("fill", "none");
+  hl.enter().append("text")
+        .attr('x', x(data)+5)
+        .attr('y', 16)
+        .attr('text-anchor', 'top')
+        .attr('alignment-baseline', 'top')
+        .attr("fill", colorSwatches.highlight)
+        .text(label)
   hl.exit().remove()
 }
 
