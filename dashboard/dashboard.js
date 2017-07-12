@@ -557,6 +557,13 @@ function numberWithCommas(x) {
     return parts.join(".");
 }
 
+/**
+* histogramHighlight - add a highlight bar to a histogram chart
+* @param {object} selection - d3 selection of the dom element for the histogram chart
+* @param {integer} data - the value to highlight
+* @param {object} chart - the histogram chart object
+* @param {string} label - the label for the highlighting bar
+*/
 function histogramHighlight (selection, data, chart, label) {
   label = (label != undefined) ? `${label.toUpperCase()} - ${data}` : `${data}`
   if( isNaN(data) ) data = -100
