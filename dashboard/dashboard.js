@@ -558,7 +558,7 @@ function numberWithCommas(x) {
 }
 
 function histogramHighlight (selection, data, chart, label) {
-  label = (label != undefined) ? `${label} - ${data}` : `${data}`
+  label = (label != undefined) ? `${label.toUpperCase()} - ${data}` : `${data}`
   if( isNaN(data) ) data = -100
   var x = chart.xScale(),
       y = chart.yScale(),
