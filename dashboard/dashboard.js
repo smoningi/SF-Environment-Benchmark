@@ -496,6 +496,14 @@ function populateInfoBoxes (singleBuildingData,categoryData,floorAreaRange) {
   d3.select('#building-ranking').text(euirank[0])
   d3.select('#total-building-type').text(euirank[1])
 
+  var complianceStatusIndicator = (singleBuildingData.latest_benchmark == "Complied") ?
+    ' <i class="fa fa-check" aria-hidden="true"></i>'
+    :
+    ' <i class="fa fa-times" aria-hidden="true"></i>'
+  d3.select('#compliance-status').html(complianceStatusIndicator)
+
+  d3.select('.ranking').text('LOCAL RANKING ' + singleBuildingData.latest_benchmark_year)
+
   //TODO: change #local-ranking-tooltip
   // the following doesn't quite work:
   $("#local-ranking-tooltip").attr("data-original-title",
