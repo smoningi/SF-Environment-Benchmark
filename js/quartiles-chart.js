@@ -1,4 +1,4 @@
-function hStackedBarChart() {
+function quartilesChart() {
   /* TODO use d3.stack instead */
 
   var margin = {top: 0, right: 0, bottom: 20, left: 10},
@@ -59,27 +59,23 @@ function hStackedBarChart() {
           .style("fill", "url(#linear-gradient)");
 
       /* Update the axis labels. */
-      var label = svg.select('.labels').selectAll('.label').data(data);
-      label.enter().append('text').attr('class', 'label');
+      var label = svg.select('.labels').selectAll('.axislabel').data(data);
+      label.enter().append('text').attr('class', 'axislabel');
       label.exit().remove();
       label.style("text-anchor", function(d, i){
             if (i === 0) {return 'end'}
             else if (i === 4 ) {return 'start'}
             else {return 'middle'}
           })
-          .style('alignment-baseline', function(d, i){
-            if (i === 0 || i === 4 ) return 'middle'
-            else if (i === 1 || i === 3 ){return 'before-edge'}
-            return 'after-edge'
-          })
+          .style('alignment-baseline', 'before-edge')
           .attr("transform", function(d,i){
-            var ypos
-            if (i === 0 || i === 4 ) ypos = 0.5
-            else if (i === 1 || i === 3 ){ypos = 0}
-            else {ypos = 1}
-            return "translate(" + x(d) + "," + y(ypos) + ")"
+            return "translate(" + x(d) + "," + y(0) + ")"
           })
-          .text(function(d){return d})
+          .text(function(d,i){
+            var val = d
+            if (i === 2) val += '-Median EUI'
+            return val
+          })
     });
   }
 

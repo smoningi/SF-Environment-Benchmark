@@ -323,7 +323,7 @@ h4 {
 
 /* charts */
 
-.chart-stackedbar {
+.chart-quartiles {
 	padding-bottom: 7%;
 }
 
@@ -348,4 +348,9 @@ h4 {
   fill: #777;
   font: 10px sans-serif;
   text-anchor: middle;
+}
+
+.axislabel {
+	font-size: 0.8em;
+	fill: #777;
 }
