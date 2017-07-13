@@ -301,7 +301,7 @@ function handlePropertyTypeResponse(rows) {
   estarHistogram.colorScale(color.energy_star_score).bins(100).xAxisLabel('Energy Star Score').yAxisLabel('Buildings')
   estarHistogramElement.datum(estarVals).call(estarHistogram)
 
-  estarHistogramElement.call(histogramHighlight,singleBuildingData.latest_energy_star_score, estarHistogram,singleBuildingData.building_name)
+  estarHistogramElement.call(addHighlightLine,singleBuildingData.latest_energy_star_score, estarHistogram,singleBuildingData.building_name)
 
   /* draw histogram for ghg */
   ghgHistogram
@@ -311,7 +311,7 @@ function handlePropertyTypeResponse(rows) {
     .xAxisLabel('GHG Emissions (Metric Tons CO2)')
     .yAxisLabel('Buildings')
   ghgHistogramElement.datum(ghgVals).call(ghgHistogram)
-  ghgHistogramElement.call(histogramHighlight,singleBuildingData.latest_total_ghg_emissions_metric_tons_co2e,ghgHistogram,singleBuildingData.building_name)
+  ghgHistogramElement.call(addHighlightLine,singleBuildingData.latest_total_ghg_emissions_metric_tons_co2e,ghgHistogram,singleBuildingData.building_name)
 
   /* draw stacked bar for energy use intensity */
   // var euiWidth = parseInt(euiChartElement.style('width'))
@@ -558,13 +558,13 @@ function numberWithCommas(x) {
 }
 
 /**
-* histogramHighlight - add a highlight bar to a histogram chart
+* addHighlightLine - add a highlight bar to a histogram chart
 * @param {object} selection - d3 selection of the dom element for the histogram chart
 * @param {integer} data - the value to highlight
 * @param {object} chart - the histogram chart object
 * @param {string} label - the label for the highlighting bar
 */
-function histogramHighlight (selection, data, chart, label) {
+function addHighlightLine (selection, data, chart, label) {
   label = (label != undefined) ? `${label.toUpperCase()} - ${data}` : `${data}`
   if( isNaN(data) ) data = -100
   var x = chart.xScale(),
@@ -582,7 +582,7 @@ function histogramHighlight (selection, data, chart, label) {
 
   var hlline = [
     {x:x(data), y:0},
-    {x:x(data), y: height - margin.bottom}
+    {x:x(data), y: height - margin.bottom - margin.top}
   ]
 
   hl.enter().append("path")
