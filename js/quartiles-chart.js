@@ -15,7 +15,8 @@ function quartilesChart() {
   function chart(selection) {
     selection.each(function(data) {
       /* stacked bar chart example http://bl.ocks.org/mbostock/1134768 */
-      data = arrayQuartiles(data)
+      var data = arrayQuartiles(data)
+      var maxVal = d3.max(data)
 
       /* Update the x-scale. */
       x   .domain(d3.extent(data))
@@ -43,14 +44,18 @@ function quartilesChart() {
       var g = svg.select("g")
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-    var defs = svg.append("defs");
-    var linearGradient = defs.append("linearGradient")
-        .attr("id", "linear-gradient");
-    linearGradient.selectAll("stop")
-      .data( color.range() )
-      .enter().append("stop")
-      .attr("offset", function(d,i) { return i/(color.range().length-1); })
-      .attr("stop-color", function(d) { return d; });
+      // arrayQuartiles, color.range()
+      var gradientSteps = data.map(function(val,i){
+        return {offset: x(val)/x(maxVal), color: color.range()[i] }
+      })
+      var defs = svg.append("defs");
+      var linearGradient = defs.append("linearGradient")
+          .attr("id", "linear-gradient");
+      linearGradient.selectAll("stop")
+        .data( gradientSteps )
+        .enter().append("stop")
+        .attr("offset", function(d) { return d.offset; })
+        .attr("stop-color", function(d) { return d.color; });
 
       var triangle = svg.select(".triangle").append("polygon");
       triangle.attr('class', 'triangle');
@@ -64,7 +69,7 @@ function quartilesChart() {
       label.exit().remove();
       label.style("text-anchor", function(d, i){
             if (i === 0) {return 'end'}
-            else if (i === 4 ) {return 'start'}
+            else if (i === 4 || i === 2) {return 'start'}
             else {return 'middle'}
           })
           .style('alignment-baseline', 'before-edge')
