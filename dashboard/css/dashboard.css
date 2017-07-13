@@ -53,6 +53,9 @@ body {
 	font-size: 30px;
 	color: #C6CED3;
 }
+.attn {
+	color: #EF839E;
+}
 #tabs .tab-content {
   color : white;
   color: black;

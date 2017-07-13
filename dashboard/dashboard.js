@@ -499,7 +499,7 @@ function populateInfoBoxes (singleBuildingData,categoryData,floorAreaRange) {
   var complianceStatusIndicator = (singleBuildingData.latest_benchmark == "Complied") ?
     ' <i class="fa fa-check" aria-hidden="true"></i>'
     :
-    ' <i class="fa fa-times" aria-hidden="true"></i>'
+    ' <i class="fa fa-times attn" aria-hidden="true"></i>'
   d3.select('#compliance-status').html(complianceStatusIndicator)
 
   d3.select('.ranking').text('LOCAL RANKING ' + singleBuildingData.latest_benchmark_year)
