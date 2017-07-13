@@ -280,7 +280,7 @@ function handlePropertyTypeResponse(rows) {
   ghgVals = ghgVals.filter(function (d) { return d > 0 })
 
   let euiVals = objArrayToSortedNumArray(categoryData,'latest_site_eui_kbtu_ft2')
-  euiVals = euiVals.filter(function (d) { return d > 0 && d < 1000 }) /* 1000 here is arbitrary to cut out outlier of SFMOMA & some others*/
+  euiVals = euiVals.filter(function (d) { return d > 1 && d < 1000 }) 
 
   /* set color domains */
   var estarQuartiles = arrayQuartiles(estarVals)
