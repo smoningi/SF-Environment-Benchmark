@@ -25,12 +25,14 @@ function hStackedBarChart() {
       y   .domain( [0,1] )
           .range([height - margin.top - margin.bottom, 0]);
 
+      var trianglepoints = `${x.range()[0]} ${y.range()[0]}, ${x.range()[1]} ${y.range()[0]}, ${x.range()[1]} ${y.range()[1]} `
+
       /* Select the svg element, if it exists. */
       var svg = d3.select(this).selectAll("svg").data([data]);
 
       /* Otherwise, create the skeletal chart. */
       var gEnter = svg.enter().append("svg").append("g");
-      gEnter.append("g").attr("class", "bars");
+      gEnter.append("g").attr("class", "triangle");
       gEnter.append("g").attr("class", "labels");
 
       /* Update the outer dimensions. */
@@ -41,16 +43,20 @@ function hStackedBarChart() {
       var g = svg.select("g")
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-      /* Update the bars. */
-      var bar = svg.select(".bars").selectAll(".bar").data(data);
-      bar.enter().append("rect").attr('class', 'bar');
-      bar.exit().remove();
-      bar .attr("width", function(d,i){ return x(data[i+1]) - x(d) })
-          .attr("x", function(d,i) { return (i===0) ? 0 : x(d) })
-          .attr("y", function(d) { return y(1); })
-          .attr("height", function(d) { return y.range()[0] - y(1) })
-          .attr('fill', function(d,i){ return color(d) } )
-          .order()
+    var defs = svg.append("defs");
+    var linearGradient = defs.append("linearGradient")
+        .attr("id", "linear-gradient");
+    linearGradient.selectAll("stop")
+      .data( color.range() )
+      .enter().append("stop")
+      .attr("offset", function(d,i) { return i/(color.range().length-1); })
+      .attr("stop-color", function(d) { return d; });
+
+      var triangle = svg.select(".triangle").append("polygon");
+      triangle.attr('class', 'triangle');
+      triangle.attr("points", trianglepoints)
+          .attr("fill", "none")
+          .style("fill", "url(#linear-gradient)");
 
       /* Update the axis labels. */
       var label = svg.select('.labels').selectAll('.label').data(data);
