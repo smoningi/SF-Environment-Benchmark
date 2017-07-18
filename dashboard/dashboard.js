@@ -75,7 +75,7 @@ let groups = {
       250000
     ]
   },
-  Retail: {
+  'Retail Store': {
     names: [
       '<20k',
       '>20k'
