@@ -12,14 +12,14 @@ const LOT = /[\/\.](.+)/
 var colorSwatches = {
       energy_star_score: ['#EF839E','#ECD68C','#80D9AF','#4FAD8E'],
       total_ghg_emissions_intensity_kgco2e_ft2: ['#4FAD8E', '#80D9AF', '#ECD68C', '#EF839E'],
-      site_eui_kbtu_ft2: ['#4FAD8E','#80D9AF', '#ECD68C', '#EF839E'],
+      site_eui_kbtu_ft2: ['#4FAD8E','#80D9AF', '#ECD68C', '#EF839E', '#ed5b5b'], //has to be 5 colors for the gradient to look right
       highlight: '#0d32d4'
     };
 
 var color = {
   energy_star_score: d3.scale.threshold().range(colorSwatches.energy_star_score),
   total_ghg_emissions_intensity_kgco2e_ft2: d3.scale.threshold().range(colorSwatches.total_ghg_emissions_intensity_kgco2e_ft2),
-  site_eui_kbtu_ft2: d3.scale.threshold().range(colorSwatches.site_eui_kbtu_ft2)
+  site_eui_kbtu_ft2: d3.scale.linear().range(colorSwatches.site_eui_kbtu_ft2)
 }
 
 /* use soda-js to query */
@@ -108,7 +108,7 @@ var ghgHistogram = histogramChart()
   .bins(100)
   .tickFormat(d3.format(',d'))
 
-var euiChartElement = d3.select('#eui-stackedbar')
+var euiChartElement = d3.select('#eui-quartileschart')
 
 
 
@@ -305,14 +305,14 @@ function handlePropertyTypeResponse(rows) {
 
   /* draw stacked bar for energy use intensity */
   // var euiWidth = parseInt(euiChartElement.style('width'))
-  var euiWidth = 450
-  var euiChart = hStackedBarChart()
+  var euiWidth = 650
+  var euiChart = quartilesChart()
     .width(euiWidth)
-    .height(60)
+    .height(150)
     .colorScale(color.site_eui_kbtu_ft2)
-    .margin({top: 10, right: 50, bottom: 10, left: 50})
+    .margin({top: 20, right: 50, bottom: 20, left: 50})
   euiChartElement.datum(euiVals).call(euiChart)
-  euiChartElement.call(stackedBarHighlight, singleBuildingData.latest_site_eui_kbtu_ft2, euiChart)
+  euiChartElement.call(addHighlightLine, singleBuildingData.latest_site_eui_kbtu_ft2, euiChart, singleBuildingData.building_name)
 
   populateInfoBoxes(singleBuildingData, categoryData, floorAreaRange)
 
@@ -603,7 +603,8 @@ function addHighlightLine (selection, data, chart, label) {
   hl.exit().remove()
 }
 
-function stackedBarHighlight (selection, data, chart) {
+function addHighlightLine (selection, data, chart, label) {
+  label = (label != undefined) ? `${label.toUpperCase()} - ${data}` : `${data}`
   if( isNaN(data) ) data = -100
   var x = chart.xScale(),
       y = chart.yScale(),
@@ -612,12 +613,32 @@ function stackedBarHighlight (selection, data, chart) {
       height = chart.height()
   var svg = selection.select('svg')
   var hl = svg.select("g").selectAll('.highlight').data([data])
-  hl.enter().append("rect").attr('class', 'highlight')
-  hl.attr("width", 2)
-    .attr("x", function(d) { return x(d) - 1 })
-    .attr("y", 0)
-    .attr("height", height )
-    .attr('fill', colorSwatches.highlight )
+
+  var lineFunction = d3.svg.line()
+           .x(function(d) { return d.x; })
+           .y(function(d) { return d.y; })
+           .interpolate("linear")
+
+  var hlline = [
+     {x:x(data), y:0},
+     {x:x(data), y: height - margin.bottom - margin.top}
+   ]
+
+  hl.enter().append("path")
+      .attr('class', 'highlight')
+      .attr("d", lineFunction(hlline))
+      .attr("stroke", colorSwatches.highlight)
+      .attr("stroke-width", 3)
+      .attr("stroke-dasharray", "5,3")
+      .attr("fill", "none");
+  hl.enter().append("text")
+      .attr('x', x(data)+5)
+      .attr('y', 16)
+      .attr('text-anchor', 'top')
+      .attr('alignment-baseline', 'top')
+      .attr("fill", colorSwatches.highlight)
+      .text(label)
+
   hl.exit().remove()
 }
 
