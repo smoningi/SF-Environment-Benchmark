@@ -65,7 +65,7 @@ let groups = {
       250000
     ]
   },
-  Retail: {
+  'Retail Store': {
     names: [
       '<20k',
       '>20k'
@@ -410,6 +410,9 @@ function latest (metric, entry) {
       entry['latest_'+metric] = entry['latest_'+metric] || 'N/A'
       entry['latest_'+metric+'_year'] = entry['latest_'+metric+'_year'] || 'N/A'
     }
+    if (typeof +entry['latest_'+metric] === 'number') {
+      entry['latest_'+metric] = roundToTenth(+entry['latest_'+metric])
+    }
   })
   if (metric !== 'benchmark') {
     entry['pct_change_one_year_'+metric] = calcPctChange(entry, metric, 1)
@@ -578,9 +581,9 @@ function objArrayToSortedNumArray (objArray,prop) {
 //   return a - b;
 // }
 
-// function roundToTenth (num){
-//   return Math.round(10*num)/10
-// }
+function roundToTenth (num){
+  return Math.round(10*num)/10
+}
 
 function numberWithCommas(x) {
     if (typeof x === 'undefined') return "and above"
