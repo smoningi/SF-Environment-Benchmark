@@ -1,15 +1,5 @@
 "use strict";
 
-  $('.panel-body.side.flex-grow').height('800px');
-
-  $('.nav.nav-pills li a').on('click', function() {
-    if (($(this).is('#eui-tab')) || ($(this).is('#ghg-tab'))) {
-      $('.panel-body.side.flex-grow').height('');
-    } else {
-      $('.panel-body.side.flex-grow').height('800px');
-    }
-  });
-
 //TODO: CHANGE limit on returned properties in function propertyTypeQuery()
 const DATASOURCE = '75rg-imyz' // 'j2j3-acqj'
 const METRICS = ['benchmark','energy_star_score','site_eui_kbtu_ft2','source_eui_kbtu_ft2','percent_better_than_national_median_site_eui','percent_better_than_national_median_source_eui','total_ghg_emissions_metric_tons_co2e','total_ghg_emissions_intensity_kgco2e_ft2','weather_normalized_site_eui_kbtu_ft2','weather_normalized_source_eui_kbtu_ft2']
@@ -23,7 +13,7 @@ var colorSwatches = {
       energy_star_score: ['#EF839E','#ECD68C','#80D9AF','#4FAD8E'],
       total_ghg_emissions_intensity_kgco2e_ft2: ['#4FAD8E', '#80D9AF', '#ECD68C', '#EF839E'],
       site_eui_kbtu_ft2: ['#4FAD8E','#80D9AF', '#ECD68C', '#EF839E'],
-      highlight: '#0d32d4'
+      highlight: 'lightgray'
     };
 
 var color = {
@@ -325,20 +315,21 @@ function handlePropertyTypeResponse(rows) {
 
   populateInfoBoxes(singleBuildingData, categoryData, floorAreaRange)
 
-
   /**
    * Use unpolished code for ring chart:
    */
   var ringRange = [0,100];
-  var ringHeight = 150;
-  var ringWidth = 150;
-  var ringThick = 14;
+  var ringHeight = 100;
+  var ringWidth = 100;
+  var ringThick = 8;
   var ringRadius = d3.min([ringHeight,ringWidth])/2
 
   var arc = d3.svg.arc()
   .outerRadius(ringRadius)
   .innerRadius(ringRadius - ringThick)
   .startAngle(0)
+
+  var euirank = rankBuildings(singleBuildingData.ID, categoryData, 'latest_weather_normalized_site_eui_kbtu_ft2')
 
   var ringElement = d3.select('#energy-star-score-radial')
   var ringSvg = ringElement.append("svg")
@@ -353,23 +344,21 @@ function handlePropertyTypeResponse(rows) {
   .attr('d', arc)
 
   var fg = ringSvg.append('path')
-  .datum({ endAngle:  arcAngle(singleBuildingData.latest_energy_star_score)  })
-  .attr('fill', function(d){return color.energy_star_score(singleBuildingData.latest_energy_star_score) })
+  .datum({ endAngle:  arcAngle(euirank[0]) })
+  .attr('fill', function(d){return color.energy_star_score(euirank[0]) })
   .attr('d', arc)
 
   // ringSvg.append('text').text('out of 100')
   ringSvg.append('text')
       .attr('text-anchor', 'middle')
       .attr('alignment-baseline', 'middle')
-      .text(singleBuildingData.latest_energy_star_score + ' out of 100')
+      .text(euirank[0] + ' out of 100')
 
   function arcAngle(value, max){
     max = max || 100
     return (2*Math.PI*value)/max
   }
   /* end unpolished code for ring chart */
-
-
   $('#view-load').addClass('hidden')
   $('#view-content').removeClass('hidden')
 }
@@ -496,6 +485,7 @@ function populateInfoBoxes (singleBuildingData,categoryData,floorAreaRange) {
   d3.selectAll('.building-type-sq-ft').text(numberWithCommas(floorAreaRange[0]) + '-' + numberWithCommas(floorAreaRange[1]))
 
   let euirank = rankBuildings(singleBuildingData.ID, categoryData, 'latest_weather_normalized_site_eui_kbtu_ft2')
+
   d3.select('#building-ranking').text(euirank[0])
   d3.select('#total-building-type').text(euirank[1])
 
@@ -602,3 +592,10 @@ function arrayQuartiles (sortedArr) {
     d3.quantile(sortedArr,0.75)
   ]
 }
+
+function setSidePanelHeight(){
+  var contentHeight = $('#view-content').height()
+  $('.panel-body.side.flex-grow').height(contentHeight - 10);
+}
+setTimeout(setSidePanelHeight, 1000)
+
