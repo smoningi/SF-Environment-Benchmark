@@ -43,7 +43,8 @@
  -->
 	<!-- end working on the airplane section... -->
 
-	<!-- todo: find the cdn for soda-js -->
+	<!-- todo: find the cdn for c3 and soda-js -->
+	<script src="../lib/c3.js"></script>
 	<script src="../lib/soda-js.bundle.js" type="text/javascript"></script>
 
 	<link rel="stylesheet" href="css/dashboard.css">
@@ -93,6 +94,9 @@
                 				<div class="row">
                 				Floor area:
                 				</div>
+												<div class="row">
+                					Compliance Status:
+                				</div>
                 			</div>
                 			<div class="col-xs-5 building-data">
                 				<div class="row building-type">
@@ -100,6 +104,9 @@
                 				</div>
                 				<div class="row">
                 				<span id="building-floor-area">105,905</span> ft<sup>2</sup>
+                				</div>
+												<div class="row">
+                					<span id="compliance-status"></span>
                 				</div>
 
                 			</div>
@@ -148,7 +155,7 @@
 		          	<div class="row border-bottom">
 		          		<div class="col-xs-3">
 		          			<div class="row center">
-		          				<span class="circle-chart" id="energy-star-score-radial"></span>
+		          				<span class="circle-chart c3" id="energy-star-score-radial"></span>
 		          			</div>
 		          		</div>
 			          	<div class="col-xs-7">
