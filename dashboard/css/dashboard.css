@@ -53,6 +53,15 @@ body {
 	font-size: 25px;
 	color: #C6CED3;
 }
+.attn {
+	color: #EF839E;
+}
+.fa-check {
+	color: green;
+}
+.fa-check, .fa-times {
+	font-size: 1.5em;
+}
 #tabs .tab-content {
   color : white;
   color: black;
