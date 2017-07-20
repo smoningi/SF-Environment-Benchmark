@@ -59,6 +59,9 @@ body {
 .fa-check {
 	color: green;
 }
+.fa-check, .fa-times {
+	font-size: 1.5em;
+}
 #tabs .tab-content {
   color : white;
   color: black;
