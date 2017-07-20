@@ -12,14 +12,14 @@ const LOT = /[\/\.](.+)/
 var colorSwatches = {
       energy_star_score: ['#EF839E','#ECD68C','#80D9AF','#4FAD8E'],
       total_ghg_emissions_intensity_kgco2e_ft2: ['#4FAD8E', '#80D9AF', '#ECD68C', '#EF839E'],
-      site_eui_kbtu_ft2: ['#4FAD8E','#80D9AF', '#ECD68C', '#EF839E'],
-      highlight: 'lightgray'
+      site_eui_kbtu_ft2: ['#4FAD8E','#80D9AF', '#ECD68C', '#EF839E', '#ed5b5b'], //has to be 5 colors for the gradient to look right
+      highlight: '#0d32d4'
     };
 
 var color = {
   energy_star_score: d3.scale.threshold().range(colorSwatches.energy_star_score),
   total_ghg_emissions_intensity_kgco2e_ft2: d3.scale.threshold().range(colorSwatches.total_ghg_emissions_intensity_kgco2e_ft2),
-  site_eui_kbtu_ft2: d3.scale.threshold().range(colorSwatches.site_eui_kbtu_ft2)
+  site_eui_kbtu_ft2: d3.scale.linear().range(colorSwatches.site_eui_kbtu_ft2)
 }
 
 /* use soda-js to query */
@@ -108,7 +108,7 @@ var ghgHistogram = histogramChart()
   .bins(100)
   .tickFormat(d3.format(',d'))
 
-var euiChartElement = d3.select('#eui-stackedbar')
+var euiChartElement = d3.select('#eui-quartileschart')
 
 
 
@@ -290,7 +290,8 @@ function handlePropertyTypeResponse(rows) {
   /* draw histogram for energy star */
   estarHistogram.colorScale(color.energy_star_score).bins(100).xAxisLabel('Energy Star Score').yAxisLabel('Buildings')
   estarHistogramElement.datum(estarVals).call(estarHistogram)
-  estarHistogramElement.call(histogramHighlight,singleBuildingData.latest_energy_star_score, estarHistogram)
+
+  estarHistogramElement.call(addHighlightLine,singleBuildingData.latest_energy_star_score, estarHistogram,singleBuildingData.building_name)
 
   /* draw histogram for ghg */
   ghgHistogram
@@ -300,18 +301,18 @@ function handlePropertyTypeResponse(rows) {
     .xAxisLabel('GHG Emissions (Metric Tons CO2)')
     .yAxisLabel('Buildings')
   ghgHistogramElement.datum(ghgVals).call(ghgHistogram)
-  ghgHistogramElement.call(histogramHighlight,singleBuildingData.latest_total_ghg_emissions_metric_tons_co2e,ghgHistogram)
+  ghgHistogramElement.call(addHighlightLine,singleBuildingData.latest_total_ghg_emissions_metric_tons_co2e,ghgHistogram,singleBuildingData.building_name)
 
   /* draw stacked bar for energy use intensity */
   // var euiWidth = parseInt(euiChartElement.style('width'))
-  var euiWidth = 450
-  var euiChart = hStackedBarChart()
+  var euiWidth = 650
+  var euiChart = quartilesChart()
     .width(euiWidth)
-    .height(60)
+    .height(150)
     .colorScale(color.site_eui_kbtu_ft2)
-    .margin({top: 10, right: 50, bottom: 10, left: 50})
+    .margin({top: 20, right: 50, bottom: 20, left: 50})
   euiChartElement.datum(euiVals).call(euiChart)
-  euiChartElement.call(stackedBarHighlight, singleBuildingData.latest_site_eui_kbtu_ft2, euiChart)
+  euiChartElement.call(addHighlightLine, singleBuildingData.latest_site_eui_kbtu_ft2, euiChart, singleBuildingData.building_name)
 
   populateInfoBoxes(singleBuildingData, categoryData, floorAreaRange)
 
@@ -388,8 +389,11 @@ function parseSingleRecord(record){
 * @return {object} - the entry param with new "latest_" properties
 */
 function latest (metric, entry) {
-  //TODO: create [years] dynamically based on the current year?
-  var years = [2011,2012,2013,2014,2015]
+  var thisYear = new Date().getFullYear()
+  var years = []
+  for (let i = 2011; i < thisYear; i++) {
+    years.push(i)
+  }
   if (metric === 'benchmark') years.unshift(2010)
   var yearTest = years.map(function(d){
     if (metric === 'benchmark') return 'benchmark_' + d + '_status'
@@ -489,6 +493,14 @@ function populateInfoBoxes (singleBuildingData,categoryData,floorAreaRange) {
   d3.select('#building-ranking').text(euirank[0])
   d3.select('#total-building-type').text(euirank[1])
 
+  var complianceStatusIndicator = (singleBuildingData.latest_benchmark == "Complied") ?
+    ' <i class="fa fa-check" aria-hidden="true"></i>'
+    :
+    ' <i class="fa fa-times attn" aria-hidden="true"></i>'
+  d3.select('#compliance-status').html(complianceStatusIndicator)
+
+  d3.select('.ranking').text('LOCAL RANKING ' + singleBuildingData.latest_benchmark_year)
+
   //TODO: change #local-ranking-tooltip
   // the following doesn't quite work:
   $("#local-ranking-tooltip").attr("data-original-title",
@@ -549,7 +561,15 @@ function numberWithCommas(x) {
     return parts.join(".");
 }
 
-function histogramHighlight (selection, data, chart) {
+/**
+* addHighlightLine - add a highlight bar to a histogram chart
+* @param {object} selection - d3 selection of the dom element for the histogram chart
+* @param {integer} data - the value to highlight
+* @param {object} chart - the histogram chart object
+* @param {string} label - the label for the highlighting bar
+*/
+function addHighlightLine (selection, data, chart, label) {
+  label = (label != undefined) ? `${label.toUpperCase()} - ${data}` : `${data}`
   if( isNaN(data) ) data = -100
   var x = chart.xScale(),
       y = chart.yScale(),
@@ -558,16 +578,36 @@ function histogramHighlight (selection, data, chart) {
       height = chart.height()
   var svg = selection.select('svg')
   var hl = svg.select("g").selectAll('.highlight').data([data])
-  hl.enter().append("rect").attr('class', 'highlight')
-  hl.attr("width", 2)
-    .attr("x", function(d) { return x(d) - 1 })
-    .attr("y", 0)
-    .attr("height", height )
-    .attr('fill', colorSwatches.highlight )
+
+  var lineFunction = d3.svg.line()
+        .x(function(d) { return d.x; })
+        .y(function(d) { return d.y; })
+        .interpolate("linear")
+
+  var hlline = [
+    {x:x(data), y:0},
+    {x:x(data), y: height - margin.bottom - margin.top}
+  ]
+
+  hl.enter().append("path")
+        .attr('class', 'highlight')
+        .attr("d", lineFunction(hlline))
+        .attr("stroke", colorSwatches.highlight)
+        .attr("stroke-width", 3)
+        .attr("stroke-dasharray", "5,3")
+        .attr("fill", "none");
+  hl.enter().append("text")
+        .attr('x', x(data)+5)
+        .attr('y', 16)
+        .attr('text-anchor', 'top')
+        .attr('alignment-baseline', 'top')
+        .attr("fill", colorSwatches.highlight)
+        .text(label)
   hl.exit().remove()
 }
 
-function stackedBarHighlight (selection, data, chart) {
+function addHighlightLine (selection, data, chart, label) {
+  label = (label != undefined) ? `${label.toUpperCase()} - ${data}` : `${data}`
   if( isNaN(data) ) data = -100
   var x = chart.xScale(),
       y = chart.yScale(),
@@ -576,12 +616,32 @@ function stackedBarHighlight (selection, data, chart) {
       height = chart.height()
   var svg = selection.select('svg')
   var hl = svg.select("g").selectAll('.highlight').data([data])
-  hl.enter().append("rect").attr('class', 'highlight')
-  hl.attr("width", 2)
-    .attr("x", function(d) { return x(d) - 1 })
-    .attr("y", 0)
-    .attr("height", height )
-    .attr('fill', colorSwatches.highlight )
+
+  var lineFunction = d3.svg.line()
+           .x(function(d) { return d.x; })
+           .y(function(d) { return d.y; })
+           .interpolate("linear")
+
+  var hlline = [
+     {x:x(data), y:0},
+     {x:x(data), y: height - margin.bottom - margin.top}
+   ]
+
+  hl.enter().append("path")
+      .attr('class', 'highlight')
+      .attr("d", lineFunction(hlline))
+      .attr("stroke", colorSwatches.highlight)
+      .attr("stroke-width", 3)
+      .attr("stroke-dasharray", "5,3")
+      .attr("fill", "none");
+  hl.enter().append("text")
+      .attr('x', x(data)+5)
+      .attr('y', 16)
+      .attr('text-anchor', 'top')
+      .attr('alignment-baseline', 'top')
+      .attr("fill", colorSwatches.highlight)
+      .text(label)
+
   hl.exit().remove()
 }
 

@@ -53,6 +53,15 @@ body {
 	font-size: 25px;
 	color: #C6CED3;
 }
+.attn {
+	color: #EF839E;
+}
+.fa-check {
+	color: green;
+}
+.fa-check, .fa-times {
+	font-size: 1.5em;
+}
 #tabs .tab-content {
   color : white;
   color: black;
@@ -317,7 +326,7 @@ h4 {
 
 /* charts */
 
-.chart-stackedbar {
+.chart-quartiles {
 	padding-bottom: 7%;
 }
 
@@ -342,4 +351,9 @@ h4 {
   fill: #777;
   font: 10px sans-serif;
   text-anchor: middle;
+}
+
+.axislabel {
+	font-size: 0.8em;
+	fill: #777;
 }
