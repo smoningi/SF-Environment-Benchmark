@@ -389,8 +389,11 @@ function parseSingleRecord(record){
 * @return {object} - the entry param with new "latest_" properties
 */
 function latest (metric, entry) {
-  //TODO: create [years] dynamically based on the current year?
-  var years = [2011,2012,2013,2014,2015]
+  var thisYear = new Date().getFullYear()
+  var years = []
+  for (let i = 2011; i < thisYear; i++) {
+    years.push(i)
+  }
   if (metric === 'benchmark') years.unshift(2010)
   var yearTest = years.map(function(d){
     if (metric === 'benchmark') return 'benchmark_' + d + '_status'
