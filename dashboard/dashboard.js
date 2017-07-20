@@ -261,7 +261,9 @@ function handleSingleBuildingResponse(rows) {
 * @param {array} rows - returned from consumer.query.getRows
 */
 function handlePropertyTypeResponse(rows) {
-  categoryData = apiDataToArray( rows.map(parseSingleRecord) ) //save data in global var
+  categoryData = rows.map(parseSingleRecord)    // save data in global var
+  categoryData = cleanData(categoryData)        // clean data according to SFENV's criteria
+  categoryData = apiDataToArray( categoryData ) // filter out unwanted data
 
   let estarVals = objArrayToSortedNumArray(categoryData, 'latest_energy_star_score')
   estarVals = estarVals.filter(function (d) { return d > 0 })
@@ -270,7 +272,7 @@ function handlePropertyTypeResponse(rows) {
   ghgVals = ghgVals.filter(function (d) { return d > 0 })
 
   let euiVals = objArrayToSortedNumArray(categoryData,'latest_site_eui_kbtu_ft2')
-  euiVals = euiVals.filter(function (d) { return d > 0 && d < 1000 }) /* 1000 here is arbitrary to cut out outlier of SFMOMA & some others*/
+  euiVals = euiVals.filter(function (d) { return d > 1 && d < 1000 })
 
   /* set color domains */
   var estarQuartiles = arrayQuartiles(estarVals)
@@ -412,13 +414,28 @@ function latest (metric, entry) {
       entry['latest_'+metric] = roundToTenth(+entry['latest_'+metric])
     }
   })
+  if (metric !== 'benchmark') {
+    entry['pct_change_one_year_'+metric] = calcPctChange(entry, metric, 1)
+    entry['pct_change_two_year_'+metric] = calcPctChange(entry, metric, 2)
+  }
   return entry
+}
+
+function calcPctChange(entry, metric, yearsBack){
+  let prev = getPrevYearMetric(entry, metric, yearsBack)
+  let pctChange = (+entry['latest_'+metric] - prev)/prev
+  return pctChange * 100
+}
+function getPrevYearMetric(entry, metric, yearsBack){
+  let targetYear = entry['latest_'+metric+'_year'] - yearsBack
+  let key = (metric === 'benchmark') ? `benchmark_${targetYear}_status` : `_${targetYear}_${metric}`
+  return +entry[key]
 }
 
 /**
 * apiDataToArray - transform record array to get a simpler, standardized array of k-v pairs
 * @param {array} data - the input array of data records
-* @return {array} an array of objects only latest_energy_star_score, latest_total_ghg_emissions_metric_tons_co2e, latest_weather_normalized_site_eui_kbtu_ft2
+* @return {array} an array of objects only LIMITEDMETRICS keys
 */
 function apiDataToArray (data) {
   let arr = data.map((parcel)=>{
@@ -529,6 +546,19 @@ function rankBuildings (id, bldgArray, prop) {
   return [rank, count]
 }
 
+/**
+* cleanData - remove property listings that don't meet criteria provided by SF Dept of Env
+* @param {array} inputData - data from socrata
+* @return {array} - % change eui has not increased by more than 100 nor decreased by 80 over the previous 2 years
+*/
+function cleanData (inputData) {
+  var filtered = inputData.filter(function(el){
+    var cond1 = (el.pct_change_one_year_site_eui_kbtu_ft2 <= 100) && (el.pct_change_one_year_site_eui_kbtu_ft2 >= -80)
+    var cond2 = (el.pct_change_two_year_site_eui_kbtu_ft2 <= 100) && (el.pct_change_two_year_site_eui_kbtu_ft2 >= -80)
+    return (cond1 && cond2)
+  })
+  return filtered
+}
 
 /****** helper functions *******/
 function onlyNumbers (val) {
