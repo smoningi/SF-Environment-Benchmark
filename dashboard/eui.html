@@ -78,7 +78,7 @@
                 			<div class="profile-header">BENCHMARKING PROFILE</div>
                 		</div>
                 		<div class="row center">
-                			<img src="../assets/hotel-icon.svg" alt="hotel-icon" id="building-icon">
+                			<i class="fa fa-building" aria-hidden="true"></i>
                 			<span class="building-name side">Hotel Zetta</span>
                 		</div>
                 		<div class="row center address">
@@ -94,6 +94,9 @@
                 				<div class="row">
                 				Floor area:
                 				</div>
+                				<div class="row">
+                				Compliance status:
+                				</div>
                 			</div>
                 			<div class="col-xs-5 building-data">
                 				<div class="row building-type">
@@ -102,7 +105,9 @@
                 				<div class="row">
                 				<span id="building-floor-area">105,905</span> ft<sup>2</sup>
                 				</div>
-
+                				<div class="row">
+                				<span id="compliance-status"></span>
+                				</div>
                 			</div>
                 		</div><br>
           <!--       		<div class="row center">
@@ -154,7 +159,7 @@
 						</div>
 						<div class="col-xs-7">
 							<div class="ranking-text">
-								<span class="building-name">Hotel Zetta</span> has an EUI <span id="eui-relative-ranking">lower</span> than the national <span class="building-type">hotel</span> median for <span class="building-type">hotels</span>.
+								<span class="building-name">Hotel Zetta</span> has an EUI <span id="eui-relative-ranking">lower</span> than the national <span class="building-type-lower">hotel</span> median for <span class="building-type-lower">hotel</span>s.
 							</div>
 						</div>
 						<div class="col-xs-2"></div>
@@ -162,17 +167,15 @@
 					<div class="row center">
 						<div class="col-xs-2"></div>
 						<div class="col-xs-8">
-							<div class="chart-title">SITE ENERGY USE INTENSITY FOR <span class="building-type">HOTEL</span> BUILDINGS IN SAN FRANCISCO<br><span class="building-type-sq-ft">150,000-200,000</span> SQUARE FEET</div>
+							<div class="chart-title">SITE ENERGY USE INTENSITY FOR <span class="building-type-upper">HOTEL</span> BUILDINGS IN SAN FRANCISCO<br><span class="building-type-sq-ft">150,000-200,000</span> SQUARE FEET</div>
 						</div>
 						<div class="col-xs-2"></div>
 					</div>
 					<div class="row center">
-						<div class="col-xs-2"></div>
-						<div class="col-xs-8">
+						<div class="col-xs-12">
 							<!-- <div class="loading">Loading&mdash;</div> -->
-							<div id="eui-stackedbar" class="chart-stackedbar"></div>
+							<div id="eui-quartileschart" class="chart-quartiles"></div>
 						</div>
-						<div class="col-xs-2"></div>
 					</div>
 					<div class="row">
 						<div class="col-xs-12 panel-bottom">
@@ -182,7 +185,7 @@
 							</div>
 						</div>
 					</div>
-				</div>	
+				</div>
 			</div>
 		</div>
 	</div>
