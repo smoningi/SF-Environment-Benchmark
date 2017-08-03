@@ -95,7 +95,7 @@ var estarWidth = 500 //parseInt(estarHistogramElement.style('width'))
 var estarHistogram = histogramChart()
   .width(estarWidth)
   .height(200)
-  .range([0,104])
+  .range([0,100])
   .bins(50)
   .tickFormat(d3.format(',d'))
 
@@ -290,7 +290,11 @@ function handlePropertyTypeResponse(rows) {
   categoryData.zscoreVal = (singleBuildingData.latest_energy_star_score - d3.mean(estarVals)) / d3.deviation(estarVals)
 
   /* draw histogram for energy star */
-  estarHistogram.colorScale(color.energy_star_score).bins(100).xAxisLabel('Energy Star Score').yAxisLabel('Buildings')
+  estarHistogram
+    .colorScale(color.energy_star_score)
+    .bins(100)
+    .xAxisLabel('Energy Star Score')
+    .yAxisLabel('Buildings')
   estarHistogramElement.datum(estarVals).call(estarHistogram)
 
   estarHistogramElement.call(addHighlightLine,singleBuildingData.latest_energy_star_score, estarHistogram,singleBuildingData.building_name)
@@ -689,4 +693,3 @@ function setSidePanelHeight(){
   $('.panel-body.side.flex-grow').height(contentHeight - 10);
 }
 setTimeout(setSidePanelHeight, 1000)
-
