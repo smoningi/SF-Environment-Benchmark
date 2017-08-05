@@ -316,7 +316,7 @@ function handlePropertyTypeResponse(rows) {
     .width(euiWidth)
     .height(150)
     .colorScale(color.site_eui_kbtu_ft2)
-    .margin({top: 20, right: 50, bottom: 20, left: 50})
+    .margin({top: 20, right: 80, bottom: 20, left: 50})
   euiChartElement.datum(euiVals).call(euiChart)
   euiChartElement.call(addHighlightLine, singleBuildingData.latest_site_eui_kbtu_ft2, euiChart, singleBuildingData.building_name)
 

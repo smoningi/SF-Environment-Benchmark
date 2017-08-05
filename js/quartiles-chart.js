@@ -79,6 +79,7 @@ function quartilesChart() {
           .text(function(d,i){
             var val = d
             if (i === 2) val += '-Median EUI'
+            if (i === 4) val += ' (kbtu/ft2)'
             return val
           })
     });
