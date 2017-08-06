@@ -414,7 +414,7 @@ function latest (metric, entry) {
       entry['latest_'+metric] = entry['latest_'+metric] || 'N/A'
       entry['latest_'+metric+'_year'] = entry['latest_'+metric+'_year'] || 'N/A'
     }
-    if (typeof +entry['latest_'+metric] === 'number' && !isNaN(entry['latest_'+metric]) ) {
+    if ( !isNaN(+entry['latest_'+metric]) ) {
       entry['latest_'+metric] = roundToTenth(+entry['latest_'+metric])
     }
   })
