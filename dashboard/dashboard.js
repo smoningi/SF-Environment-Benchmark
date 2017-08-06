@@ -493,8 +493,10 @@ function apiDataToArray (data) {
 */
 function populateInfoBoxes (singleBuildingData,categoryData,floorAreaRange) {
   d3.select('#building-energy-star-score').text(singleBuildingData.latest_energy_star_score)
+  d3.selectAll('.building-energy-star-score-year').text(singleBuildingData.latest_energy_star_score_year)
   d3.select('#building-eui').text(singleBuildingData.latest_site_eui_kbtu_ft2)
-  d3.selectAll('.building-ghg-emissions ').text(singleBuildingData.latest_total_ghg_emissions_metric_tons_co2e)
+  d3.selectAll('.building-ghg-emissions').text(singleBuildingData.latest_total_ghg_emissions_metric_tons_co2e)
+  d3.selectAll('.building-ghg-emissions-year').text(singleBuildingData.latest_total_ghg_emissions_metric_tons_co2e_year)
   d3.selectAll('.building-type-lower').text(singleBuildingData.property_type_self_selected.toLowerCase())
   d3.selectAll('.building-type-upper').text(singleBuildingData.property_type_self_selected.toUpperCase())
 
