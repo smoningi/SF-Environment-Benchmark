@@ -414,13 +414,17 @@ function latest (metric, entry) {
       entry['latest_'+metric] = entry['latest_'+metric] || 'N/A'
       entry['latest_'+metric+'_year'] = entry['latest_'+metric+'_year'] || 'N/A'
     }
-    if (typeof +entry['latest_'+metric] === 'number') {
+    if ( !isNaN(+entry['latest_'+metric]) ) {
       entry['latest_'+metric] = roundToTenth(+entry['latest_'+metric])
     }
   })
   if (metric !== 'benchmark') {
     entry['pct_change_one_year_'+metric] = calcPctChange(entry, metric, 1)
     entry['pct_change_two_year_'+metric] = calcPctChange(entry, metric, 2)
+  }
+  if (metric === 'benchmark') {
+    var prevYear = 'benchmark_' + (entry.latest_benchmark_year - 1) + '_status'
+    entry['prev_year_benchmark'] = entry[prevYear]
   }
   return entry
 }
@@ -516,10 +520,17 @@ function populateInfoBoxes (singleBuildingData,categoryData,floorAreaRange) {
   d3.select('#building-ranking').text(euirank[0])
   d3.select('#total-building-type').text(euirank[1])
 
-  var complianceStatusIndicator = (singleBuildingData.latest_benchmark == "Complied") ?
-    ' <i class="fa fa-check" aria-hidden="true"></i>'
-    :
-    ' <i class="fa fa-times attn" aria-hidden="true"></i>'
+  var complianceStatusIndicator = `${singleBuildingData.latest_benchmark_year}: ${complianceStatusString(singleBuildingData.latest_benchmark)} <br>
+  ${singleBuildingData.latest_benchmark_year - 1}: ${complianceStatusString(singleBuildingData.prev_year_benchmark)}`
+
+  function complianceStatusString(status){
+    var indicator = (status == "Complied") ?
+      ' <i class="fa fa-check" aria-hidden="true"></i>'
+      :
+      ' <i class="fa fa-times attn" aria-hidden="true"></i>'
+    return `${indicator} ${status}`
+  }
+
   d3.select('#compliance-status').html(complianceStatusIndicator)
 
   d3.select('.ranking').text('LOCAL RANKING ' + singleBuildingData.latest_benchmark_year)
