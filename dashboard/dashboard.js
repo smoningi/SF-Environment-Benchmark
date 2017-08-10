@@ -624,6 +624,10 @@ function addHighlightLine (selection, data, chart, label) {
     {x:x(data), y: height - margin.bottom - margin.top}
   ]
 
+  var moreThanHalf = ( x(data) < chart.width()/2 ) ? false : true
+  var textPos = moreThanHalf ? x(data)-5 : x(data)+5
+  var textAnchor = moreThanHalf ? 'end' : 'start'
+
   hl.enter().append("path")
         .attr('class', 'highlight')
         .attr("d", lineFunction(hlline))
@@ -632,53 +636,15 @@ function addHighlightLine (selection, data, chart, label) {
         .attr("stroke-dasharray", "5,3")
         .attr("fill", "none");
   hl.enter().append("text")
-        .attr('x', x(data)+5)
+        .attr('x', textPos)
         .attr('y', 16)
-        .attr('text-anchor', 'top')
+        .attr('text-anchor', textAnchor)
         .attr('alignment-baseline', 'top')
         .attr("fill", colorSwatches.highlight)
         .text(label)
   hl.exit().remove()
 }
 
-function addHighlightLine (selection, data, chart, label) {
-  label = (label != undefined) ? `${label.toUpperCase()} - ${data}` : `${data}`
-  if( isNaN(data) ) data = -100
-  var x = chart.xScale(),
-      y = chart.yScale(),
-      margin = chart.margin(),
-      width = chart.width(),
-      height = chart.height()
-  var svg = selection.select('svg')
-  var hl = svg.select("g").selectAll('.highlight').data([data])
-
-  var lineFunction = d3.svg.line()
-           .x(function(d) { return d.x; })
-           .y(function(d) { return d.y; })
-           .interpolate("linear")
-
-  var hlline = [
-     {x:x(data), y:0},
-     {x:x(data), y: height - margin.bottom - margin.top}
-   ]
-
-  hl.enter().append("path")
-      .attr('class', 'highlight')
-      .attr("d", lineFunction(hlline))
-      .attr("stroke", colorSwatches.highlight)
-      .attr("stroke-width", 3)
-      .attr("stroke-dasharray", "5,3")
-      .attr("fill", "none");
-  hl.enter().append("text")
-      .attr('x', x(data)+5)
-      .attr('y', 16)
-      .attr('text-anchor', 'top')
-      .attr('alignment-baseline', 'top')
-      .attr("fill", colorSwatches.highlight)
-      .text(label)
-
-  hl.exit().remove()
-}
 
 function arrayQuartiles (sortedArr) {
   return [
