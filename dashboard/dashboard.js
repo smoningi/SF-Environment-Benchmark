@@ -518,8 +518,16 @@ function populateInfoBoxes (singleBuildingData,categoryData,floorAreaRange) {
   d3.select('#building-ranking').text(euirank[0])
   d3.select('#total-building-type').text(euirank[1])
 
-  var complianceStatusIndicator = `${singleBuildingData.latest_benchmark_year}: ${singleBuildingData.latest_benchmark}
-  ${singleBuildingData.latest_benchmark_year - 1}: ${singleBuildingData.prev_year_benchmark}`
+  var complianceStatusIndicator = `${singleBuildingData.latest_benchmark_year}: ${complianceStatusString(singleBuildingData.latest_benchmark)} <br>
+  ${singleBuildingData.latest_benchmark_year - 1}: ${complianceStatusString(singleBuildingData.prev_year_benchmark)}`
+
+  function complianceStatusString(status){
+    var indicator = (status == "Complied") ?
+      ' <i class="fa fa-check" aria-hidden="true"></i>'
+      :
+      ' <i class="fa fa-times attn" aria-hidden="true"></i>'
+    return `${indicator} ${status}`
+  }
 
   d3.select('#compliance-status').html(complianceStatusIndicator)
 
